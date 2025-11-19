@@ -42,9 +42,7 @@ jobs:
 
     - name: Run tests
       id: tests
-      run: |
-        npm run test:integration-update
-        npm run test
+      run: npm run test
 
     # This will fail the workflow if either of the output directories are different
     # than expected.
@@ -61,14 +59,14 @@ jobs:
           git diff --ignore-space-at-eol --text dist/
           exit 1
         fi
-        if [ ! -d test/ ]; then
-          echo "Expected test/ directory does not exist.  See status below:"
+        if [ ! -d tests/ ]; then
+          echo "Expected tests/ directory does not exist.  See status below:"
           ls -la ./
           exit 1
         fi
-        if [ "$(git diff --ignore-space-at-eol --text test/ | wc -l)" -gt "0" ]; then
+        if [ "$(git diff --ignore-space-at-eol --text tests/ | wc -l)" -gt "0" ]; then
           echo "Detected uncommitted changes after build. See status below:"
-          git diff --ignore-space-at-eol --text test/
+          git diff --ignore-space-at-eol --text tests/
           exit 1
         fi
 
