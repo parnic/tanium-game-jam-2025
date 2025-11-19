@@ -1,4 +1,4 @@
-name: CI
+name: CI and deploy
 
 on:
   push:
@@ -7,8 +7,7 @@ on:
     branches: [ main ]
 
 jobs:
-  build:
-
+  ci:
     runs-on: ubuntu-latest
 
     strategy:
@@ -74,10 +73,64 @@ jobs:
     # workflow artifact.
     - if: ${{ failure() && steps.diff.outcome == 'failure' }}
       name: Upload Artifact
-      id: upload
+      id: uploadResult
       uses: actions/upload-artifact@v4
       with:
         name: outdir-${{ matrix.node-version }}-diff
         path: |
           dist/
           test/
+
+  build-pages:
+    name: Build GitHub Pages
+    needs: ci
+    if: github.ref == 'refs/heads/main' && success()
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        id: checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node
+        id: setup-node
+        uses: actions/setup-node@v6
+
+      - name: Install dependencies
+        id: install
+        run: npm install
+
+      - name: Build project
+        id: build
+        run: npm run build
+
+      - name: Setup Pages
+        id: setup-pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload production-ready build files
+        id: upload
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: ./dist
+
+  deploy:
+    name: Deploy
+    needs: build-pages
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: write
+      pages: write
+    if: github.ref == 'refs/heads/main' && success()
+
+    steps:
+      - name: Download artifact
+        id: download
+        uses: actions/download-artifact@v6
+        with:
+          path: ./dist
+
+      - name: Deploy to GitHub Pages
+        id: deploy-pages
+        uses: actions/deploy-pages@v4
