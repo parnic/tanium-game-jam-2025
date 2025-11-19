@@ -13,6 +13,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Set commit status as pending
+        uses: myrotvorets/set-commit-status-action@v2
+        with:
+          status: pending
+          context: Build
+
       - name: Checkout repo
         uses: actions/checkout@v5
 
@@ -33,6 +39,13 @@ jobs:
         with:
           path: ./dist
 
+      - name: Set final commit status
+        uses: myrotvorets/set-commit-status-action@v2
+        if: always()
+        with:
+          status: ${{ job.status }}
+          context: Build
+
   deploy:
     name: Deploy
     needs: build
@@ -44,6 +57,12 @@ jobs:
     if: github.ref == 'refs/heads/main' && github.event.workflow_run.conclusion == 'success'
 
     steps:
+      - name: Set commit status as pending
+        uses: myrotvorets/set-commit-status-action@v2
+        with:
+          status: pending
+          context: Deploy
+
       - name: Download artifact
         uses: actions/download-artifact@v6
         with:
@@ -51,3 +70,10 @@ jobs:
 
       - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v4
+      
+      - name: Set final commit status
+        uses: myrotvorets/set-commit-status-action@v2
+        if: always()
+        with:
+          status: ${{ job.status }}
+          context: Deploy
