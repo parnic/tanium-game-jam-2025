@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <tileset version="1.10" tiledversion="1.11.2" name="enemies" tilewidth="128" tileheight="128" tilecount="64" columns="8">
- <image source="../assets/kenney_new-platformer-pack-1.0/Spritesheets/spritesheet-enemies-double.png" width="1024" height="1024"/>
+ <image source="../public/images/spritesheet-enemies-double.png" width="1024" height="1024"/>
  <tile id="4" type="enemy">
   <objectgroup draworder="index" id="2">
    <object id="1" type="collision" x="0" y="0" width="128" height="128"/>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <tileset version="1.10" tiledversion="1.11.2" name="world" tilewidth="128" tileheight="128" tilecount="540" columns="27">
- <image source="../assets/kenney_top-down-shooter/Tilesheet/tilesheet_complete_2X.png" width="3456" height="2560"/>
+ <image source="../public/images/tilesheet_complete_2X.png" width="3456" height="2560"/>
  <wangsets>
   <wangset name="Grass" type="mixed" tile="-1">
    <wangcolor name="grass" color="#ff0000" tile="-1" probability="1"/>
