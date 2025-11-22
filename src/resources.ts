@@ -8,7 +8,7 @@ export const Resources = {
 // So when you type Resources.Sword -> ImageSource
 
 export const TiledResources: TiledResource[] = [
-  new TiledResource("../levels/level1.tmx", {
+  new TiledResource("./levels/level1.tmx", {
     startZIndex: -10,
     useTilemapCameraStrategy: false,
   }),

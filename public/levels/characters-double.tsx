@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <tileset version="1.10" tiledversion="1.11.2" name="characters" tilewidth="256" tileheight="256" tilecount="64" columns="8">
- <image source="../public/images/spritesheet-characters-double.png" width="2048" height="2048"/>
+ <image source="../images/spritesheet-characters-double.png" width="2048" height="2048"/>
  <tile id="0">
   <objectgroup draworder="index" id="2">
    <object id="1" name="body" type="playerCollision" x="64" y="0" width="128" height="256">
