@@ -27,15 +27,25 @@
   "homepage": "",
   "dependencies": {
     "@excaliburjs/plugin-tiled": "0.31.0",
-    "excalibur": "0.31.0"
+    "excalibur": "0.32.0-alpha.1561"
   },
   "devDependencies": {
-    "@playwright/test": "^1.49.1",
-    "@types/node": "^22.10.2",
+    "@playwright/test": "^1.56.1",
+    "@types/node": "^24.10.1",
     "eslint": "9.39.1",
+    "pre-commit": "^1.2.2",
     "prettier": "3.6.2",
     "typescript": "5.9.3",
     "typescript-eslint": "8.47.0",
-    "vite": "6.4.1"
-  }
+    "vite": "7.2.4"
+  },
+  "overrides": {
+    "@excaliburjs/plugin-tiled": {
+      "excalibur": "0.32.0-alpha.1561"
+    }
+  },
+  "pre-commit": [
+    "lint",
+    "build"
+  ]
 }
