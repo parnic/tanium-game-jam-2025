@@ -47,7 +47,6 @@ export class Player extends Actor {
     this.graphics.add(Resources.Sword.toSprite());
 
     // Actions are useful for scripting common behavior, for example patrolling enemies
-    this.actions.delay(2000);
     this.actions.repeatForever((ctx) => {
       ctx.moveBy({ offset: vec(100, 0), duration: 1000 });
       ctx.moveBy({ offset: vec(0, 100), duration: 1000 });

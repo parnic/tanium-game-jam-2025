@@ -12,3 +12,4 @@ test/images/diff-*.png
 /src/*.d.ts
 *-lock.json
 /.vscode/
+/levels/
