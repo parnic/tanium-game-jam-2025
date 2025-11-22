@@ -26,7 +26,7 @@ export default defineConfig([
       "eslint.config.mjs",
       "playwright.config.ts",
       "vite.config.mjs",
-      "levels/**",
+      "public/**",
     ],
   },
 ]);
