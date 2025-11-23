@@ -115,9 +115,9 @@ export class GameLevel extends Scene {
     const idx = Math.round(Math.random() * (eligibleEnemies.length - 1));
     const enemyDef = eligibleEnemies[idx];
     const enemy = new Enemy(
-      (this.player?.pos ?? Vector.Zero).add(vec(5, 5)),
+      (this.player?.pos ?? Vector.Zero).add(vec(5, 5)), // todo: pick the right position to spawn: random direction away from the player, just off screen
       enemyDef,
-      128,
+      128, // todo: extract these numbers from the right place
       128,
     );
     this.enemies.push(enemy);
