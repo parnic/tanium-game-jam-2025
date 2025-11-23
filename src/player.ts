@@ -4,6 +4,7 @@ import {
   Buttons,
   Collider,
   CollisionContact,
+  CollisionType,
   Engine,
   Gamepad,
   Keys,
@@ -14,7 +15,7 @@ import {
 } from "excalibur";
 import { Tile } from "@excaliburjs/plugin-tiled";
 import { GameLevel } from "./game-level";
-import { GameActor } from "./game-actor";
+import { GameActor, TiledCollision } from "./game-actor";
 
 // Actors are the main unit of composition you'll likely use, anything that you want to draw and move around the screen
 // is likely built with an actor
@@ -37,7 +38,7 @@ export class Player extends GameActor {
   lastGamepadDpad = Vector.Zero;
   gamepadDeadzone = 0.2;
 
-  constructor(inPos: Vector, tile: Tile, width?: number, height?: number) {
+  constructor(inPos: Vector, tile: Tile) {
     super({
       // Giving your actor a name is optional, but helps in debugging using the dev tools or debug mode
       // https://github.com/excaliburjs/excalibur-extension/
@@ -45,10 +46,10 @@ export class Player extends GameActor {
       // Firefox: https://addons.mozilla.org/en-US/firefox/addon/excalibur-dev-tools/
       name: "Player",
       pos: inPos,
-      width: width,
-      height: height,
-      // anchor: vec(0, 0), // Actors default center colliders and graphics with anchor (0.5, 0.5)
-      // collisionType: CollisionType.Active, // Collision Type Active means this participates in collisions read more https://excaliburjs.com/docs/collisiontypes
+      width: tile.tileset.tileWidth,
+      height: tile.tileset.tileHeight,
+      collisionType: CollisionType.Active,
+      collisionDef: new TiledCollision(tile),
     });
 
     this._speed = 0.4;

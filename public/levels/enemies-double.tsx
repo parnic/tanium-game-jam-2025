@@ -9,7 +9,7 @@
    <property name="speed" type="float" value="1"/>
   </properties>
   <objectgroup draworder="index" id="2">
-   <object id="1" type="collision" x="0" y="0" width="128" height="128"/>
+   <object id="2" type="collision" x="4" y="31" width="121" height="97"/>
   </objectgroup>
   <animation>
    <frame tileid="4" duration="180"/>
@@ -24,7 +24,7 @@
    <property name="speed" type="float" value="0.75"/>
   </properties>
   <objectgroup draworder="index" id="2">
-   <object id="1" type="collision" x="0" y="0" width="128" height="128"/>
+   <object id="2" type="collision" x="0" y="22" width="128" height="106"/>
   </objectgroup>
   <animation>
    <frame tileid="9" duration="180"/>
@@ -38,6 +38,9 @@
    <property name="name" value="slime"/>
    <property name="speed" type="float" value="1"/>
   </properties>
+  <objectgroup draworder="index" id="2">
+   <object id="1" type="collision" x="0" y="46" width="128" height="82"/>
+  </objectgroup>
   <animation>
    <frame tileid="10" duration="300"/>
    <frame tileid="18" duration="300"/>
@@ -76,7 +79,7 @@
    <property name="speed" type="float" value="1"/>
   </properties>
   <objectgroup draworder="index" id="2">
-   <object id="1" type="collision" x="0" y="0" width="128" height="128"/>
+   <object id="2" type="collision" x="0" y="72" width="128" height="56"/>
   </objectgroup>
   <animation>
    <frame tileid="24" duration="150"/>
@@ -91,6 +94,9 @@
    <property name="name" value="slug"/>
    <property name="speed" type="float" value="0.78"/>
   </properties>
+  <objectgroup draworder="index" id="2">
+   <object id="1" type="collision" x="4" y="25" width="122" height="103"/>
+  </objectgroup>
   <animation>
    <frame tileid="28" duration="180"/>
    <frame tileid="36" duration="180"/>
@@ -104,7 +110,7 @@
    <property name="speed" type="float" value="1"/>
   </properties>
   <objectgroup draworder="index" id="2">
-   <object id="1" type="collision" x="0" y="0" width="128" height="128"/>
+   <object id="2" type="collision" x="3" y="22" width="120" height="94"/>
   </objectgroup>
   <animation>
    <frame tileid="29" duration="180"/>
@@ -119,7 +125,7 @@
    <property name="speed" type="float" value="1"/>
   </properties>
   <objectgroup draworder="index" id="2">
-   <object id="2" type="collision" x="0" y="0" width="128" height="128"/>
+   <object id="3" type="collision" x="0" y="22" width="128" height="106"/>
   </objectgroup>
   <animation>
    <frame tileid="41" duration="150"/>
@@ -136,7 +142,7 @@
    <property name="speed" type="float" value="1"/>
   </properties>
   <objectgroup draworder="index" id="2">
-   <object id="1" type="collision" x="0" y="0" width="128" height="128"/>
+   <object id="2" type="collision" x="0" y="32" width="128" height="96"/>
   </objectgroup>
   <animation>
    <frame tileid="42" duration="180"/>
@@ -151,6 +157,9 @@
    <property name="name" value="bee"/>
    <property name="speed" type="float" value="1"/>
   </properties>
+  <objectgroup draworder="index" id="2">
+   <object id="1" type="collision" x="4" y="12" width="120" height="102"/>
+  </objectgroup>
   <animation>
    <frame tileid="43" duration="180"/>
    <frame tileid="23" duration="180"/>
@@ -164,7 +173,7 @@
    <property name="speed" type="float" value="1"/>
   </properties>
   <objectgroup draworder="index" id="2">
-   <object id="1" type="collision" x="0" y="0" width="128" height="128"/>
+   <object id="2" type="collision" x="0" y="80" width="128" height="48"/>
   </objectgroup>
   <animation>
    <frame tileid="48" duration="150"/>
@@ -179,6 +188,9 @@
    <property name="name" value="spike"/>
    <property name="speed" type="float" value="0.8"/>
   </properties>
+  <objectgroup draworder="index" id="2">
+   <object id="1" type="collision" x="3" y="3" width="122" height="122"/>
+  </objectgroup>
   <animation>
    <frame tileid="51" duration="180"/>
    <frame tileid="59" duration="180"/>

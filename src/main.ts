@@ -1,4 +1,11 @@
-import { BoundingBox, DisplayMode, Engine, vec } from "excalibur";
+import {
+  Actor,
+  BoundingBox,
+  DisplayMode,
+  Engine,
+  SolverStrategy,
+  vec,
+} from "excalibur";
 import { loader, LevelResources } from "./resources";
 import { GameLevel } from "./game-level";
 import { Player } from "./player";
@@ -12,17 +19,13 @@ const game = new Engine({
   scenes: {
     start: GameLevel,
   },
-  // resolution: Resolution.Standard,
   suppressHiDPIScaling: false,
   antialiasing: false,
   snapToPixel: false,
-  physics: false,
   pixelRatio: 1,
-  // physics: {
-  //   solver: SolverStrategy.Realistic,
-  //   substep: 5 // Sub step the physics simulation for more robust simulations
-  // },
-  // fixedUpdateTimestep: 16 // Turn on fixed update timestep when consistent physic simulation is important
+  physics: {
+    solver: SolverStrategy.Arcade,
+  },
 });
 
 await game
@@ -39,20 +42,26 @@ await game
     const level = LevelResources[0];
     level.addToScene(game.currentScene);
 
-    const characters = level.getTilesetByName("characters");
-    const playerTileset = characters.find(
-      (ch) => ch.getTilesByClassName("player").length > 0,
-    );
-    const playerTile = playerTileset?.getTilesByClassName("player")[0];
-    const startLocs = level.getObjectsByClassName("playerStart");
+    const playerStartActor = level.getEntitiesByClassName("playerStart").at(0);
+    if (playerStartActor instanceof Actor) {
+      const characters = level.getTilesetByName("characters");
+      const playerTileset = characters.find(
+        (ch) => ch.getTilesByClassName("player").length > 0,
+      );
 
-    const player = new Player(
-      vec(startLocs[0].x, startLocs[0].y),
-      playerTile!,
-      startLocs[0].tiledObject.width,
-      startLocs[0].tiledObject.height,
-    );
-    game.currentScene.add(player);
+      const playerTile = playerTileset?.getTilesByClassName("player")[0];
+      const player = new Player(
+        vec(playerStartActor.pos.x, playerStartActor.pos.y),
+        playerTile!,
+      );
+      game.currentScene.add(player);
+
+      // set the camera to the player's position before making it elastic to avoid
+      // a big across-the-world ease at the start of a level
+      game.currentScene.camera.pos = player.pos;
+      game.currentScene.camera.strategy.elasticToActor(player, 0.15, 0.75);
+      // game.currentScene.camera.zoom = 0.3;
+    }
 
     const allowedEnemyNamesProp = level.map.properties?.find(
       (prop) => prop.name === "enemies",
@@ -75,12 +84,6 @@ await game
         game.currentScene.enemyData.push(enemyDef);
       }
     }
-
-    // set the camera to the player's position before making it elastic to avoid
-    // a big across-the-world ease at the start of a level
-    game.currentScene.camera.pos = player.pos;
-    game.currentScene.camera.strategy.elasticToActor(player, 0.15, 0.75);
-    // game.currentScene.camera.zoom = 0.3;
 
     const firstLayer = level.getTileLayers().at(0);
     if (firstLayer) {

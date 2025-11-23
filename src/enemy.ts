@@ -1,4 +1,4 @@
-import { Animation, Engine, Vector } from "excalibur";
+import { Animation, CollisionType, Engine, Vector } from "excalibur";
 import { GameLevel } from "./game-level";
 import { EnemyData } from "./enemy-data";
 import { GameActor } from "./game-actor";
@@ -16,6 +16,8 @@ export class Enemy extends GameActor {
       pos: inPos,
       width: width,
       height: height,
+      collisionType: CollisionType.Passive,
+      collisionDef: def.collisionDef,
     });
 
     this._speed = 0.15;

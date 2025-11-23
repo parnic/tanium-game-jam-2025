@@ -1,4 +1,33 @@
-import { Actor, Animation, Engine, Vector } from "excalibur";
+import { Tile } from "@excaliburjs/plugin-tiled";
+import {
+  Actor,
+  ActorArgs,
+  Animation,
+  Engine,
+  Shape,
+  vec,
+  Vector,
+} from "excalibur";
+
+export class TiledCollision {
+  x = 0;
+  y = 0;
+  width = 0;
+  height = 0;
+
+  constructor(tile: Tile) {
+    const collider = tile.objects.find((o) => o.class === "collision");
+
+    this.x = collider?.tiledObject.x ?? 0;
+    this.y = collider?.tiledObject.y ?? 0;
+    this.width = collider?.tiledObject.width ?? 0;
+    this.height = collider?.tiledObject.height ?? 0;
+  }
+}
+
+export type GameActorArgs = ActorArgs & {
+  collisionDef?: TiledCollision;
+};
 
 export abstract class GameActor extends Actor {
   currMove = Vector.Zero;
@@ -12,6 +41,28 @@ export abstract class GameActor extends Actor {
 
   public get facing(): Vector {
     return this._spriteFacing;
+  }
+
+  constructor(config?: GameActorArgs) {
+    super(config);
+
+    if (config?.collisionDef) {
+      this.setCollision(config.collisionDef);
+    }
+  }
+
+  private setCollision(def: TiledCollision) {
+    const shape = Shape.Polygon(
+      [
+        vec(def.x, def.y),
+        vec(def.x, def.y + def.height),
+        vec(def.x + def.width, def.y + def.height),
+        vec(def.x + def.width, def.y),
+      ],
+      vec(-this.width / 2, -this.height / 2),
+    );
+
+    this.collider.set(shape);
   }
 
   protected moveInDirection(direction: Vector, elapsedMs: number) {
