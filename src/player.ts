@@ -1,9 +1,14 @@
 import {
   Animation,
+  Axes,
+  Buttons,
   Collider,
   CollisionContact,
   Engine,
+  Gamepad,
   Keys,
+  PointerButton,
+  PointerType,
   Side,
   Vector,
 } from "excalibur";
@@ -27,6 +32,10 @@ export class Player extends GameActor {
   movementEnabled = true;
   tile: Tile;
   pointerMoveSource?: Vector;
+  lastUsedGamepad?: Gamepad;
+  lastGamepadAxis = Vector.Zero;
+  lastGamepadDpad = Vector.Zero;
+  gamepadDeadzone = 0.2;
 
   constructor(inPos: Vector, tile: Tile, width?: number, height?: number) {
     super({
@@ -66,6 +75,9 @@ export class Player extends GameActor {
     super.onInitialize(engine);
 
     engine.input.keyboard.on("hold", (evt) => {
+      // disable gamepad input
+      this.lastUsedGamepad = undefined;
+
       switch (evt.key) {
         case Keys.W:
         case Keys.Up:
@@ -89,12 +101,88 @@ export class Player extends GameActor {
       }
     });
 
+    engine.input.gamepads.enabled = true;
+    engine.input.gamepads.on("connect", (evt) => {
+      this.hookGamepadEvents(evt.gamepad);
+    });
+    engine.input.gamepads.on("disconnect", (evt) => {
+      this.unhookGamepadEvents(evt.gamepad);
+    });
+
     engine.input.pointers.primary.on("down", (evt) => {
-      this.pointerMoveSource = evt.screenPos;
+      // disable gamepad input
+      this.lastUsedGamepad = undefined;
+      if (
+        evt.button === PointerButton.Left ||
+        evt.pointerType !== PointerType.Mouse
+      ) {
+        this.pointerMoveSource = evt.screenPos;
+      }
     });
     engine.input.pointers.primary.on("up", (evt) => {
-      this.pointerMoveSource = undefined;
+      if (
+        evt.button === PointerButton.Left ||
+        evt.pointerType !== PointerType.Mouse
+      ) {
+        this.pointerMoveSource = undefined;
+      }
     });
+  }
+
+  hookGamepadEvents(gamepad: Gamepad): void {
+    gamepad.on("axis", (evt) => {
+      if (evt.axis == Axes.LeftStickX) {
+        if (Math.abs(evt.value) < this.gamepadDeadzone) {
+          if (gamepad === this.lastUsedGamepad) {
+            this.lastGamepadAxis.x = 0;
+          }
+        } else {
+          // claim input from this gamepad
+          this.lastUsedGamepad = gamepad;
+          this.lastGamepadAxis.x = evt.value;
+        }
+      }
+      if (evt.axis == Axes.LeftStickY) {
+        if (Math.abs(evt.value) < this.gamepadDeadzone) {
+          if (gamepad === this.lastUsedGamepad) {
+            this.lastGamepadAxis.y = 0;
+          }
+        } else {
+          // claim input from this gamepad
+          this.lastUsedGamepad = gamepad;
+          this.lastGamepadAxis.y = evt.value;
+        }
+      }
+    });
+
+    gamepad.on("button", (evt) => {
+      // claim input from this gamepad
+      this.lastUsedGamepad = gamepad;
+
+      // we can't actually use this because "release" events aren't passed, only down, so evt.value is never 0.
+      // switch (evt.button) {
+      //   case Buttons.DpadDown:
+      //     this.lastGamepadDpad.y = evt.value;
+      //     break;
+
+      //   case Buttons.DpadUp:
+      //     this.lastGamepadDpad.y = -evt.value;
+      //     break;
+
+      //   case Buttons.DpadLeft:
+      //     this.lastGamepadDpad.x = -evt.value;
+      //     break;
+
+      //   case Buttons.DpadRight:
+      //     this.lastGamepadDpad.x = evt.value;
+      //     break;
+      // }
+    });
+  }
+
+  unhookGamepadEvents(gamepad: Gamepad): void {
+    gamepad.off("axis");
+    gamepad.off("button");
   }
 
   override onPreUpdate(engine: Engine, elapsedMs: number): void {
@@ -102,6 +190,24 @@ export class Player extends GameActor {
   }
 
   override onPostUpdate(engine: Engine, elapsedMs: number): void {
+    if (this.lastUsedGamepad) {
+      this.currMove = this.lastGamepadAxis;
+
+      const gamepad = this.lastUsedGamepad;
+      if (gamepad.isButtonHeld(Buttons.DpadDown)) {
+        this.currMove = this.currMove.add(Vector.Down);
+      }
+      if (gamepad.isButtonHeld(Buttons.DpadUp)) {
+        this.currMove = this.currMove.add(Vector.Up);
+      }
+      if (gamepad.isButtonHeld(Buttons.DpadLeft)) {
+        this.currMove = this.currMove.add(Vector.Left);
+      }
+      if (gamepad.isButtonHeld(Buttons.DpadRight)) {
+        this.currMove = this.currMove.add(Vector.Right);
+      }
+    }
+
     // pointer input overrides all other types of input
     if (this.pointerMoveSource) {
       this.currMove = engine.input.pointers.primary.lastScreenPos.sub(
