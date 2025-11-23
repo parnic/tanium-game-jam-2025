@@ -8,7 +8,7 @@ const game = new Engine({
   width: 1920,
   height: 1080,
   displayMode: DisplayMode.FitScreenAndFill,
-  pixelArt: true,
+  pixelArt: false,
   scenes: {
     start: GameLevel,
   },
@@ -17,7 +17,7 @@ const game = new Engine({
   antialiasing: false,
   snapToPixel: false,
   physics: false,
-  pixelRatio: 2,
+  pixelRatio: 1,
   // physics: {
   //   solver: SolverStrategy.Realistic,
   //   substep: 5 // Sub step the physics simulation for more robust simulations
@@ -80,7 +80,7 @@ await game
     // a big across-the-world ease at the start of a level
     game.currentScene.camera.pos = player.pos;
     game.currentScene.camera.strategy.elasticToActor(player, 0.15, 0.75);
-    game.currentScene.camera.zoom = 0.3;
+    // game.currentScene.camera.zoom = 0.3;
 
     const firstLayer = level.getTileLayers().at(0);
     if (firstLayer) {

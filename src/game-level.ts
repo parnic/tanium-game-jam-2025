@@ -41,6 +41,8 @@ export class GameLevel extends Scene {
 
   override onInitialize(engine: Engine): void {
     // Scene.onInitialize is where we recommend you perform the composition for your game
+    // const pointerSystem = this.world.systemManager.get(PointerSystem);
+    // this.world.systemManager.removeSystem(pointerSystem!);
   }
 
   override onPreLoad(loader: DefaultLoader): void {
@@ -76,7 +78,9 @@ export class GameLevel extends Scene {
 
     if (Math.floor(nowSeconds) % 5 === 0 && Math.floor(lastSeconds) % 5 !== 0) {
       Logger.getInstance().info(`spawning enemy`);
-      this.spawnEnemy();
+      if (this.enemies.length === 0) {
+        this.spawnEnemy();
+      }
     }
 
     this.lastTime = engine.clock.now();

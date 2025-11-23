@@ -18,7 +18,7 @@ export class Enemy extends GameActor {
       height: height,
     });
 
-    this._speed = 0.35;
+    this._speed = 0.15;
     this.def = def;
     this._spriteFacing = def.facing > 0 ? Vector.Right : Vector.Left;
     this.walk = new Animation({ frames: this.def.walkFrames });

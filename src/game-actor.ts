@@ -1,6 +1,6 @@
 import { Actor, Animation, Engine, Vector } from "excalibur";
 
-export class GameActor extends Actor {
+export abstract class GameActor extends Actor {
   currMove = Vector.Zero;
   _speed = 0.4;
   _spriteFacing = Vector.Left;
