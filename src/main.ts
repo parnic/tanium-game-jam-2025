@@ -1,4 +1,4 @@
-import { BoundingBox, DisplayMode, Engine, Resolution, vec } from "excalibur";
+import { BoundingBox, DisplayMode, Engine, vec } from "excalibur";
 import { loader, LevelResources } from "./resources";
 import { GameLevel } from "./game-level";
 import { Player } from "./player";
@@ -12,7 +12,7 @@ const game = new Engine({
   scenes: {
     start: GameLevel,
   },
-  resolution: Resolution.Standard,
+  // resolution: Resolution.Standard,
   suppressHiDPIScaling: false,
   antialiasing: false,
   snapToPixel: false,
