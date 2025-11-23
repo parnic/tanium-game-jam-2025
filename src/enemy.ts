@@ -1,12 +1,12 @@
-import { Actor, Animation, Engine, Vector } from "excalibur";
+import { Animation, Engine, Vector } from "excalibur";
 import { GameLevel } from "./game-level";
 import { EnemyData } from "./enemy-data";
+import { GameActor } from "./game-actor";
 
-export class Enemy extends Actor {
+export class Enemy extends GameActor {
   addedInWave = 0;
   def: EnemyData;
   gameScene: GameLevel | undefined;
-  walk: Animation;
   static enemyCounter = new Uint32Array([1]);
 
   constructor(inPos: Vector, def: EnemyData, width?: number, height?: number) {
@@ -18,7 +18,9 @@ export class Enemy extends Actor {
       height: height,
     });
 
+    this._speed = 0.35;
     this.def = def;
+    this._spriteFacing = def.facing > 0 ? Vector.Right : Vector.Left;
     this.walk = new Animation({ frames: this.def.walkFrames });
   }
 
@@ -26,27 +28,17 @@ export class Enemy extends Actor {
     return this.def.health;
   }
 
-  public get speed(): number {
-    return this.def.speed * 0.35;
+  public override get speed(): number {
+    return this.def.speed * this._speed;
   }
 
   override onInitialize(engine: Engine): void {
     this.gameScene = this.scene as GameLevel;
     this.addedInWave = this.gameScene.currentWave;
-    this.graphics.use(this.walk);
+    super.onInitialize(engine);
   }
 
-  moveInDirection(direction: Vector, elapsedMs: number) {
-    this.pos.x += direction.x * this.speed * elapsedMs;
-    this.pos.y += direction.y * this.speed * elapsedMs;
-  }
-
-  override onPostUpdate(engine: Engine, elapsedMs: number): void {
-    const moveDir =
-      this.gameScene?.player?.pos.sub(this.pos).normal() ?? Vector.Zero;
-    this.moveInDirection(moveDir, elapsedMs);
-
-    this.graphics.flipHorizontal =
-      Math.sign(moveDir.x) != Math.sign(this.def.facing);
+  override onPreUpdate(engine: Engine, elapsedMs: number): void {
+    this.currMove = this.gameScene?.player?.pos.sub(this.pos) ?? Vector.Zero;
   }
 }

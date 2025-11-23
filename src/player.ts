@@ -1,5 +1,4 @@
 import {
-  Actor,
   Animation,
   Collider,
   CollisionContact,
@@ -10,6 +9,7 @@ import {
 } from "excalibur";
 import { Tile } from "@excaliburjs/plugin-tiled";
 import { GameLevel } from "./game-level";
+import { GameActor } from "./game-actor";
 
 // Actors are the main unit of composition you'll likely use, anything that you want to draw and move around the screen
 // is likely built with an actor
@@ -23,13 +23,9 @@ import { GameLevel } from "./game-level";
 // actor.actions
 // actor.pointer
 
-export class Player extends Actor {
-  moveSpeed: number;
-  currMove = Vector.Zero;
+export class Player extends GameActor {
   movementEnabled = true;
   tile: Tile;
-  walk: Animation;
-  spriteFacing: Vector;
 
   constructor(inPos: Vector, tile: Tile, width?: number, height?: number) {
     super({
@@ -45,9 +41,9 @@ export class Player extends Actor {
       // collisionType: CollisionType.Active, // Collision Type Active means this participates in collisions read more https://excaliburjs.com/docs/collisiontypes
     });
 
-    this.moveSpeed = 0.4;
+    this._speed = 0.4;
     this.tile = tile;
-    this.spriteFacing =
+    this._spriteFacing =
       (this.tile.properties.get("facing") as number) < 0
         ? Vector.Left
         : Vector.Right;
@@ -66,7 +62,7 @@ export class Player extends Actor {
     if (this.scene instanceof GameLevel) {
       this.scene.player = this;
     }
-    this.graphics.use(this.walk);
+    super.onInitialize(engine);
 
     engine.input.keyboard.on("hold", (evt) => {
       switch (evt.key) {
@@ -93,29 +89,12 @@ export class Player extends Actor {
     });
   }
 
-  moveInDirection(direction: Vector, elapsedMs: number) {
-    this.pos.x += direction.x * this.moveSpeed * elapsedMs;
-    this.pos.y += direction.y * this.moveSpeed * elapsedMs;
-  }
-
   override onPreUpdate(engine: Engine, elapsedMs: number): void {
     // Put any update logic here runs every frame before Actor builtins
   }
 
   override onPostUpdate(engine: Engine, elapsedMs: number): void {
-    this.currMove.clampMagnitude(1);
-    if (this.currMove.magnitude > 0) {
-      this.walk.play();
-    } else {
-      this.walk.pause();
-    }
-    this.moveInDirection(this.currMove, elapsedMs);
-
-    if (this.currMove.x != 0) {
-      this.graphics.flipHorizontal =
-        Math.sign(this.currMove.x) != Math.sign(this.spriteFacing.x);
-    }
-    this.currMove = Vector.Zero;
+    super.onPostUpdate(engine, elapsedMs);
   }
 
   override onPreCollisionResolve(
