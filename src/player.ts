@@ -26,6 +26,7 @@ import { GameActor } from "./game-actor";
 export class Player extends GameActor {
   movementEnabled = true;
   tile: Tile;
+  pointerMoveSource?: Vector;
 
   constructor(inPos: Vector, tile: Tile, width?: number, height?: number) {
     super({
@@ -87,6 +88,13 @@ export class Player extends GameActor {
           break;
       }
     });
+
+    engine.input.pointers.primary.on("down", (evt) => {
+      this.pointerMoveSource = evt.screenPos;
+    });
+    engine.input.pointers.primary.on("up", (evt) => {
+      this.pointerMoveSource = undefined;
+    });
   }
 
   override onPreUpdate(engine: Engine, elapsedMs: number): void {
@@ -94,6 +102,13 @@ export class Player extends GameActor {
   }
 
   override onPostUpdate(engine: Engine, elapsedMs: number): void {
+    // pointer input overrides all other types of input
+    if (this.pointerMoveSource) {
+      this.currMove = engine.input.pointers.primary.lastScreenPos.sub(
+        this.pointerMoveSource,
+      );
+    }
+
     super.onPostUpdate(engine, elapsedMs);
   }
 
