@@ -3,7 +3,6 @@ import {
   Engine,
   ExcaliburGraphicsContext,
   Logger,
-  PointerSystem,
   Scene,
   SceneActivationContext,
   vec,
@@ -42,8 +41,6 @@ export class GameLevel extends Scene {
 
   override onInitialize(engine: Engine): void {
     // Scene.onInitialize is where we recommend you perform the composition for your game
-    const pointerSystem = this.world.systemManager.get(PointerSystem);
-    this.world.systemManager.removeSystem(pointerSystem!);
   }
 
   override onPreLoad(loader: DefaultLoader): void {
@@ -62,9 +59,6 @@ export class GameLevel extends Scene {
 
   override onPreUpdate(engine: Engine, elapsedMs: number): void {
     // Called before anything updates in the scene
-  }
-
-  override onPostUpdate(engine: Engine, elapsedMs: number): void {
     const now = engine.clock.now();
     const nowSeconds = now / 1000;
     const lastSeconds = this.lastTime / 1000;
@@ -86,6 +80,10 @@ export class GameLevel extends Scene {
     }
 
     this.lastTime = engine.clock.now();
+  }
+
+  override onPostUpdate(engine: Engine, elapsedMs: number): void {
+    // empty
   }
 
   override onPreDraw(ctx: ExcaliburGraphicsContext, elapsedMs: number): void {
