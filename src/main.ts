@@ -53,6 +53,9 @@ await game
     );
     game.currentScene.add(player);
 
+    // set the camera to the player's position before making it elastic to avoid
+    // a big across-the-world ease at the start of a level
+    game.currentScene.camera.pos = player.pos;
     game.currentScene.camera.strategy.elasticToActor(player, 0.15, 0.75);
     game.currentScene.camera.zoom = 0.3;
 
