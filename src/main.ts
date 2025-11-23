@@ -1,7 +1,8 @@
 import { BoundingBox, DisplayMode, Engine, Resolution, vec } from "excalibur";
 import { loader, LevelResources } from "./resources";
-import { GameLevel } from "./level";
+import { GameLevel } from "./game-level";
 import { Player } from "./player";
+import { EnemyData } from "./enemy-data";
 
 const game = new Engine({
   width: 1920,
@@ -16,7 +17,7 @@ const game = new Engine({
   antialiasing: false,
   snapToPixel: false,
   physics: false,
-  pixelRatio: 1,
+  pixelRatio: 2,
   // physics: {
   //   solver: SolverStrategy.Realistic,
   //   substep: 5 // Sub step the physics simulation for more robust simulations
@@ -52,6 +53,28 @@ await game
       startLocs[0].tiledObject.height,
     );
     game.currentScene.add(player);
+
+    const allowedEnemyNamesProp = level.map.properties?.find(
+      (prop) => prop.name === "enemies",
+    );
+    const allowedEnemyNames =
+      allowedEnemyNamesProp?.type === "string"
+        ? allowedEnemyNamesProp.value.split(",")
+        : [];
+    const enemies = level.getTilesetByName("enemies");
+    const enemyTileset = enemies.find(
+      (enemy) => enemy.getTilesByClassName("enemy").length > 0,
+    );
+    const enemyTiles = enemyTileset?.getTilesByClassName("enemy") ?? [];
+    for (const enemy of enemyTiles) {
+      const enemyDef = new EnemyData(enemy);
+      if (
+        allowedEnemyNames.some((n) => enemyDef.name === n) &&
+        game.currentScene instanceof GameLevel
+      ) {
+        game.currentScene.enemyData.push(enemyDef);
+      }
+    }
 
     // set the camera to the player's position before making it elastic to avoid
     // a big across-the-world ease at the start of a level

@@ -1,0 +1,56 @@
+import { Tile } from "@excaliburjs/plugin-tiled";
+import { Frame } from "excalibur";
+
+export class EnemyData {
+  private _health: number;
+  private _speed: number;
+  private _walkFrames: Frame[];
+  private _name: string;
+  private _facing: number;
+  private _difficulty: number;
+
+  public get health() {
+    return this._health;
+  }
+
+  public get speed() {
+    return this._speed;
+  }
+
+  public get walkFrames() {
+    return this._walkFrames;
+  }
+
+  public get name() {
+    return this._name;
+  }
+
+  public get facing() {
+    return this._facing;
+  }
+
+  public get difficulty() {
+    return this._difficulty;
+  }
+
+  constructor(tile: Tile) {
+    const facingProp = tile.properties.get("facing");
+    const nameProp = tile.properties.get("name");
+    const healthProp = tile.properties.get("health-mult");
+    const speedProp = tile.properties.get("speed");
+    const difficultyProp = tile.properties.get("difficulty");
+
+    this._name = typeof nameProp === "string" ? nameProp : "enemy";
+    this._facing = typeof facingProp === "number" ? facingProp : -1;
+    this._health = typeof healthProp === "number" ? healthProp : 1;
+    this._speed = typeof speedProp === "number" ? speedProp : 1;
+    this._difficulty = typeof difficultyProp === "number" ? difficultyProp : 0;
+
+    this._walkFrames = tile.animation.map((anim) => {
+      return {
+        graphic: tile.tileset.spritesheet.sprites[anim.tileid],
+        duration: anim.duration,
+      };
+    });
+  }
+}

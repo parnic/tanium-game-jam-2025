@@ -9,6 +9,7 @@ import {
   Vector,
 } from "excalibur";
 import { Tile } from "@excaliburjs/plugin-tiled";
+import { GameLevel } from "./game-level";
 
 // Actors are the main unit of composition you'll likely use, anything that you want to draw and move around the screen
 // is likely built with an actor
@@ -44,7 +45,7 @@ export class Player extends Actor {
       // collisionType: CollisionType.Active, // Collision Type Active means this participates in collisions read more https://excaliburjs.com/docs/collisiontypes
     });
 
-    this.moveSpeed = 4;
+    this.moveSpeed = 0.4;
     this.tile = tile;
     this.spriteFacing =
       (this.tile.properties.get("facing") as number) < 0
@@ -62,6 +63,9 @@ export class Player extends Actor {
   }
 
   override onInitialize(engine: Engine) {
+    if (this.scene instanceof GameLevel) {
+      this.scene.player = this;
+    }
     this.graphics.use(this.walk);
 
     engine.input.keyboard.on("hold", (evt) => {
@@ -89,9 +93,9 @@ export class Player extends Actor {
     });
   }
 
-  moveInDirection(direction: Vector) {
-    this.pos.x += direction.x * this.moveSpeed;
-    this.pos.y += direction.y * this.moveSpeed;
+  moveInDirection(direction: Vector, elapsedMs: number) {
+    this.pos.x += direction.x * this.moveSpeed * elapsedMs;
+    this.pos.y += direction.y * this.moveSpeed * elapsedMs;
   }
 
   override onPreUpdate(engine: Engine, elapsedMs: number): void {
@@ -105,7 +109,7 @@ export class Player extends Actor {
     } else {
       this.walk.pause();
     }
-    this.moveInDirection(this.currMove);
+    this.moveInDirection(this.currMove, elapsedMs);
 
     if (this.currMove.x != 0) {
       this.graphics.flipHorizontal =
