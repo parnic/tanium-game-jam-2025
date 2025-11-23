@@ -1,25 +1,19 @@
 import { TiledResource } from "@excaliburjs/plugin-tiled";
 import { ImageSource, Loader } from "excalibur";
+import { config } from "./config";
 
-// It is convenient to put your resources in one place
 export const Resources = {
-  Sword: new ImageSource("./images/sword.png"), // Vite public/ directory serves the root images
-} as const; // the 'as const' is a neat typescript trick to get strong typing on your resources.
-// So when you type Resources.Sword -> ImageSource
+  Sword: new ImageSource("./images/sword.png"),
+} as const;
 
-export const TiledResources: TiledResource[] = [
+export const LevelResources: TiledResource[] = [
   new TiledResource("./levels/level1.tmx", {
-    startZIndex: -10,
+    startZIndex: config.ZIndexBackground,
     useTilemapCameraStrategy: false,
   }),
-  // new TiledResource("./levels/characters-double.tsx"),
-  // new TiledResource("./levels/enemies-double.tsx"),
-  // new TiledResource("./levels/world-double.tsx"),
 ];
 
-// We build a loader and add all of our resources to the boot loader
-// You can build your own loader by extending DefaultLoader
-export const loader = new Loader(TiledResources);
+export const loader = new Loader(LevelResources);
 for (const res of Object.values(Resources)) {
   loader.addResource(res);
 }

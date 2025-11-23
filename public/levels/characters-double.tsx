@@ -14,7 +14,11 @@
    <frame tileid="34" duration="250"/>
   </animation>
  </tile>
- <tile id="33">
+ <tile id="33" type="player">
+  <properties>
+   <property name="facing" type="int" value="1"/>
+   <property name="name" value="purple"/>
+  </properties>
   <objectgroup draworder="index" id="2">
    <object id="1" type="collision" x="46" y="52" width="166" height="201"/>
   </objectgroup>
