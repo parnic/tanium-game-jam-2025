@@ -45,5 +45,8 @@ export class Enemy extends Actor {
     const moveDir =
       this.gameScene?.player?.pos.sub(this.pos).normal() ?? Vector.Zero;
     this.moveInDirection(moveDir, elapsedMs);
+
+    this.graphics.flipHorizontal =
+      Math.sign(moveDir.x) != Math.sign(this.def.facing);
   }
 }
