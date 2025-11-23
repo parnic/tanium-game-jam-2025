@@ -34,8 +34,10 @@ export abstract class GameActor extends Actor {
     }
     this.moveInDirection(this.currMove, elapsedMs);
 
-    this.graphics.flipHorizontal =
-      Math.sign(this.currMove.x) != Math.sign(this.facing.x);
+    if (this.currMove.x !== 0) {
+      this.graphics.flipHorizontal =
+        Math.sign(this.currMove.x) != Math.sign(this.facing.x);
+    }
     this.currMove = Vector.Zero;
   }
 }
