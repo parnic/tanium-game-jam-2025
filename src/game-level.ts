@@ -61,6 +61,11 @@ export class GameLevel extends Scene {
   }
 
   override onPreUpdate(engine: Engine, elapsedMs: number): void {
+    // don't spawn any enemies or adjust the clock/waves after the player dies
+    if (this.player?.isKilled() === true) {
+      return;
+    }
+
     // Called before anything updates in the scene
     const now = engine.clock.now();
     const nowSeconds = now / 1000;
@@ -151,6 +156,5 @@ export class GameLevel extends Scene {
     );
     // todo: spawn corpse if fromAttack
     enemy.kill();
-    this.remove(enemy);
   }
 }

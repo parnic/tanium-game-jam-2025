@@ -50,7 +50,15 @@ export class Enemy extends GameActor {
   }
 
   override onPreUpdate(engine: Engine, elapsedMs: number): void {
-    this.currMove = this.gameScene?.player?.pos.sub(this.pos) ?? Vector.Zero;
+    const playerDead = this.gameScene?.player?.isKilled() === true;
+    const from = playerDead
+      ? (this.gameScene?.player?.pos ?? Vector.Zero)
+      : this.pos;
+    const to = playerDead
+      ? this.pos
+      : (this.gameScene?.player?.pos ?? Vector.Zero);
+
+    this.currMove = to.sub(from);
   }
 
   override onPostUpdate(engine: Engine, elapsedMs: number): void {
