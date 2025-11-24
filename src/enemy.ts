@@ -33,10 +33,7 @@ export class Enemy extends GameActor {
     this.def = def;
     this._spriteFacing = def.facing > 0 ? Vector.Right : Vector.Left;
     this.walk = new Animation({ frames: this.def.walkFrames });
-  }
-
-  public get health(): number {
-    return this.def.health;
+    this._health = def.health;
   }
 
   public override get speed(): number {
@@ -76,8 +73,14 @@ export class Enemy extends GameActor {
     contact: CollisionContact,
   ): void {
     if (other.owner instanceof Player) {
+      // todo: we probably don't want to kill every enemy type that hits the player, e.g. the minibosses.
+      // those should probably stop moving for a second or so.
       other.owner.onHitByEnemy(this);
-      this.gameScene?.killEnemy(this, false);
+      this.takeDamage(this.health);
     }
+  }
+
+  protected override onHealthReachedZero(): void {
+    this.gameScene?.killEnemy(this, false);
   }
 }

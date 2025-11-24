@@ -5,7 +5,6 @@ import {
   Collider,
   CollisionContact,
   CollisionType,
-  Color,
   Engine,
   Gamepad,
   Keys,
@@ -37,7 +36,7 @@ export class Player extends GameActor {
   pointerMoveSource?: Vector;
   lastUsedGamepad?: Gamepad;
   lastGamepadAxis = Vector.Zero;
-  lastGamepadDpad = Vector.Zero;
+  // lastGamepadDpad = Vector.Zero;
   gamepadDeadzone = 0.2;
 
   constructor(inPos: Vector, tile: Tile) {
@@ -60,6 +59,7 @@ export class Player extends GameActor {
       (this.tile.properties.get("facing") as number) < 0
         ? Vector.Left
         : Vector.Right;
+    this._health = 10;
 
     this.walk = new Animation({
       frames: this.tile.animation.map((anim) => {
@@ -267,6 +267,11 @@ export class Player extends GameActor {
   }
 
   onHitByEnemy(enemy: Enemy): void {
-    this.actions.flash(Color.White, 150);
+    this.takeDamage(1);
+  }
+
+  protected override onHealthReachedZero(): void {
+    // todo: spawn corpse/effect? need to show a "you died" ui for sure
+    this.kill();
   }
 }

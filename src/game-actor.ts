@@ -3,7 +3,9 @@ import {
   Actor,
   ActorArgs,
   Animation,
+  Color,
   Engine,
+  Logger,
   Material,
   Shape,
   vec,
@@ -31,11 +33,14 @@ export type GameActorArgs = ActorArgs & {
 };
 
 export abstract class GameActor extends Actor {
-  currMove = Vector.Zero;
-  _speed = 0.4;
-  _spriteFacing = Vector.Left;
-  walk?: Animation;
-  whiteFlashMaterial: Material | null = null;
+  protected currMove = Vector.Zero;
+  protected _speed = 0.4;
+  protected _spriteFacing = Vector.Left;
+  protected walk?: Animation;
+  protected whiteFlashMaterial: Material | null = null;
+  protected _health = 10;
+  protected lastDamaged?: Date;
+  protected invulnerabilityWindowSeconds = 0.3;
 
   public get speed(): number {
     return this._speed;
@@ -43,6 +48,10 @@ export abstract class GameActor extends Actor {
 
   public get facing(): Vector {
     return this._spriteFacing;
+  }
+
+  public get health(): number {
+    return this._health;
   }
 
   constructor(config?: GameActorArgs) {
@@ -109,5 +118,35 @@ export abstract class GameActor extends Actor {
         Math.sign(this.currMove.x) != Math.sign(this.facing.x);
     }
     this.currMove = Vector.Zero;
+  }
+
+  takeDamage(damage: number, bypassInvulnWindow?: boolean): void {
+    const now = new Date();
+    if (
+      this.lastDamaged &&
+      !bypassInvulnWindow &&
+      now.getTime() <=
+        this.lastDamaged.getTime() + this.invulnerabilityWindowSeconds * 1000
+    ) {
+      Logger.getInstance().info(
+        `Suppressing damage done to the player because it was inside the invulnerability window of ${this.invulnerabilityWindowSeconds.toString()} seconds since the last damage.`,
+      );
+      return;
+    }
+
+    this._health -= damage;
+    Logger.getInstance().info(
+      `${this.name} took ${damage.toString()} damage, remaining health: ${this.health.toString()}`,
+    );
+    this.lastDamaged = now;
+    if (this.health <= 0) {
+      this.onHealthReachedZero();
+    } else {
+      this.actions.flash(Color.White, 150);
+    }
+  }
+
+  protected onHealthReachedZero(): void {
+    this.kill();
   }
 }

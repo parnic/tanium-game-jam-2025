@@ -83,8 +83,12 @@ export class GameLevel extends Scene {
     }
 
     if (Math.floor(nowSeconds) % 5 === 0 && Math.floor(lastSeconds) % 5 !== 0) {
-      Logger.getInstance().info(`spawning enemy`);
-      this.spawnEnemy();
+      Logger.getInstance().info(
+        `spawning enemies, wave ${this.currentWave.toString()}`,
+      );
+      for (let i = 0; i < 3; i++) {
+        this.spawnEnemy();
+      }
     }
 
     this.lastTime = engine.clock.now();
