@@ -1,7 +1,16 @@
-import { Animation, CollisionType, Engine, Vector } from "excalibur";
+import {
+  Animation,
+  Collider,
+  CollisionContact,
+  CollisionType,
+  Engine,
+  Side,
+  Vector,
+} from "excalibur";
 import { GameLevel } from "./game-level";
 import { EnemyData } from "./enemy-data";
 import { GameActor } from "./game-actor";
+import { Player } from "./player";
 
 export class Enemy extends GameActor {
   addedInWave = 0;
@@ -20,7 +29,7 @@ export class Enemy extends GameActor {
       collisionDef: def.collisionDef,
     });
 
-    this._speed = 0.15;
+    this._speed = 0.35;
     this.def = def;
     this._spriteFacing = def.facing > 0 ? Vector.Right : Vector.Left;
     this.walk = new Animation({ frames: this.def.walkFrames });
@@ -42,5 +51,17 @@ export class Enemy extends GameActor {
 
   override onPreUpdate(engine: Engine, elapsedMs: number): void {
     this.currMove = this.gameScene?.player?.pos.sub(this.pos) ?? Vector.Zero;
+  }
+
+  override onCollisionStart(
+    self: Collider,
+    other: Collider,
+    side: Side,
+    contact: CollisionContact,
+  ): void {
+    if (other.owner instanceof Player) {
+      other.owner.onHitByEnemy(this);
+      this.gameScene?.killEnemy(this);
+    }
   }
 }

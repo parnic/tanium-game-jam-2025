@@ -4,6 +4,7 @@ import {
   ActorArgs,
   Animation,
   Engine,
+  Material,
   Shape,
   vec,
   Vector,
@@ -33,7 +34,8 @@ export abstract class GameActor extends Actor {
   currMove = Vector.Zero;
   _speed = 0.4;
   _spriteFacing = Vector.Left;
-  walk: Animation | undefined;
+  walk?: Animation;
+  whiteFlashMaterial: Material | null = null;
 
   public get speed(): number {
     return this._speed;
@@ -74,6 +76,23 @@ export abstract class GameActor extends Actor {
     if (this.walk) {
       this.graphics.use(this.walk);
     }
+
+    this.whiteFlashMaterial = engine.graphicsContext.createMaterial({
+      name: "custom-material",
+      fragmentSource: `#version 300 es
+        precision mediump float;
+        uniform sampler2D u_graphic;
+        in vec2 v_uv;
+        out vec4 color;
+        void main() {
+          vec4 existingColor = texture(u_graphic, v_uv);
+          if (existingColor.a > 0.0) {
+              color = vec4(1.0, 1.0, 1.0, 1.0);
+          } else {
+              color = existingColor;
+          }
+        }`,
+    });
   }
 
   override onPostUpdate(engine: Engine, elapsedMs: number): void {

@@ -5,6 +5,7 @@ import {
   Collider,
   CollisionContact,
   CollisionType,
+  Color,
   Engine,
   Gamepad,
   Keys,
@@ -16,6 +17,7 @@ import {
 import { Tile } from "@excaliburjs/plugin-tiled";
 import { GameLevel } from "./game-level";
 import { GameActor, TiledCollision } from "./game-actor";
+import { Enemy } from "./enemy";
 
 // Actors are the main unit of composition you'll likely use, anything that you want to draw and move around the screen
 // is likely built with an actor
@@ -253,5 +255,9 @@ export class Player extends GameActor {
     lastContact: CollisionContact,
   ): void {
     // Called when a pair of objects separates
+  }
+
+  onHitByEnemy(enemy: Enemy): void {
+    this.actions.flash(Color.White, 150);
   }
 }

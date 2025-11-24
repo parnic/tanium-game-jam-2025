@@ -11,6 +11,7 @@ import {
 import { Enemy } from "./enemy";
 import { Player } from "./player";
 import { EnemyData } from "./enemy-data";
+import { rand } from "./utilities/math";
 
 interface Ramp {
   wave: number;
@@ -78,9 +79,7 @@ export class GameLevel extends Scene {
 
     if (Math.floor(nowSeconds) % 5 === 0 && Math.floor(lastSeconds) % 5 !== 0) {
       Logger.getInstance().info(`spawning enemy`);
-      if (this.enemies.length === 0) {
-        this.spawnEnemy();
-      }
+      this.spawnEnemy();
     }
 
     this.lastTime = engine.clock.now();
@@ -116,15 +115,29 @@ export class GameLevel extends Scene {
       return;
     }
 
-    const idx = Math.round(Math.random() * (eligibleEnemies.length - 1));
+    const idx = rand.integer(0, eligibleEnemies.length - 1);
     const enemyDef = eligibleEnemies[idx];
+    const spawnX = rand.integer(-100, 100);
+    const spawnY = rand.integer(-100, 100);
     const enemy = new Enemy(
-      (this.player?.pos ?? Vector.Zero).add(vec(5, 5)), // todo: pick the right position to spawn: random direction away from the player, just off screen
+      (this.player?.pos ?? Vector.Zero).add(
+        vec(
+          spawnX >= 0 ? spawnX + 300 : spawnX - 300,
+          spawnY >= 0 ? spawnY + 300 : spawnY - 300,
+        ),
+      ), // todo: pick the right position to spawn: random direction away from the player, just off screen
       enemyDef,
       128, // todo: extract these numbers from the right place
       128,
     );
     this.enemies.push(enemy);
     this.add(enemy);
+  }
+
+  killEnemy(enemy: Enemy) {
+    // todo: spawn corpse
+    enemy.kill();
+    // todo: probably want to leave dead enemies in the list to reuse later to avoid churn.
+    this.enemies = this.enemies.filter((e) => e != enemy);
   }
 }
