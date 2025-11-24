@@ -127,8 +127,6 @@ export class GameLevel extends Scene {
         ),
       ), // todo: pick the right position to spawn: random direction away from the player, just off screen
       enemyDef,
-      128, // todo: extract these numbers from the right place
-      128,
     );
     this.enemies.push(enemy);
     this.add(enemy);

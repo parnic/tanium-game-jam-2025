@@ -10,6 +10,8 @@ export class EnemyData {
   private _facing: number;
   private _difficulty: number;
   private _collisionDef: TiledCollision;
+  private _textureWidth: number;
+  private _textureHeight: number;
 
   public get health() {
     return this._health;
@@ -39,6 +41,14 @@ export class EnemyData {
     return this._collisionDef;
   }
 
+  public get textureWidth() {
+    return this._textureWidth;
+  }
+
+  public get textureHeight() {
+    return this._textureHeight;
+  }
+
   constructor(tile: Tile) {
     const facingProp = tile.properties.get("facing");
     const nameProp = tile.properties.get("name");
@@ -52,6 +62,8 @@ export class EnemyData {
     this._speed = typeof speedProp === "number" ? speedProp : 1;
     this._difficulty = typeof difficultyProp === "number" ? difficultyProp : 0;
     this._collisionDef = new TiledCollision(tile);
+    this._textureWidth = tile.tileset.tileWidth;
+    this._textureHeight = tile.tileset.tileHeight;
 
     this._walkFrames = tile.animation.map((anim) => {
       return {

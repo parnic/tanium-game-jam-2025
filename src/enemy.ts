@@ -18,13 +18,13 @@ export class Enemy extends GameActor {
   gameScene: GameLevel | undefined;
   static enemyCounter = new Uint32Array([1]);
 
-  constructor(inPos: Vector, def: EnemyData, width?: number, height?: number) {
+  constructor(inPos: Vector, def: EnemyData) {
     const myNum = Atomics.add(Enemy.enemyCounter, 0, 1);
     super({
       name: `${def.name}-${myNum.toString()}`,
       pos: inPos,
-      width: width,
-      height: height,
+      width: def.textureWidth,
+      height: def.textureHeight,
       collisionType: CollisionType.Passive,
       collisionDef: def.collisionDef,
     });
