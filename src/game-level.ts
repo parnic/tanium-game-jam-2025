@@ -128,14 +128,29 @@ export class GameLevel extends Scene {
       ), // todo: pick the right position to spawn: random direction away from the player, just off screen
       enemyDef,
     );
-    this.enemies.push(enemy);
+
+    const slot = this.enemies.findIndex((e) => e.isKilled());
+    if (slot >= 0) {
+      Logger.getInstance().info(
+        `Placing enemy ${enemy.name} into a previously-occupied slot`,
+      );
+      this.enemies[slot] = enemy;
+    } else {
+      Logger.getInstance().info(
+        `Adding enemy ${enemy.name} to the list of enemies.`,
+      );
+      this.enemies.push(enemy);
+    }
+
     this.add(enemy);
   }
 
-  killEnemy(enemy: Enemy) {
-    // todo: spawn corpse
+  killEnemy(enemy: Enemy, fromAttack: boolean) {
+    Logger.getInstance().info(
+      `Killing enemy ${enemy.name} (killed by player? ${fromAttack.toString()})`,
+    );
+    // todo: spawn corpse if fromAttack
     enemy.kill();
-    // todo: probably want to leave dead enemies in the list to reuse later to avoid churn.
-    this.enemies = this.enemies.filter((e) => e != enemy);
+    this.remove(enemy);
   }
 }

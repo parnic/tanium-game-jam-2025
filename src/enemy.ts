@@ -53,6 +53,14 @@ export class Enemy extends GameActor {
     this.currMove = this.gameScene?.player?.pos.sub(this.pos) ?? Vector.Zero;
   }
 
+  override onPostUpdate(engine: Engine, elapsedMs: number): void {
+    super.onPostUpdate(engine, elapsedMs);
+
+    if (!engine.screen.getWorldBounds().overlaps(this.graphics.bounds)) {
+      this.gameScene?.killEnemy(this, false);
+    }
+  }
+
   override onCollisionStart(
     self: Collider,
     other: Collider,
@@ -61,7 +69,7 @@ export class Enemy extends GameActor {
   ): void {
     if (other.owner instanceof Player) {
       other.owner.onHitByEnemy(this);
-      this.gameScene?.killEnemy(this);
+      this.gameScene?.killEnemy(this, false);
     }
   }
 }
