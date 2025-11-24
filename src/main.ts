@@ -60,7 +60,7 @@ await game
       // a big across-the-world ease at the start of a level
       game.currentScene.camera.pos = player.pos;
       game.currentScene.camera.strategy.elasticToActor(player, 0.15, 0.75);
-      // game.currentScene.camera.zoom = 0.3;
+      game.currentScene.camera.zoom = 0.4;
     }
 
     const allowedEnemyNamesProp = level.map.properties?.find(
