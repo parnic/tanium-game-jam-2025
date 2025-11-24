@@ -101,6 +101,15 @@ export class Player extends GameActor {
         case Keys.Right:
           this.currMove = this.currMove.add(Vector.Right);
           break;
+
+        case Keys.K:
+          if (
+            !this.isKilled() &&
+            engine.input.keyboard.isHeld(Keys.ShiftLeft)
+          ) {
+            this.kill();
+          }
+          break;
       }
     });
 
