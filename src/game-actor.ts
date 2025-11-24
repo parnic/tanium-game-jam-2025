@@ -38,7 +38,7 @@ export abstract class GameActor extends Actor {
   protected _spriteFacing = Vector.Left;
   protected walk?: Animation;
   protected whiteFlashMaterial: Material | null = null;
-  protected _health = 10;
+  private _health = 10;
   protected lastDamaged?: Date;
   protected invulnerabilityWindowSeconds = 0.3;
 
@@ -54,12 +54,21 @@ export abstract class GameActor extends Actor {
     return this._health;
   }
 
+  public set health(hp: number) {
+    this._health = hp;
+    this.onHealthChanged();
+  }
+
   constructor(config?: GameActorArgs) {
     super(config);
 
     if (config?.collisionDef) {
       this.setCollision(config.collisionDef);
     }
+  }
+
+  protected onHealthChanged() {
+    /* to be overridden if desired */
   }
 
   private setCollision(def: TiledCollision) {
@@ -134,7 +143,7 @@ export abstract class GameActor extends Actor {
       return;
     }
 
-    this._health -= damage;
+    this.health -= damage;
     Logger.getInstance().info(
       `${this.name} took ${damage.toString()} damage, remaining health: ${this.health.toString()}`,
     );

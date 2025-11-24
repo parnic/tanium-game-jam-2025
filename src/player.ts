@@ -11,12 +11,15 @@ import {
   PointerButton,
   PointerType,
   Side,
+  vec,
   Vector,
 } from "excalibur";
 import { Tile } from "@excaliburjs/plugin-tiled";
 import { GameLevel } from "./game-level";
 import { GameActor, TiledCollision } from "./game-actor";
 import { Enemy } from "./enemy";
+import { config } from "./config";
+import { showElement } from "./utilities/html";
 
 // Actors are the main unit of composition you'll likely use, anything that you want to draw and move around the screen
 // is likely built with an actor
@@ -39,6 +42,9 @@ export class Player extends GameActor {
   // lastGamepadDpad = Vector.Zero;
   gamepadDeadzone = 0.2;
 
+  healthbarContainerElem: HTMLElement;
+  healthbarElem: HTMLElement;
+
   constructor(inPos: Vector, tile: Tile) {
     super({
       // Giving your actor a name is optional, but helps in debugging using the dev tools or debug mode
@@ -60,7 +66,6 @@ export class Player extends GameActor {
       (this.tile.properties.get("facing") as number) < 0
         ? Vector.Left
         : Vector.Right;
-    this._health = 10;
 
     this.walk = new Animation({
       frames: this.tile.animation.map((anim) => {
@@ -70,6 +75,12 @@ export class Player extends GameActor {
         };
       }),
     });
+
+    this.healthbarContainerElem = document.getElementById(
+      "player-healthbar-container",
+    )!;
+    this.healthbarElem = document.getElementById("player-healthbar")!;
+    this.health = 10;
   }
 
   override onInitialize(engine: Engine) {
@@ -140,6 +151,9 @@ export class Player extends GameActor {
         this.pointerMoveSource = undefined;
       }
     });
+
+    this.healthbarElem.setAttribute("max", this.health.toString());
+    showElement(this.healthbarContainerElem);
   }
 
   hookGamepadEvents(gamepad: Gamepad): void {
@@ -228,6 +242,18 @@ export class Player extends GameActor {
       );
     }
 
+    const healthbarCoords = engine.screen
+      .worldToPageCoordinates(this.pos)
+      .add(vec(-this.width / 2, this.height / 2));
+    this.healthbarContainerElem.style.setProperty(
+      "--pointer-x",
+      `${healthbarCoords.x.toString()}px`,
+    );
+    this.healthbarContainerElem.style.setProperty(
+      "--pointer-y",
+      `${healthbarCoords.y.toString()}px`,
+    );
+
     super.onPostUpdate(engine, elapsedMs);
   }
 
@@ -274,5 +300,9 @@ export class Player extends GameActor {
   protected override onHealthReachedZero(): void {
     // todo: spawn corpse/effect? need to show a "you died" ui for sure
     this.kill();
+  }
+
+  protected override onHealthChanged(): void {
+    this.healthbarElem.setAttribute("value", this.health.toString());
   }
 }

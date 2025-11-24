@@ -3,3 +3,44 @@
     background-color: black;
   }
 }
+
+* {
+  padding: 0;
+  margin: 0;
+}
+
+div,
+span {
+  -webkit-touch-callout: none !important;
+  -webkit-user-select: none !important;
+}
+
+html,
+body,
+main {
+  height: 100%;
+}
+
+.excalibur-scale {
+  /* transform from the top left of the element */
+  transform-origin: 0 0;
+  /* scale the ui */
+  transform: scale(var(--pixel-conversion), var(--pixel-conversion));
+}
+
+.hide {
+  display: none !important;
+}
+
+.show {
+  display: block;
+}
+
+.absolute {
+  position: absolute;
+}
+
+#player-healthbar-container {
+  left: var(--pointer-x);
+  top: var(--pointer-y);
+}
