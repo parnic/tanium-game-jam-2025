@@ -11,6 +11,7 @@ import { GameLevel } from "./game-level";
 import { EnemyData } from "./enemy-data";
 import { GameActor } from "./game-actor";
 import { Player } from "./player";
+import { config } from "./config";
 
 export class Enemy extends GameActor {
   addedInWave = 0;
@@ -29,6 +30,7 @@ export class Enemy extends GameActor {
       collisionDef: def.collisionDef,
     });
 
+    this.z = config.ZIndexEnemy;
     this._speed = 0.35;
     this.def = def;
     this._spriteFacing = def.facing > 0 ? Vector.Right : Vector.Left;

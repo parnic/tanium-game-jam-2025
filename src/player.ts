@@ -53,6 +53,7 @@ export class Player extends GameActor {
       collisionDef: new TiledCollision(tile),
     });
 
+    this.z = config.ZIndexCharacter;
     this._speed = 0.4;
     this.tile = tile;
     this._spriteFacing =
