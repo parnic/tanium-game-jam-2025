@@ -164,7 +164,7 @@ jobs:
 
       - name: Set Version
         run: |
-          echo "version=${GITHUB_REF/refs\/tags\/v/}" >> $GITHUB_ENV
+          echo "version=${GITHUB_REF/refs\/heads\/v/}-${{ github.sha }}" >> $GITHUB_ENV
 
       - name: Upload to itch.io
         uses: robpc/itchio-upload-action@v1
