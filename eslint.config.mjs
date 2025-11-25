@@ -28,6 +28,7 @@ export default defineConfig([
       "playwright.config.ts",
       "vite.config.mjs",
       "public/**",
+      "src-tauri/**",
     ],
   },
 ]);

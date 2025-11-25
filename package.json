@@ -11,6 +11,7 @@
     "format": "eslint . --fix && prettier --write **/*.ts **/*.js **/*.json",
     "serve": "vite preview",
     "prod": "npm run build && npm run serve",
+    "tauri": "tauri",
     "test": "npm run build && npx playwright test",
     "test:integration-update": "npx playwright test --update-snapshots"
   },
@@ -26,11 +27,14 @@
   "bugs": {},
   "homepage": "",
   "dependencies": {
+    "@tauri-apps/api": "^2",
+    "@tauri-apps/plugin-opener": "^2",
     "@excaliburjs/plugin-tiled": "0.31.0",
     "excalibur": "0.32.0-alpha.1561"
   },
   "devDependencies": {
     "@playwright/test": "^1.56.1",
+    "@tauri-apps/cli": "^2",
     "@types/node": "^24.10.1",
     "eslint": "9.39.1",
     "pre-commit": "^1.2.2",

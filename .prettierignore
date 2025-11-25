@@ -13,3 +13,4 @@ test/images/diff-*.png
 *-lock.json
 /.vscode/
 /public/
+/src-tauri/
