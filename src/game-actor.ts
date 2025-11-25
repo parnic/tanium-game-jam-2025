@@ -41,6 +41,7 @@ export abstract class GameActor extends Actor {
   private _health = 10;
   protected lastDamaged?: Date;
   protected invulnerabilityWindowSeconds = 0.3;
+  protected alwaysAnimate = false;
 
   public get speed(): number {
     return this._speed;
@@ -115,7 +116,7 @@ export abstract class GameActor extends Actor {
 
   override onPostUpdate(engine: Engine, elapsedMs: number): void {
     this.currMove.clampMagnitude(1);
-    if (this.currMove.magnitude > 0) {
+    if (this.currMove.magnitude > 0 || this.alwaysAnimate) {
       this.walk?.play();
     } else {
       this.walk?.pause();
