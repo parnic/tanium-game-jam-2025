@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" class="level1" orientation="orthogonal" renderorder="right-down" width="30" height="20" tilewidth="128" tileheight="128" infinite="1" nextlayerid="4" nextobjectid="21">
+<map version="1.10" tiledversion="1.11.2" class="level1" orientation="orthogonal" renderorder="right-down" width="30" height="20" tilewidth="128" tileheight="128" infinite="1" nextlayerid="4" nextobjectid="32">
  <properties>
   <property name="enemies" value="snail,worm-yellow,mouse-gray,fly,block-green"/>
+  <property name="num-gifts-to-spawn" type="int" value="5"/>
  </properties>
  <tileset firstgid="1" source="characters-double.tsx"/>
  <tileset firstgid="65" source="enemies-double.tsx"/>
  <tileset firstgid="129" source="world-double.tsx"/>
+ <tileset firstgid="669" source="holiday-pack.tsx"/>
  <objectgroup id="2" name="Collision">
   <object id="13" type="mapbarrier" x="-20480" y="-24576" width="128" height="47104">
    <properties>
@@ -33,6 +35,36 @@
    <properties>
     <property name="collisiontype" value="PreventCollision"/>
    </properties>
+   <point/>
+  </object>
+  <object id="21" name="gift1" type="gift" x="-11424" y="-15224">
+   <point/>
+  </object>
+  <object id="23" name="gift2" type="gift" x="-11656" y="14522">
+   <point/>
+  </object>
+  <object id="24" name="gift3" type="gift" x="318" y="17806">
+   <point/>
+  </object>
+  <object id="25" name="gift4" type="gift" x="23088" y="12778">
+   <point/>
+  </object>
+  <object id="26" name="gift5" type="gift" x="23100" y="-2380">
+   <point/>
+  </object>
+  <object id="27" name="gift6" type="gift" x="15002" y="-18292">
+   <point/>
+  </object>
+  <object id="28" name="gift7" type="gift" x="14354" y="-5574">
+   <point/>
+  </object>
+  <object id="29" name="gift8" type="gift" x="10726" y="8458">
+   <point/>
+  </object>
+  <object id="30" name="gift9" type="gift" x="-2786" y="2166">
+   <point/>
+  </object>
+  <object id="31" name="gift10" type="gift" x="2678" y="-9978">
    <point/>
   </object>
  </objectgroup>
