@@ -2,9 +2,9 @@ name: CI and deploy
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   ci:
@@ -12,74 +12,74 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [ 24.x ]
+        node-version: [24.x]
 
     steps:
-    - name: Checkout
-      id: checkout
-      uses: actions/checkout@v5
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v5
 
-    - name: Setup Node.js ${{ matrix.node-version }}
-      id: setup-node
-      uses: actions/setup-node@v6
-      with:
-        node-version: ${{ matrix.node-version }}
+      - name: Setup Node.js ${{ matrix.node-version }}
+        id: setup-node
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ matrix.node-version }}
 
-    - name: Install dependencies
-      id: install
-      run: |
-        npm ci
-      # npx playwright install
+      - name: Install dependencies
+        id: install
+        run: |
+          npm ci
+        # npx playwright install
 
-    - name: Build
-      id: build
-      run: npm run build
+      - name: Build
+        id: build
+        run: npm run build
 
-    - name: Lint
-      id: lint
-      run: npm run lint
+      - name: Lint
+        id: lint
+        run: npm run lint
 
-    #- name: Run tests
-    #  id: tests
-    #  run: npm run test
+      #- name: Run tests
+      #  id: tests
+      #  run: npm run test
 
-    # This will fail the workflow if either of the output directories are different
-    # than expected.
-    - name: Compare Directories
-      id: diff
-      run: |
-        if [ ! -d dist/ ]; then
-          echo "Expected dist/ directory does not exist.  See status below:"
-          ls -la ./
-          exit 1
-        fi
-        if [ "$(git diff --ignore-space-at-eol --text dist/ | wc -l)" -gt "0" ]; then
-          echo "Detected uncommitted changes after build. See status below:"
-          git diff --ignore-space-at-eol --text dist/
-          exit 1
-        fi
-        if [ ! -d tests/ ]; then
-          echo "Expected tests/ directory does not exist.  See status below:"
-          ls -la ./
-          exit 1
-        fi
-        if [ "$(git diff --ignore-space-at-eol --text tests/ | wc -l)" -gt "0" ]; then
-          echo "Detected uncommitted changes after build. See status below:"
-          git diff --ignore-space-at-eol --text tests/
-          exit 1
-        fi
+      # This will fail the workflow if either of the output directories are different
+      # than expected.
+      - name: Compare Directories
+        id: diff
+        run: |
+          if [ ! -d dist/ ]; then
+            echo "Expected dist/ directory does not exist.  See status below:"
+            ls -la ./
+            exit 1
+          fi
+          if [ "$(git diff --ignore-space-at-eol --text dist/ | wc -l)" -gt "0" ]; then
+            echo "Detected uncommitted changes after build. See status below:"
+            git diff --ignore-space-at-eol --text dist/
+            exit 1
+          fi
+          if [ ! -d tests/ ]; then
+            echo "Expected tests/ directory does not exist.  See status below:"
+            ls -la ./
+            exit 1
+          fi
+          if [ "$(git diff --ignore-space-at-eol --text tests/ | wc -l)" -gt "0" ]; then
+            echo "Detected uncommitted changes after build. See status below:"
+            git diff --ignore-space-at-eol --text tests/
+            exit 1
+          fi
 
-    # If outdir was different than expected, upload the expected version as a
-    # workflow artifact.
-    - if: ${{ failure() && steps.diff.outcome == 'failure' }}
-      name: Upload Artifact
-      id: uploadResult
-      uses: actions/upload-artifact@v4
-      with:
-        name: outdir-${{ matrix.node-version }}-diff
-        path: |
-          dist/
-          test/
+      # If outdir was different than expected, upload the expected version as a
+      # workflow artifact.
+      - if: ${{ failure() && steps.diff.outcome == 'failure' }}
+        name: Upload Artifact
+        id: uploadResult
+        uses: actions/upload-artifact@v4
+        with:
+          name: outdir-${{ matrix.node-version }}-diff
+          path: |
+            dist/
+            test/
 
   build-pages:
     name: Build GitHub Pages
@@ -115,7 +115,7 @@ jobs:
           path: ./dist
 
   deploy:
-    name: Deploy
+    name: GitHub Pages deploy
     needs: build-pages
     runs-on: ubuntu-latest
     permissions:
@@ -137,7 +137,7 @@ jobs:
 
   itchio-deploy:
     name: Itch.io deploy
-    needs: build-pages
+    needs: ci
     runs-on: ubuntu-latest
     permissions:
       id-token: write
@@ -146,14 +146,26 @@ jobs:
     if: github.ref == 'refs/heads/main' && success()
 
     steps:
-      - name: Download artifact
-        id: download
-        uses: actions/download-artifact@v6
-        with:
-          path: ./dist
+      - name: Checkout repo
+        id: checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node
+        id: setup-node
+        uses: actions/setup-node@v6
+
+      - name: Install dependencies
+        id: install
+        run: npm install
+
+      - name: Build project
+        id: build
+        run: npm run build
+
       - name: Set Version
         run: |
           echo "version=${GITHUB_REF/refs\/tags\/v/}" >> $GITHUB_ENV
+
       - name: Upload to itch.io
         uses: robpc/itchio-upload-action@v1
         with:
