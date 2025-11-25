@@ -134,3 +134,31 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deploy-pages
         uses: actions/deploy-pages@v4
+
+  itchio-deploy:
+    name: Itch.io deploy
+    needs: build-pages
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: write
+      pages: write
+    if: github.ref == 'refs/heads/main' && success()
+
+    steps:
+      - name: Download artifact
+        id: download
+        uses: actions/download-artifact@v6
+        with:
+          path: ./dist
+      - name: Set Version
+        run: |
+          echo "version=${GITHUB_REF/refs\/tags\/v/}" >> $GITHUB_ENV
+      - name: Upload to itch.io
+        uses: robpc/itchio-upload-action@v1
+        with:
+          path: dist
+          project: parnic/gift-roundup
+          #channel: ${{ env.itchio_channel }}
+          version: ${{ env.version }}
+          api-key: ${{ secrets.ITCHIO_API_KEY }}
