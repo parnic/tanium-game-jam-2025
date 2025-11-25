@@ -159,6 +159,6 @@ jobs:
         with:
           path: dist
           project: parnic/gift-roundup
-          #channel: ${{ env.itchio_channel }}
+          channel: html
           version: ${{ env.version }}
           api-key: ${{ secrets.ITCHIO_API_KEY }}
