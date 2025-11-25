@@ -12,6 +12,7 @@ import { Enemy } from "./enemy";
 import { Player } from "./player";
 import { EnemyData } from "./enemy-data";
 import { rand } from "./utilities/math";
+import { Gift } from "./gift";
 
 interface Ramp {
   wave: number;
@@ -38,6 +39,7 @@ export class GameLevel extends Scene {
   player: Player | undefined;
   enemyData: EnemyData[] = [];
   enemies: Enemy[] = [];
+  gifts: Gift[] = [];
   lastTime = 0;
 
   override onInitialize(engine: Engine): void {

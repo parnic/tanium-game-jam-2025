@@ -3,6 +3,7 @@ import {
   BoundingBox,
   DisplayMode,
   Engine,
+  Logger,
   SolverStrategy,
   vec,
   Vector,
@@ -11,6 +12,8 @@ import { loader, LevelResources } from "./resources";
 import { GameLevel } from "./game-level";
 import { Player } from "./player";
 import { EnemyData } from "./enemy-data";
+import { rand } from "./utilities/math";
+import { Gift } from "./gift";
 
 const calculateExPixelConversion = (screen: ex.Screen) => {
   const origin = screen.worldToPageCoordinates(Vector.Zero);
@@ -59,6 +62,7 @@ await game
     const level = LevelResources[0];
     level.addToScene(game.currentScene);
 
+    // place the player
     const playerStartActor = level.getEntitiesByClassName("playerStart").at(0);
     if (playerStartActor instanceof Actor) {
       const characters = level.getTilesetByName("characters");
@@ -80,6 +84,7 @@ await game
       game.currentScene.camera.zoom = 0.4;
     }
 
+    // find the list of enemies for this level and populate their definitions
     const allowedEnemyNamesProp = level.map.properties?.find(
       (prop) => prop.name === "enemies",
     );
@@ -102,6 +107,7 @@ await game
       }
     }
 
+    // set the level camera bounds
     const firstLayer = level.getTileLayers().at(0);
     if (firstLayer) {
       // this is only correct if map render order is right-down and the layer
@@ -124,4 +130,35 @@ await game
       ]);
       game.currentScene.camera.strategy.limitCameraBounds(bounds);
     }
+
+    // spawn objectives
+    const giftSpawnLocs = level.getObjectsByClassName("gift");
+    const numGiftsToSpawnProp = level.map.properties?.find(
+      (p) => p.name === "num-gifts-to-spawn",
+    );
+    const numGiftsToSpawn =
+      numGiftsToSpawnProp?.type === "int"
+        ? numGiftsToSpawnProp.value
+        : giftSpawnLocs.length / 2;
+    const giftsToSpawn = rand.pickSet(giftSpawnLocs, numGiftsToSpawn);
+    const holidayItems = level.getTilesetByName("holiday-pack");
+    const giftTileset = holidayItems.find(
+      (item) => item.getTilesByClassName("gift").length > 0,
+    );
+    const giftTiles = giftTileset?.getTilesByClassName("gift") ?? [];
+    giftsToSpawn.forEach((gift) => {
+      Logger.getInstance().info(
+        `Spawning gift ${gift.name!} at ${gift.x.toString()},${gift.y.toString()}`,
+      );
+      const giftActor = new Gift(
+        vec(gift.x, gift.y),
+        gift.name ?? "",
+        rand.pickOne(giftTiles),
+      );
+      game.currentScene.add(giftActor);
+
+      if (game.currentScene instanceof GameLevel) {
+        game.currentScene.gifts.push(giftActor);
+      }
+    });
   });

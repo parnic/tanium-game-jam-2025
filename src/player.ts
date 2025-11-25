@@ -8,6 +8,7 @@ import {
   Engine,
   Gamepad,
   Keys,
+  Logger,
   PointerButton,
   PointerType,
   Side,
@@ -20,6 +21,7 @@ import { GameActor, TiledCollision } from "./game-actor";
 import { Enemy } from "./enemy";
 import { config } from "./config";
 import { showElement } from "./utilities/html";
+import { Gift } from "./gift";
 
 // Actors are the main unit of composition you'll likely use, anything that you want to draw and move around the screen
 // is likely built with an actor
@@ -41,6 +43,8 @@ export class Player extends GameActor {
   lastGamepadAxis = Vector.Zero;
   // lastGamepadDpad = Vector.Zero;
   gamepadDeadzone = 0.2;
+  giftsCollected = 0;
+  giftsNeeded = 0;
 
   healthbarContainerElem: HTMLElement;
   healthbarElem: HTMLElement;
@@ -86,6 +90,7 @@ export class Player extends GameActor {
   override onInitialize(engine: Engine) {
     if (this.scene instanceof GameLevel) {
       this.scene.player = this;
+      this.giftsNeeded = this.scene.gifts.length;
     }
     super.onInitialize(engine);
 
@@ -297,7 +302,21 @@ export class Player extends GameActor {
     side: Side,
     contact: CollisionContact,
   ): void {
-    // Called when a pair of objects are in contact
+    if (other.owner instanceof Gift) {
+      // todo: spawn some cool effect, shake screen maybe, celebrate
+      other.owner.kill();
+      this.giftsCollected++;
+      Logger.getInstance().info(
+        `Player collected gift ${this.giftsCollected.toString()} out of ${this.giftsNeeded.toString()}.`,
+      );
+
+      if (this.giftsCollected === this.giftsNeeded) {
+        // todo: hint player to return to ship
+        Logger.getInstance().info(
+          "All gifts collected! Get outta here, you rascal.",
+        );
+      }
+    }
   }
 
   override onCollisionEnd(
