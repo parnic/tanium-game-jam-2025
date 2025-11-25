@@ -113,13 +113,29 @@ export class Player extends GameActor {
         case Keys.Right:
           this.currMove = this.currMove.add(Vector.Right);
           break;
+      }
+    });
 
+    engine.input.keyboard.on("press", (evt) => {
+      switch (evt.key) {
         case Keys.K:
           if (
             !this.isKilled() &&
             engine.input.keyboard.isHeld(Keys.ShiftLeft)
           ) {
             this.kill();
+          }
+          break;
+
+        case Keys.G:
+          if (engine.input.keyboard.isHeld(Keys.ShiftLeft)) {
+            this.isGodMode = !this.isGodMode;
+          }
+          break;
+
+        case Keys.H:
+          if (engine.input.keyboard.isHeld(Keys.ShiftLeft)) {
+            this.isDemigodMode = !this.isDemigodMode;
           }
           break;
       }

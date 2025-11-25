@@ -42,6 +42,8 @@ export abstract class GameActor extends Actor {
   protected lastDamaged?: Date;
   protected invulnerabilityWindowSeconds = 0.3;
   protected alwaysAnimate = false;
+  private _isGodMode = false;
+  private _isDemigodMode = false;
 
   public get speed(): number {
     return this._speed;
@@ -58,6 +60,28 @@ export abstract class GameActor extends Actor {
   public set health(hp: number) {
     this._health = hp;
     this.onHealthChanged();
+  }
+
+  protected get isGodMode(): boolean {
+    return this._isGodMode;
+  }
+
+  protected set isGodMode(enable: boolean) {
+    this._isGodMode = enable;
+    Logger.getInstance().info(
+      `${this.name} ${enable ? "enabled" : "disabled"} god mode`,
+    );
+  }
+
+  protected get isDemigodMode(): boolean {
+    return this._isDemigodMode;
+  }
+
+  protected set isDemigodMode(enable: boolean) {
+    this._isDemigodMode = enable;
+    Logger.getInstance().info(
+      `${this.name} ${enable ? "enabled" : "disabled"} demigod mode`,
+    );
   }
 
   constructor(config?: GameActorArgs) {
@@ -131,6 +155,19 @@ export abstract class GameActor extends Actor {
   }
 
   takeDamage(damage: number, bypassInvulnWindow?: boolean): void {
+    if (this.isGodMode) {
+      Logger.getInstance().info(
+        `Suppressing damage done to ${this.name} because it was in god mode.`,
+      );
+      return;
+    } else if (this.isDemigodMode && this.health <= damage) {
+      const incomingDamage = damage;
+      damage = Math.max(0, this.health - 1);
+      Logger.getInstance().info(
+        `Incoming damage of ${incomingDamage.toString()} set to ${damage.toString()} because ${this.name} was in demigod mode.`,
+      );
+    }
+
     const now = new Date();
     if (
       this.lastDamaged &&
@@ -139,7 +176,7 @@ export abstract class GameActor extends Actor {
         this.lastDamaged.getTime() + this.invulnerabilityWindowSeconds * 1000
     ) {
       Logger.getInstance().info(
-        `Suppressing damage done to the player because it was inside the invulnerability window of ${this.invulnerabilityWindowSeconds.toString()} seconds since the last damage.`,
+        `Suppressing damage done to ${this.name} because it was inside the invulnerability window of ${this.invulnerabilityWindowSeconds.toString()} seconds since the last damage.`,
       );
       return;
     }
