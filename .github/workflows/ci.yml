@@ -204,7 +204,7 @@ jobs:
         if: matrix.platform == 'ubuntu-22.04' || matrix.platform == 'ubuntu-22.04-arm' # This must match the platform value defined above.
         run: |
           sudo apt-get update
-          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf xdg-utils
 
       - name: Setup Node
         id: setup-node
@@ -239,12 +239,11 @@ jobs:
       - name: Show what was built (non-Windows)
         if: matrix.platform != 'windows-latest'
         run: |
-          find src-tauri/target
-          find target
+          find src-tauri/target/release/bundle
 
       - name: Show what was built (Windows)
         if: matrix.platform == 'windows-latest'
-        run: dir /s /b
+        run: Get-ChildItem -Recurse
 
       # - name: Set Version
       #   run: |
