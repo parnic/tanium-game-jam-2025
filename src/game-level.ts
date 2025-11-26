@@ -1,4 +1,6 @@
 import {
+  Actor,
+  BoundingBox,
   DefaultLoader,
   Engine,
   ExcaliburGraphicsContext,
@@ -13,6 +15,7 @@ import { Player } from "./player";
 import { EnemyData } from "./enemy-data";
 import { rand } from "./utilities/math";
 import { Gift } from "./gift";
+import { TiledResource } from "@excaliburjs/plugin-tiled";
 
 interface Ramp {
   wave: number;
@@ -36,16 +39,109 @@ export class GameLevel extends Scene {
   ];
   currentWave = 0;
 
-  player: Player | undefined;
+  tiledLevel: TiledResource;
+  player?: Player;
   enemyData: EnemyData[] = [];
   enemies: Enemy[] = [];
   gifts: Gift[] = [];
   lastTime = 0;
 
+  constructor(level: TiledResource) {
+    super();
+
+    this.tiledLevel = level;
+  }
+
   override onInitialize(engine: Engine): void {
     // Scene.onInitialize is where we recommend you perform the composition for your game
     // const pointerSystem = this.world.systemManager.get(PointerSystem);
     // this.world.systemManager.removeSystem(pointerSystem!);
+
+    this.initializePlayer();
+    this.initializeEnemies();
+    this.initializeObjectives();
+  }
+
+  initializePlayer() {
+    const playerStartActor = this.tiledLevel
+      .getEntitiesByClassName("playerStart")
+      .at(0);
+    if (!(playerStartActor instanceof Actor)) {
+      Logger.getInstance().error(
+        "playerStart not found or not correct type; player will not spawn",
+      );
+      return;
+    }
+
+    const characters = this.tiledLevel.getTilesetByName("characters");
+    const playerTileset = characters.find(
+      (ch) => ch.getTilesByClassName("player").length > 0,
+    );
+
+    const playerTile = playerTileset?.getTilesByClassName("player")[0];
+    this.player = new Player(
+      vec(playerStartActor.pos.x, playerStartActor.pos.y),
+      playerTile!,
+    );
+    this.add(this.player);
+  }
+
+  initializeEnemies() {
+    const allowedEnemyNamesProp = this.tiledLevel.map.properties?.find(
+      (prop) => prop.name === "enemies",
+    );
+    const allowedEnemyNames =
+      allowedEnemyNamesProp?.type === "string"
+        ? allowedEnemyNamesProp.value.split(",")
+        : [];
+    const enemies = this.tiledLevel.getTilesetByName("enemies");
+    const enemyTileset = enemies.find(
+      (enemy) => enemy.getTilesByClassName("enemy").length > 0,
+    );
+    const enemyTiles = enemyTileset?.getTilesByClassName("enemy") ?? [];
+
+    for (const enemy of enemyTiles) {
+      const enemyDef = new EnemyData(enemy);
+
+      if (allowedEnemyNames.some((n) => enemyDef.name === n)) {
+        this.enemyData.push(enemyDef);
+      }
+    }
+  }
+
+  initializeObjectives() {
+    const numGiftsToSpawnProp = this.tiledLevel.map.properties?.find(
+      (p) => p.name === "num-gifts-to-spawn",
+    );
+
+    const giftSpawnLocs = this.tiledLevel.getObjectsByClassName("gift");
+    const numGiftsToSpawn =
+      numGiftsToSpawnProp?.type === "int"
+        ? numGiftsToSpawnProp.value
+        : giftSpawnLocs.length / 2;
+    const giftsToSpawn = giftSpawnLocs.length
+      ? rand.pickSet(giftSpawnLocs, numGiftsToSpawn)
+      : [];
+
+    const holidayItems = this.tiledLevel.getTilesetByName("holiday-pack");
+    const giftTileset = holidayItems.find(
+      (item) => item.getTilesByClassName("gift").length > 0,
+    );
+    const giftTiles = giftTileset?.getTilesByClassName("gift") ?? [];
+
+    giftsToSpawn.forEach((gift) => {
+      Logger.getInstance().info(
+        `Spawning gift ${gift.name!} at ${gift.x.toString()},${gift.y.toString()}`,
+      );
+
+      const giftActor = new Gift(
+        vec(gift.x, gift.y),
+        gift.name ?? "",
+        rand.pickOne(giftTiles),
+      );
+      this.gifts.push(giftActor);
+      this.add(giftActor);
+    });
   }
 
   override onPreLoad(loader: DefaultLoader): void {
@@ -55,6 +151,41 @@ export class GameLevel extends Scene {
   override onActivate(context: SceneActivationContext<unknown>): void {
     // Called when Excalibur transitions to this scene
     // Only 1 scene is active at a time
+
+    // set the camera to the player's position before making it elastic to avoid
+    // a big across-the-world ease at the start of a level
+    this.camera.pos = this.player!.pos;
+    this.activateCameraStrategies();
+  }
+
+  activateCameraStrategies() {
+    this.camera.strategy.elasticToActor(this.player!, 0.15, 0.75);
+    this.camera.zoom = 0.4;
+
+    const firstLayer = this.tiledLevel.getTileLayers().at(0);
+    if (!firstLayer) {
+      return;
+    }
+
+    // this is only correct if map render order is right-down and the layer
+    // doesn't have any tiles outside of its bounds. check for the thick
+    // outline on the Tiled layer view and ensure everything inside the
+    // thick line is filled with a texture. additionally, ensure your chunk
+    // size divides evenly into the number of tiles on your map.
+    // to debug if you got it right, set your Tile Layer Format to CSV and
+    // look for any tiles with an id of 0 in the outputted xml.
+    const upperLeftTile = firstLayer.tilemap.tiles.at(0);
+    const bottomRightTile = firstLayer.tilemap.tiles.at(
+      firstLayer.tilemap.tiles.length - 1,
+    );
+
+    const bounds = BoundingBox.fromPoints([
+      upperLeftTile!.pos,
+      bottomRightTile!.pos.add(
+        vec(bottomRightTile!.width, bottomRightTile!.height),
+      ),
+    ]);
+    this.camera.strategy.limitCameraBounds(bounds);
   }
 
   override onDeactivate(context: SceneActivationContext): void {

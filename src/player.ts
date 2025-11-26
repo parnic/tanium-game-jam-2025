@@ -89,7 +89,6 @@ export class Player extends GameActor {
 
   override onInitialize(engine: Engine) {
     if (this.scene instanceof GameLevel) {
-      this.scene.player = this;
       this.giftsNeeded = this.scene.gifts.length;
     }
     super.onInitialize(engine);
