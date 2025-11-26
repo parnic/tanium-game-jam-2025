@@ -8,6 +8,7 @@
  <tileset firstgid="65" source="enemies-double.tsx"/>
  <tileset firstgid="129" source="world-double.tsx"/>
  <tileset firstgid="669" source="holiday-pack.tsx"/>
+ <tileset firstgid="729" source="tower-defense-tilesheet.tsx"/>
  <objectgroup id="2" name="Collision">
   <object id="13" type="mapbarrier" x="-20480" y="-24576" width="128" height="47104">
    <properties>
