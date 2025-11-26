@@ -14,3 +14,4 @@ test/images/diff-*.png
 /.vscode/
 /public/
 /src-tauri/
+/.github/

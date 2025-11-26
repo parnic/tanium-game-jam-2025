@@ -29,6 +29,7 @@ export default defineConfig([
       "vite.config.mjs",
       "public/**",
       "src-tauri/**",
+      ".github/**",
     ],
   },
 ]);

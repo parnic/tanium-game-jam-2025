@@ -1,0 +1,25 @@
+name: Itch.io upload
+description: Uploads a list of artifacts to itch.io
+inputs:
+  butler:
+    description: The path to the butler executable
+    default: .butler/butler
+    required: false
+  artifactPaths:
+    description: A list of artifacts, formatted as a string or stringified JSON string array, to upload
+    required: true
+  project:
+    description: The itch.io project name in username/project format
+    required: true
+  channel:
+    description: The name of the channel for this upload
+    required: true
+  version:
+    description: The version of the application you're uploading
+    required: false
+  api_key:
+    description: Your itch.io API key
+    required: true
+runs:
+  using: 'node24'
+  main: 'src/main.js'
