@@ -44,6 +44,11 @@ export class Weapon extends Entity {
   }
 
   override onPostUpdate(engine: Engine, elapsed: number): void {
+    if (this.owner.isKilled()) {
+      this.kill();
+      return;
+    }
+
     if (
       this.lastSpawnedTimeMs &&
       this.lastSpawnedTimeMs + this.spawnIntervalMs > engine.clock.now()

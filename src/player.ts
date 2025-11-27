@@ -348,6 +348,7 @@ export class Player extends GameActor {
   protected override onHealthReachedZero(): void {
     // todo: spawn corpse/effect? need to show a "you died" ui for sure
     this.kill();
+    this.weapons = [];
   }
 
   protected override onHealthChanged(): void {
