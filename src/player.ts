@@ -12,7 +12,6 @@ import {
   PointerButton,
   PointerType,
   Side,
-  toRadians,
   vec,
   Vector,
 } from "excalibur";
@@ -24,7 +23,6 @@ import { config } from "./config";
 import { showElement } from "./utilities/html";
 import { Gift } from "./gift";
 import { Weapon } from "./weapon";
-import { rand } from "./utilities/math";
 
 // Actors are the main unit of composition you'll likely use, anything that you want to draw and move around the screen
 // is likely built with an actor
@@ -96,28 +94,9 @@ export class Player extends GameActor {
       return;
     }
 
-    const weaponsTilesets = this.scene.tiledLevel
-      .getTilesetByProperty("has-weapons")
-      .filter((t) => t.properties.get("has-weapons") === true);
-    const weapons = weaponsTilesets
-      .map((t) => t.getTilesByClassName("weapon"))
-      .flat();
-    const weaponTile = weapons.find((w) => w.properties.get("name") === name);
-    if (!weaponTile) {
-      Logger.getInstance().error(`Unable to find weapon by name ${name}`);
-      return;
-    }
-
-    // todo: we need to be instancing a WeaponDef or similar that we can instantiate weapons from when we need them
-    const weapon = new Weapon(name, weaponTile);
-    this.weapons.push(weapon);
-    weapon.pos = this.pos;
-    weapon.direction =
-      this.scene.enemies.find((e) => !e.isKilled())?.pos.sub(this.pos) ??
-      this.pos.rotate(toRadians(rand.integer(0, 360))); // todo: if there's no living enemy, we probably want to wait to fire until the moment one appears. that behavior should probably be definition-driven, though.
-    // weapon.rotation = weapon.direction.toAngle() + Math.PI / 2; // todo: setting rotation is causing the collision rotation to not match the graphic. why? not rotating about origin?
-
+    const weapon = new Weapon(name, this.scene.tiledLevel, this);
     this.scene.add(weapon);
+    this.weapons.push(weapon);
   }
 
   override onInitialize(engine: Engine) {
@@ -207,6 +186,9 @@ export class Player extends GameActor {
 
     this.healthbarElem.setAttribute("max", this.health.toString());
     showElement(this.healthbarContainerElem);
+
+    // todo: temp - determine starting weapon differently
+    this.giveWeapon("rocket-small");
   }
 
   hookGamepadEvents(gamepad: Gamepad): void {
@@ -267,10 +249,6 @@ export class Player extends GameActor {
 
   override onPreUpdate(engine: Engine, elapsedMs: number): void {
     // Put any update logic here runs every frame before Actor builtins
-    const lastUpdate = Math.floor((engine.clock.now() - elapsedMs) / 1000);
-    if (lastUpdate !== Math.floor(engine.clock.now() / 1000)) {
-      this.giveWeapon("rocket-small");
-    }
   }
 
   override onPostUpdate(engine: Engine, elapsedMs: number): void {

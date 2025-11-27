@@ -1,71 +1,96 @@
-import { Tile } from "@excaliburjs/plugin-tiled";
-import { GameActor, TiledCollision } from "./game-actor";
-import {
-  Animation,
-  Collider,
-  CollisionContact,
-  CollisionType,
-  Engine,
-  Side,
-  Vector,
-} from "excalibur";
+import { Tile, TiledResource } from "@excaliburjs/plugin-tiled";
+import { Actor, Engine, Entity, Logger } from "excalibur";
+import { WeaponActor } from "./weapon-actor";
+import { GameLevel } from "./game-level";
 import { Enemy } from "./enemy";
-import { config } from "./config";
 
-export class Weapon extends GameActor {
-  static weaponCounter = new Uint32Array([1]);
-  direction = Vector.Zero; // tmp. need to store this info in a weapon def of some kind so that each weapon can have its own movement scheme
-  damage = 5; // tmp
+export class Weapon extends Entity {
+  weaponName: string;
+  level: TiledResource;
+  tile?: Tile;
+  spawnIntervalMs = 0;
+  lastSpawnedTimeMs?: number;
+  owner: Actor;
 
-  constructor(name: string, tile: Tile) {
-    const myNum = Atomics.add(Weapon.weaponCounter, 0, 1);
+  constructor(name: string, level: TiledResource, owner: Actor) {
     super({
-      name: `${name}-${myNum.toString()}`,
-      width: tile.tileset.tileWidth,
-      height: tile.tileset.tileHeight,
-      collisionType: CollisionType.Passive,
-      collisionDef: new TiledCollision(tile),
+      name: `weapon-${name}`,
     });
 
-    this.z = config.ZIndexWeapon;
-    this._speed = 1;
-    if (tile.animation.length) {
-      this.walk = new Animation({
-        frames: tile.animation.map((anim) => {
-          return {
-            graphic: tile.tileset.spritesheet.sprites[anim.tileid],
-            duration: anim.duration,
-          };
-        }),
-      });
-    } else {
-      this.staticImage = tile.tileset.spritesheet.sprites.at(tile.tiledTile.id);
-    }
+    this.weaponName = name;
+    this.level = level;
+    this.owner = owner;
   }
 
-  override onPostUpdate(engine: Engine, elapsedMs: number): void {
+  override onInitialize(engine: Engine): void {
+    const weaponsTilesets = this.level
+      .getTilesetByProperty("has-weapons")
+      .filter((t) => t.properties.get("has-weapons") === true);
+    const weapons = weaponsTilesets
+      .map((t) => t.getTilesByClassName("weapon"))
+      .flat();
+    const weaponTile = weapons.find(
+      (w) => w.properties.get("name") === this.weaponName,
+    );
+    if (!weaponTile) {
+      Logger.getInstance().error(
+        `Unable to find weapon by name ${this.weaponName}`,
+      );
+    }
+
+    this.tile = weaponTile;
+    this.lastSpawnedTimeMs = engine.clock.now();
+    this.spawnIntervalMs = 1000; // todo: get from somewhere
+  }
+
+  override onPostUpdate(engine: Engine, elapsed: number): void {
     if (
-      !this.scene?.engine.screen.getWorldBounds().overlaps(this.graphics.bounds)
+      this.lastSpawnedTimeMs &&
+      this.lastSpawnedTimeMs + this.spawnIntervalMs > engine.clock.now()
     ) {
-      // or the weapon has lived out its lifetime
-      this.kill();
       return;
     }
 
-    this.moveInDirection(this.direction.clampMagnitude(1), elapsedMs);
-    super.onPostUpdate(engine, elapsedMs);
+    this.spawnWeapon(engine);
   }
 
-  override onCollisionStart(
-    self: Collider,
-    other: Collider,
-    side: Side,
-    contact: CollisionContact,
-  ): void {
-    if (other.owner instanceof Enemy) {
-      other.owner.takeDamage(this.damage);
-      // todo: don't kill depending on what the weapon def wants to happen when it hits something
-      this.kill();
+  getNearestLivingEnemy(level: GameLevel): Enemy | undefined {
+    let closestEnemy: Enemy | undefined = undefined;
+    for (const e of level.enemies) {
+      if (e.isKilled()) {
+        continue;
+      }
+
+      if (
+        !closestEnemy ||
+        e.pos.squareDistance(this.owner.pos) <
+          closestEnemy.pos.squareDistance(this.owner.pos)
+      ) {
+        closestEnemy = e;
+      }
     }
+
+    return closestEnemy;
+  }
+
+  spawnWeapon(engine: Engine) {
+    if (!this.tile || !(engine.currentScene instanceof GameLevel)) {
+      return;
+    }
+
+    const closestEnemy = this.getNearestLivingEnemy(engine.currentScene);
+    // todo: this behavior should probably be data-driven. some weapons don't need a target enemy,
+    // some probably won't want to always target the nearest, etc.
+    if (!closestEnemy) {
+      return;
+    }
+
+    const weapon = new WeaponActor(this.weaponName, this.tile);
+    weapon.pos = this.owner.pos;
+    weapon.direction = closestEnemy.pos.sub(this.owner.pos);
+    // weapon.rotation = weapon.direction.toAngle() + Math.PI / 2; // todo: setting rotation is causing the collision rotation to not match the graphic. why? not rotating about origin?
+
+    engine.currentScene.add(weapon);
+    this.lastSpawnedTimeMs = engine.clock.now();
   }
 }
