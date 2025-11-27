@@ -18,6 +18,7 @@ export class Enemy extends GameActor {
   def: EnemyData;
   gameScene: GameLevel | undefined;
   static enemyCounter = new Uint32Array([1]);
+  spawnTime = 0;
 
   constructor(inPos: Vector, def: EnemyData) {
     const myNum = Atomics.add(Enemy.enemyCounter, 0, 1);
@@ -45,6 +46,7 @@ export class Enemy extends GameActor {
   override onInitialize(engine: Engine): void {
     this.gameScene = this.scene as GameLevel;
     this.addedInWave = this.gameScene.currentWave;
+    this.spawnTime = engine.clock.now();
     super.onInitialize(engine);
   }
 
@@ -63,7 +65,11 @@ export class Enemy extends GameActor {
   override onPostUpdate(engine: Engine, elapsedMs: number): void {
     super.onPostUpdate(engine, elapsedMs);
 
-    if (!engine.screen.getWorldBounds().overlaps(this.graphics.bounds)) {
+    // enemies are spawned off screen, so give them some time to get on screen before killing them off
+    if (
+      this.spawnTime + 1000 < engine.clock.now() &&
+      !engine.screen.getWorldBounds().overlaps(this.graphics.bounds)
+    ) {
       this.gameScene?.killEnemy(this, false);
     }
   }

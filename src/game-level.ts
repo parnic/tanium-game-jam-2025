@@ -259,17 +259,8 @@ export class GameLevel extends Scene {
 
     const idx = rand.integer(0, eligibleEnemies.length - 1);
     const enemyDef = eligibleEnemies[idx];
-    const spawnX = rand.integer(-100, 100);
-    const spawnY = rand.integer(-100, 100);
-    const enemy = new Enemy(
-      (this.player?.pos ?? Vector.Zero).add(
-        vec(
-          spawnX >= 0 ? spawnX + 300 : spawnX - 300,
-          spawnY >= 0 ? spawnY + 300 : spawnY - 300,
-        ),
-      ), // todo: pick the right position to spawn: random direction away from the player, just off screen
-      enemyDef,
-    );
+    const spawnLoc = this.getNextEnemySpawnLoc(enemyDef);
+    const enemy = new Enemy(spawnLoc, enemyDef);
 
     const slot = this.enemies.findIndex((e) => e.isKilled());
     if (slot >= 0) {
@@ -285,6 +276,35 @@ export class GameLevel extends Scene {
     }
 
     this.add(enemy);
+  }
+
+  getNextEnemySpawnLoc(enemyDef: EnemyData): Vector {
+    const bounds = this.engine.screen.getWorldBounds();
+    const spawnSide = rand.d4();
+    switch (spawnSide) {
+      case 1: // left
+        return vec(
+          bounds.left - enemyDef.textureWidth,
+          rand.floating(bounds.top, bounds.bottom),
+        );
+      case 2: // top
+        return vec(
+          rand.floating(bounds.left, bounds.right),
+          bounds.top - enemyDef.textureHeight,
+        );
+      case 3: // right
+        return vec(
+          bounds.right + enemyDef.textureWidth,
+          rand.floating(bounds.top, bounds.bottom),
+        );
+      case 4: // bottom
+        return vec(
+          rand.floating(bounds.left, bounds.right),
+          bounds.bottom + enemyDef.textureHeight,
+        );
+    }
+
+    return Vector.Zero;
   }
 
   killEnemy(enemy: Enemy, fromAttack: boolean) {
