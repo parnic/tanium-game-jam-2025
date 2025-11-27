@@ -73,7 +73,7 @@ export class WeaponActor extends GameActor {
       return;
     }
 
-    if (other.owner instanceof Enemy) {
+    if (other.owner instanceof Enemy && !other.owner.isKilled()) {
       other.owner.takeDamage(this.damage);
       // todo: don't kill depending on what the weapon def wants to happen when it hits something
       this.kill();
