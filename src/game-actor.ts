@@ -41,8 +41,8 @@ export abstract class GameActor extends Actor {
   protected staticImage?: Sprite;
   protected whiteFlashMaterial: Material | null = null;
   private _health = 10;
-  protected lastDamaged?: Date;
-  protected invulnerabilityWindowSeconds = 0.3;
+  protected lastDamaged?: number;
+  protected invulnerabilityWindowMs = 300;
   protected alwaysAnimate = false;
   private _isGodMode = false;
   private _isDemigodMode = false;
@@ -172,15 +172,14 @@ export abstract class GameActor extends Actor {
       );
     }
 
-    const now = new Date();
+    const now = this.scene?.engine.clock.now() ?? 0;
     if (
       this.lastDamaged &&
       !bypassInvulnWindow &&
-      now.getTime() <=
-        this.lastDamaged.getTime() + this.invulnerabilityWindowSeconds * 1000
+      now <= this.lastDamaged + this.invulnerabilityWindowMs
     ) {
       Logger.getInstance().info(
-        `Suppressing damage done to ${this.name} because it was inside the invulnerability window of ${this.invulnerabilityWindowSeconds.toString()} seconds since the last damage.`,
+        `Suppressing damage done to ${this.name} because it was inside the invulnerability window of ${this.invulnerabilityWindowMs.toString()} milliseconds since the last damage.`,
       );
       return;
     }
