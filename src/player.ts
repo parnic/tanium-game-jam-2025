@@ -275,7 +275,7 @@ export class Player extends GameActor {
 
   override onPostUpdate(engine: Engine, elapsedMs: number): void {
     if (this.lastUsedGamepad) {
-      this.currMove = this.lastGamepadAxis;
+      this.currMove = this.currMove.add(this.lastGamepadAxis);
 
       const gamepad = this.lastUsedGamepad;
       if (gamepad.isButtonHeld(Buttons.DpadDown)) {
@@ -292,10 +292,9 @@ export class Player extends GameActor {
       }
     }
 
-    // pointer input overrides all other types of input
     if (this.pointerMoveSource) {
-      this.currMove = engine.input.pointers.primary.lastScreenPos.sub(
-        this.pointerMoveSource,
+      this.currMove = this.currMove.add(
+        engine.input.pointers.primary.lastScreenPos.sub(this.pointerMoveSource),
       );
     }
 
