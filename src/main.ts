@@ -22,7 +22,7 @@ const game = new Engine({
   },
   suppressHiDPIScaling: false,
   antialiasing: false,
-  snapToPixel: false,
+  snapToPixel: true,
   pixelRatio: 1,
   physics: {
     solver: SolverStrategy.Arcade,
