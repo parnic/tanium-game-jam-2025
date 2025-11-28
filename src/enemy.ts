@@ -12,6 +12,7 @@ import { EnemyData } from "./enemy-data";
 import { GameActor } from "./game-actor";
 import { Player } from "./player";
 import { config } from "./config";
+import { GameEngine } from "./game-engine";
 
 export class Enemy extends GameActor {
   addedInWave = 0;
@@ -51,6 +52,10 @@ export class Enemy extends GameActor {
   }
 
   override onPreUpdate(engine: Engine, elapsedMs: number): void {
+    if ((engine as GameEngine).playersOnly) {
+      return;
+    }
+
     const playerDead = this.gameScene?.player?.isKilled() === true;
     const from = playerDead
       ? (this.gameScene?.player?.pos ?? Vector.Zero)
@@ -63,6 +68,10 @@ export class Enemy extends GameActor {
   }
 
   override onPostUpdate(engine: Engine, elapsedMs: number): void {
+    if ((engine as GameEngine).playersOnly) {
+      return;
+    }
+
     super.onPostUpdate(engine, elapsedMs);
 
     // enemies are spawned off screen, so give them some time to get on screen before killing them off

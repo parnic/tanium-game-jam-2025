@@ -16,6 +16,7 @@ import { EnemyData } from "./enemy-data";
 import { rand } from "./utilities/math";
 import { Gift } from "./gift";
 import { TiledResource } from "@excaliburjs/plugin-tiled";
+import { GameEngine } from "./game-engine";
 
 interface Ramp {
   wave: number;
@@ -196,6 +197,9 @@ export class GameLevel extends Scene {
   override onPreUpdate(engine: Engine, elapsedMs: number): void {
     // don't spawn any enemies or adjust the clock/waves after the player dies
     if (this.player?.isKilled() === true) {
+      return;
+    }
+    if ((engine as GameEngine).playersOnly) {
       return;
     }
 

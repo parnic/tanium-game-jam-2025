@@ -23,6 +23,7 @@ import { config } from "./config";
 import { showElement } from "./utilities/html";
 import { Gift } from "./gift";
 import { Weapon } from "./weapon";
+import { GameEngine } from "./game-engine";
 
 // Actors are the main unit of composition you'll likely use, anything that you want to draw and move around the screen
 // is likely built with an actor
@@ -154,6 +155,12 @@ export class Player extends GameActor {
             this.isDemigodMode = !this.isDemigodMode;
           }
           break;
+
+        case Keys.M:
+          if (engine.input.keyboard.isHeld(Keys.ShiftLeft)) {
+            (engine as GameEngine).togglePlayersOnly();
+            break;
+          }
       }
     });
 

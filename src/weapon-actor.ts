@@ -11,6 +11,7 @@ import {
 } from "excalibur";
 import { Enemy } from "./enemy";
 import { config } from "./config";
+import { GameEngine } from "./game-engine";
 
 export class WeaponActor extends GameActor {
   static weaponCounter = new Uint32Array([1]);
@@ -48,6 +49,10 @@ export class WeaponActor extends GameActor {
   }
 
   override onPostUpdate(engine: Engine, elapsedMs: number): void {
+    if ((engine as GameEngine).playersOnly) {
+      return;
+    }
+
     if (
       !this.scene?.engine.screen.getWorldBounds().overlaps(this.graphics.bounds)
     ) {

@@ -1,6 +1,7 @@
-import { DisplayMode, Engine, SolverStrategy, vec, Vector } from "excalibur";
+import { DisplayMode, SolverStrategy, vec, Vector } from "excalibur";
 import { loader, LevelResources } from "./resources";
 import { GameLevel } from "./game-level";
+import { GameEngine } from "./game-engine";
 
 const calculateExPixelConversion = (screen: ex.Screen) => {
   const origin = screen.worldToPageCoordinates(Vector.Zero);
@@ -12,7 +13,7 @@ const calculateExPixelConversion = (screen: ex.Screen) => {
   );
 };
 
-const game = new Engine({
+const game = new GameEngine({
   width: 1920,
   height: 1080,
   displayMode: DisplayMode.FitScreenAndFill,

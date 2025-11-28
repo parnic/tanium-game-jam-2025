@@ -3,6 +3,7 @@ import { Actor, Engine, Entity, Logger } from "excalibur";
 import { WeaponActor } from "./weapon-actor";
 import { GameLevel } from "./game-level";
 import { Enemy } from "./enemy";
+import { GameEngine } from "./game-engine";
 
 export class Weapon extends Entity {
   weaponName: string;
@@ -44,6 +45,10 @@ export class Weapon extends Entity {
   }
 
   override onPostUpdate(engine: Engine, elapsed: number): void {
+    if ((engine as GameEngine).playersOnly) {
+      return;
+    }
+
     if (this.owner.isKilled()) {
       this.kill();
       return;
