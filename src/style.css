@@ -21,6 +21,12 @@ main {
   height: 100%;
 }
 
+body {
+  font-family: 'Silkscreen';
+  color: #dff6f5;
+  background-color: #333;
+}
+
 .excalibur-scale {
   /* transform from the top left of the element */
   transform-origin: 0 0;
@@ -43,4 +49,34 @@ main {
 #player-healthbar-container {
   left: var(--pointer-x);
   top: var(--pointer-y);
+}
+
+.center {
+  margin: 0 auto;
+  left: 0;
+  right: 0;
+}
+
+.text-start {
+  text-align: start;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-end {
+  text-align: end;
+}
+
+.outline {
+  -webkit-text-stroke: 2px black;
+}
+
+.fs-3 {
+  font-size: 3em;
+}
+
+.w-100 {
+  width: 100%;
 }

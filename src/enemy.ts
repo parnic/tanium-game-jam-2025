@@ -101,5 +101,8 @@ export class Enemy extends GameActor {
 
   protected override onHealthReachedZero(): void {
     this.gameScene?.killEnemy(this, this.lastDamagedByPlayer);
+    if (this.lastDamagedByPlayer && this.gameScene?.player) {
+      this.gameScene.player.kills++;
+    }
   }
 }

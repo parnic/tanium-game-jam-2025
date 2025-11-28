@@ -47,6 +47,7 @@ export class Player extends GameActor {
   gamepadDeadzone = 0.2;
   giftsCollected = 0;
   giftsNeeded = 0;
+  kills = 0;
   weapons: Weapon[] = [];
 
   healthbarContainerElem: HTMLElement;

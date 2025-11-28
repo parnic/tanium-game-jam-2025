@@ -1,6 +1,7 @@
 import {
   Actor,
   BoundingBox,
+  Clock,
   DefaultLoader,
   Engine,
   ExcaliburGraphicsContext,
@@ -46,11 +47,17 @@ export class GameLevel extends Scene {
   enemies: Enemy[] = [];
   gifts: Gift[] = [];
   lastTime = 0;
+  elemTimer: HTMLElement;
+  elemGiftCounter: HTMLElement;
+  elemKillCounter: HTMLElement;
 
   constructor(level: TiledResource) {
     super();
 
     this.tiledLevel = level;
+    this.elemTimer = document.getElementById("round-timer")!;
+    this.elemGiftCounter = document.getElementById("gift-counter")!;
+    this.elemKillCounter = document.getElementById("kill-counter")!;
   }
 
   override onInitialize(engine: Engine): void {
@@ -61,6 +68,30 @@ export class GameLevel extends Scene {
     this.initializePlayer();
     this.initializeEnemies();
     this.initializeObjectives();
+  }
+
+  updateUI(clock: Clock) {
+    this.updateRoundTimer(clock);
+    this.updateGiftCounter();
+    this.updateKillCounter();
+  }
+
+  updateRoundTimer(clock: Clock) {
+    const nowTotalSeconds = Math.floor(clock.now() / 1000);
+
+    const nowSeconds = nowTotalSeconds % 60;
+    const nowMinutes = Math.floor(nowTotalSeconds / 60);
+    this.elemTimer.innerText = `${nowMinutes.toString()}:${nowSeconds.toString().padStart(2, "0")}`;
+  }
+
+  updateGiftCounter() {
+    const giftsCollected = this.player?.giftsCollected ?? 0;
+    const giftsNeeded = this.player?.giftsNeeded ?? 0;
+    this.elemGiftCounter.innerText = `Gifts: ${giftsCollected.toString()}/${giftsNeeded.toString()}`;
+  }
+
+  updateKillCounter() {
+    this.elemKillCounter.innerText = `Kills: ${(this.player?.kills ?? 0).toLocaleString()}`;
   }
 
   initializePlayer() {
@@ -157,6 +188,7 @@ export class GameLevel extends Scene {
     // a big across-the-world ease at the start of a level
     this.camera.pos = this.player!.pos;
     this.activateCameraStrategies();
+    this.updateUI(context.engine.clock);
   }
 
   activateCameraStrategies() {
@@ -192,6 +224,9 @@ export class GameLevel extends Scene {
   override onDeactivate(context: SceneActivationContext): void {
     // Called when Excalibur transitions away from this scene
     // Only 1 scene is active at a time
+    this.elemKillCounter.innerText = "";
+    this.elemGiftCounter.innerText = "";
+    this.elemTimer.innerText = "";
   }
 
   override onPreUpdate(engine: Engine, elapsedMs: number): void {
@@ -232,7 +267,7 @@ export class GameLevel extends Scene {
   }
 
   override onPostUpdate(engine: Engine, elapsedMs: number): void {
-    // empty
+    this.updateUI(engine.clock);
   }
 
   override onPreDraw(ctx: ExcaliburGraphicsContext, elapsedMs: number): void {
