@@ -99,14 +99,16 @@ export abstract class GameActor extends Actor {
   }
 
   private setCollision(def: TiledCollision) {
+    const xOffset = this.width / 2;
+    const yOffset = this.height / 2;
     const shape = Shape.Polygon(
       [
-        vec(def.x, def.y),
-        vec(def.x, def.y + def.height),
-        vec(def.x + def.width, def.y + def.height),
-        vec(def.x + def.width, def.y),
+        vec(def.x - xOffset, def.y - yOffset),
+        vec(def.x - xOffset, def.y + def.height - yOffset),
+        vec(def.x + def.width - xOffset, def.y + def.height - yOffset),
+        vec(def.x + def.width - xOffset, def.y - yOffset),
       ],
-      vec(-this.width / 2, -this.height / 2),
+      Vector.Zero,
     );
 
     this.collider.set(shape);

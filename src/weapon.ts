@@ -98,7 +98,7 @@ export class Weapon extends Entity {
     const weapon = new WeaponActor(this.weaponName, this.tile);
     weapon.pos = this.owner.pos;
     weapon.direction = closestEnemy.pos.sub(this.owner.pos);
-    // weapon.rotation = weapon.direction.toAngle() + Math.PI / 2; // todo: setting rotation is causing the collision rotation to not match the graphic. why? not rotating about origin?
+    weapon.rotation = weapon.direction.toAngle() + Math.PI / 2;
 
     engine.currentScene.add(weapon);
     this.lastSpawnedTimeMs = engine.clock.now();
