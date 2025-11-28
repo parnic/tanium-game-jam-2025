@@ -12,13 +12,15 @@ import {
 import { Enemy } from "./enemy";
 import { config } from "./config";
 import { GameEngine } from "./game-engine";
+import { Player } from "./player";
 
 export class WeaponActor extends GameActor {
   static weaponCounter = new Uint32Array([1]);
   direction = Vector.Zero;
   damage = 5; // tmp
+  instigator: GameActor;
 
-  constructor(name: string, tile: Tile) {
+  constructor(name: string, tile: Tile, instigator: GameActor) {
     const myNum = Atomics.add(WeaponActor.weaponCounter, 0, 1);
     super({
       name: `${name}-${myNum.toString()}`,
@@ -28,6 +30,7 @@ export class WeaponActor extends GameActor {
       collisionDef: new TiledCollision(tile),
     });
 
+    this.instigator = instigator;
     this.z = config.ZIndexWeapon;
     this._speed = 1;
     if (tile.animation.length) {
@@ -79,7 +82,7 @@ export class WeaponActor extends GameActor {
     }
 
     if (other.owner instanceof Enemy && !other.owner.isKilled()) {
-      other.owner.takeDamage(this.damage);
+      other.owner.takeDamage(this.damage, this.instigator instanceof Player);
       // todo: don't kill depending on what the weapon def wants to happen when it hits something
       this.kill();
     }

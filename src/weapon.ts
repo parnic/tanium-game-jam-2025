@@ -1,9 +1,10 @@
 import { Tile, TiledResource } from "@excaliburjs/plugin-tiled";
-import { Actor, Engine, Entity, Logger } from "excalibur";
+import { Engine, Entity, Logger } from "excalibur";
 import { WeaponActor } from "./weapon-actor";
 import { GameLevel } from "./game-level";
 import { Enemy } from "./enemy";
 import { GameEngine } from "./game-engine";
+import { GameActor } from "./game-actor";
 
 export class Weapon extends Entity {
   weaponName: string;
@@ -11,9 +12,9 @@ export class Weapon extends Entity {
   tile?: Tile;
   spawnIntervalMs = 0;
   lastSpawnedTimeMs?: number;
-  owner: Actor;
+  owner: GameActor;
 
-  constructor(name: string, level: TiledResource, owner: Actor) {
+  constructor(name: string, level: TiledResource, owner: GameActor) {
     super({
       name: `weapon-${name}`,
     });
@@ -95,7 +96,7 @@ export class Weapon extends Entity {
       return;
     }
 
-    const weapon = new WeaponActor(this.weaponName, this.tile);
+    const weapon = new WeaponActor(this.weaponName, this.tile, this.owner);
     weapon.pos = this.owner.pos;
     weapon.direction = closestEnemy.pos.sub(this.owner.pos);
     weapon.rotation = weapon.direction.toAngle() + Math.PI / 2;

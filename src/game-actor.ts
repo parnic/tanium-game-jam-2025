@@ -46,6 +46,7 @@ export abstract class GameActor extends Actor {
   protected alwaysAnimate = false;
   private _isGodMode = false;
   private _isDemigodMode = false;
+  protected lastDamagedByPlayer = false;
 
   public get speed(): number {
     return this._speed;
@@ -144,6 +145,10 @@ export abstract class GameActor extends Actor {
     });
   }
 
+  override onPreUpdate(engine: Engine, elapsed: number): void {
+    this.lastDamagedByPlayer = false;
+  }
+
   override onPostUpdate(engine: Engine, elapsedMs: number): void {
     this.currMove.clampMagnitude(1);
     if (this.currMove.magnitude > 0 || this.alwaysAnimate) {
@@ -160,7 +165,11 @@ export abstract class GameActor extends Actor {
     this.currMove = Vector.Zero;
   }
 
-  takeDamage(damage: number, bypassInvulnWindow?: boolean): void {
+  takeDamage(
+    damage: number,
+    damagedByPlayer?: boolean,
+    bypassInvulnWindow?: boolean,
+  ): void {
     if (this.isGodMode) {
       Logger.getInstance().info(
         `Suppressing damage done to ${this.name} because it was in god mode.`,
@@ -186,6 +195,7 @@ export abstract class GameActor extends Actor {
       return;
     }
 
+    this.lastDamagedByPlayer = !!damagedByPlayer;
     this.health -= damage;
     Logger.getInstance().info(
       `${this.name} took ${damage.toString()} damage, remaining health: ${this.health.toString()}`,

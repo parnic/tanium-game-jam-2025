@@ -65,6 +65,8 @@ export class Enemy extends GameActor {
       : (this.gameScene?.player?.pos ?? Vector.Zero);
 
     this.currMove = to.sub(from);
+
+    super.onPreUpdate(engine, elapsedMs);
   }
 
   override onPostUpdate(engine: Engine, elapsedMs: number): void {
@@ -98,6 +100,6 @@ export class Enemy extends GameActor {
   }
 
   protected override onHealthReachedZero(): void {
-    this.gameScene?.killEnemy(this, false);
+    this.gameScene?.killEnemy(this, this.lastDamagedByPlayer);
   }
 }
