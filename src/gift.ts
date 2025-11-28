@@ -1,8 +1,20 @@
-import { Animation, CollisionType, Vector } from "excalibur";
+import {
+  Actor,
+  Animation,
+  clamp,
+  CollisionType,
+  Engine,
+  Scene,
+  ScreenElement,
+  Vector,
+} from "excalibur";
 import { GameActor, TiledCollision } from "./game-actor";
 import { Tile } from "@excaliburjs/plugin-tiled";
+import { GameLevel } from "./game-level";
 
 export class Gift extends GameActor {
+  offScreen: GiftOffScreenIndicator;
+
   constructor(inPos: Vector, name: string, tile: Tile) {
     super({
       name: name,
@@ -13,6 +25,12 @@ export class Gift extends GameActor {
       collisionDef: new TiledCollision(tile),
     });
 
+    // todo: determine if we should be using the on-dark image or not (probably from the level's properties)
+    const bgs = tile.tileset.getTilesByClassName("offscreen-indicator");
+    const onDark = bgs.filter((bg) => bg.properties.get("on-dark") === true);
+    // todo: determine which of the options to choose somehow (random? maybe always grabbing the first one is good for consistency?)
+    const bg = onDark.at(0);
+
     this.alwaysAnimate = true;
     this.walk = new Animation({
       frames: tile.animation.map((anim) => {
@@ -22,5 +40,80 @@ export class Gift extends GameActor {
         };
       }),
     });
+
+    this.offScreen = new GiftOffScreenIndicator(this, bg!);
+  }
+
+  override onAdd(engine: Engine): void {
+    this.scene?.add(this.offScreen);
+  }
+
+  override onRemove(engine: Engine): void {
+    this.scene?.remove(this.offScreen);
+  }
+
+  override onPostKill(scene: Scene): void {
+    this.offScreen.kill();
+  }
+}
+
+export class GiftOffScreenIndicator extends ScreenElement {
+  overlay: Actor;
+  gift: Gift;
+
+  constructor(gift: Gift, background: Tile) {
+    super({
+      width: background.tileset.tileWidth,
+      height: background.tileset.tileHeight,
+    });
+
+    this.gift = gift;
+    this.overlay = new Actor({
+      x: this.width / 2,
+      y: this.height / 2,
+    });
+
+    if (gift.activeGraphic) {
+      this.overlay.graphics.use(gift.activeGraphic);
+    }
+    this.addChild(this.overlay);
+
+    const bgGraphic = background.tileset.spritesheet.sprites.at(
+      background.tiledTile.id,
+    );
+    if (bgGraphic) {
+      this.graphics.use(bgGraphic);
+    }
+  }
+
+  override onPostUpdate(engine: Engine, elapsed: number): void {
+    if (!(this.scene instanceof GameLevel)) {
+      return;
+    }
+    if (!this.scene.player || this.scene.player.isKilled()) {
+      return;
+    }
+
+    if (!this.gift.isOffScreen) {
+      this.graphics.isVisible = false;
+      this.overlay.graphics.isVisible = false;
+      return;
+    }
+    this.graphics.isVisible = true;
+    this.overlay.graphics.isVisible = true;
+
+    const playerScreenPos = engine.screen.center;
+    const giftLoc = this.gift.pos;
+    const giftScreenPos = engine.worldToScreenCoordinates(giftLoc);
+    const dir = giftScreenPos.sub(playerScreenPos).normalize();
+    const tx =
+      ((dir.x > 0 ? engine.screen.width : 0) - playerScreenPos.x) / dir.x;
+    const ty =
+      ((dir.y > 0 ? engine.screen.height : 0) - playerScreenPos.y) / dir.y;
+    const t = Math.min(tx, ty);
+    const indicatorPos = playerScreenPos.add(dir.scale(t));
+
+    this.pos.x = clamp(indicatorPos.x, 0, engine.screen.width - this.width);
+    this.pos.y = clamp(indicatorPos.y, 0, engine.screen.height - this.height);
   }
 }

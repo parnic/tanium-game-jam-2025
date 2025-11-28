@@ -5,6 +5,7 @@ import {
   Animation,
   Color,
   Engine,
+  Graphic,
   Logger,
   Material,
   Shape,
@@ -47,6 +48,10 @@ export abstract class GameActor extends Actor {
   private _isGodMode = false;
   private _isDemigodMode = false;
   protected lastDamagedByPlayer = false;
+
+  public get activeGraphic(): Graphic | undefined {
+    return this.walk ?? this.staticImage;
+  }
 
   public get speed(): number {
     return this._speed;
