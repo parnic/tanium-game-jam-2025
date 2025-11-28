@@ -223,7 +223,7 @@ export class GameLevel extends Scene {
       Logger.getInstance().info(
         `spawning enemies, wave ${this.currentWave.toString()}`,
       );
-      for (let i = 0; i < 3; i++) {
+      for (let i = 0; i < 10; i++) {
         this.spawnEnemy();
       }
     }
