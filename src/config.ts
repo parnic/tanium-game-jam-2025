@@ -4,6 +4,7 @@ export const config = {
   ZIndexCharacter: 0,
   ZIndexEnemy: 10,
   ZIndexWeapon: 20,
+  ZIndexScreenElements: 100,
 
   SpeedPickup: 2,
 } as const;

@@ -11,6 +11,7 @@ import {
 import { GameActor, TiledCollision } from "./game-actor";
 import { Tile } from "@excaliburjs/plugin-tiled";
 import { GameLevel } from "./game-level";
+import { config } from "./config";
 
 export class Gift extends GameActor {
   offScreen: GiftOffScreenIndicator;
@@ -67,10 +68,12 @@ export class GiftOffScreenIndicator extends ScreenElement {
       height: background.tileset.tileHeight,
     });
 
+    this.z = config.ZIndexScreenElements;
+    this.scale = Vector.Half;
     this.gift = gift;
     this.overlay = new Actor({
-      x: this.width / 2,
-      y: this.height / 2,
+      x: this.width / 2 / this.scale.x,
+      y: this.height / 2 / this.scale.y,
     });
 
     if (gift.activeGraphic) {
@@ -102,14 +105,16 @@ export class GiftOffScreenIndicator extends ScreenElement {
     this.graphics.isVisible = true;
     this.overlay.graphics.isVisible = true;
 
-    const playerScreenPos = engine.screen.center;
+    const playerScreenPos = vec(
+      engine.screen.scaledWidth / 2,
+      engine.screen.scaledHeight / 2,
+    );
     const giftLoc = this.gift.pos;
     const giftScreenPos = engine.worldToScreenCoordinates(giftLoc);
     const giftToPlayer = giftScreenPos.sub(playerScreenPos);
-
     const normGiftToPlayer = vec(
-      giftToPlayer.x / (engine.screen.width * 2),
-      giftToPlayer.y / (engine.screen.height * 2),
+      giftToPlayer.x / (engine.screen.scaledWidth * 2),
+      giftToPlayer.y / (engine.screen.scaledHeight * 2),
     );
 
     const div =
@@ -124,12 +129,14 @@ export class GiftOffScreenIndicator extends ScreenElement {
 
     const fromCenter = screenNormGiftToPlayer.scale(
       vec(
-        engine.screen.center.x - this.width,
-        engine.screen.center.y - this.height,
+        playerScreenPos.x - this.width / 2,
+        playerScreenPos.y - this.height / 2,
       ),
     );
 
-    const indicatorPos = engine.screen.center.add(fromCenter);
+    const indicatorPos = playerScreenPos.add(fromCenter);
     this.pos = indicatorPos;
+    this.pos.x -= this.width / 2;
+    this.pos.y -= this.height / 2;
   }
 }
