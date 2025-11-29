@@ -9,7 +9,6 @@ import {
   Logger,
   Material,
   Shape,
-  Sprite,
   vec,
   Vector,
 } from "excalibur";
@@ -39,7 +38,7 @@ export abstract class GameActor extends Actor {
   protected _speed = 0.4;
   protected _spriteFacing = Vector.Left;
   protected walk?: Animation;
-  protected staticImage?: Sprite;
+  protected staticImage?: Graphic;
   protected whiteFlashMaterial: Material | null = null;
   private _health = 10;
   protected lastDamaged?: number;

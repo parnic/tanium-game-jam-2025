@@ -48,7 +48,9 @@ export class Player extends GameActor {
   giftsCollected = 0;
   giftsNeeded = 0;
   kills = 0;
+  xp = 0;
   weapons: Weapon[] = [];
+  pickupDistanceSq = 200 * 200;
 
   healthbarContainerElem: HTMLElement;
   healthbarElem: HTMLElement;
@@ -160,8 +162,18 @@ export class Player extends GameActor {
         case Keys.M:
           if (engine.input.keyboard.isHeld(Keys.ShiftLeft)) {
             (engine as GameEngine).togglePlayersOnly();
-            break;
           }
+          break;
+
+        case Keys.P:
+          if (engine.input.keyboard.isHeld(Keys.ShiftLeft)) {
+            (this.scene as GameLevel).xpPickups.forEach((p) => {
+              if (p) {
+                p.pickedUpBy = this;
+              }
+            });
+          }
+          break;
       }
     });
 
@@ -296,7 +308,25 @@ export class Player extends GameActor {
       `${healthbarCoords.y.toString()}px`,
     );
 
+    this.tryPickup();
+
     super.onPostUpdate(engine, elapsedMs);
+  }
+
+  tryPickup() {
+    if (!(this.scene instanceof GameLevel)) {
+      return;
+    }
+
+    for (const pickup of this.scene.xpPickups) {
+      if (!pickup || pickup.pickedUpBy) {
+        continue;
+      }
+
+      if (this.pos.squareDistance(pickup.pos) <= this.pickupDistanceSq) {
+        pickup.pickedUpBy = this;
+      }
+    }
   }
 
   override onPreCollisionResolve(

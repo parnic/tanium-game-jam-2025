@@ -1,5 +1,5 @@
 import { Tile } from "@excaliburjs/plugin-tiled";
-import { Frame } from "excalibur";
+import { Frame, Graphic } from "excalibur";
 import { TiledCollision } from "./game-actor";
 
 export class EnemyData {
@@ -12,6 +12,7 @@ export class EnemyData {
   private _collisionDef: TiledCollision;
   private _textureWidth: number;
   private _textureHeight: number;
+  private _corpseTile: Graphic | undefined;
 
   public get health() {
     return this._health;
@@ -49,12 +50,17 @@ export class EnemyData {
     return this._textureHeight;
   }
 
+  public get corpseTile() {
+    return this._corpseTile;
+  }
+
   constructor(tile: Tile) {
     const facingProp = tile.properties.get("facing");
     const nameProp = tile.properties.get("name");
     const healthProp = tile.properties.get("health-mult");
     const speedProp = tile.properties.get("speed");
     const difficultyProp = tile.properties.get("difficulty");
+    const corpseTileID = tile.properties.get("corpse-id");
 
     this._name = typeof nameProp === "string" ? nameProp : "enemy";
     this._facing = typeof facingProp === "number" ? facingProp : -1;
@@ -64,6 +70,9 @@ export class EnemyData {
     this._collisionDef = new TiledCollision(tile);
     this._textureWidth = tile.tileset.tileWidth;
     this._textureHeight = tile.tileset.tileHeight;
+    if (typeof corpseTileID === "number") {
+      this._corpseTile = tile.tileset.spritesheet.sprites[corpseTileID];
+    }
 
     this._walkFrames = tile.animation.map((anim) => {
       return {

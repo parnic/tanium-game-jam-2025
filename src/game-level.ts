@@ -18,6 +18,7 @@ import { rand } from "./utilities/math";
 import { Gift } from "./gift";
 import { TiledResource } from "@excaliburjs/plugin-tiled";
 import { GameEngine } from "./game-engine";
+import { EnemyCorpse } from "./enemy-corpse";
 
 interface Ramp {
   wave: number;
@@ -46,6 +47,7 @@ export class GameLevel extends Scene {
   enemyData: EnemyData[] = [];
   enemies: Enemy[] = [];
   gifts: Gift[] = [];
+  xpPickups: (EnemyCorpse | undefined)[] = [];
   lastTime = 0;
   elemTimer: HTMLElement;
   elemGiftCounter: HTMLElement;
@@ -350,7 +352,6 @@ export class GameLevel extends Scene {
     Logger.getInstance().info(
       `Killing enemy ${enemy.name} (killed by player? ${fromAttack.toString()})`,
     );
-    // todo: spawn corpse if fromAttack
     enemy.kill();
   }
 }

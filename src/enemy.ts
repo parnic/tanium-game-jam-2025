@@ -4,6 +4,7 @@ import {
   CollisionContact,
   CollisionType,
   Engine,
+  Scene,
   Side,
   Vector,
 } from "excalibur";
@@ -13,6 +14,7 @@ import { GameActor } from "./game-actor";
 import { Player } from "./player";
 import { config } from "./config";
 import { GameEngine } from "./game-engine";
+import { EnemyCorpse } from "./enemy-corpse";
 
 export class Enemy extends GameActor {
   addedInWave = 0;
@@ -96,6 +98,32 @@ export class Enemy extends GameActor {
       // those should probably stop moving for a second or so.
       other.owner.onHitByEnemy(this);
       this.takeDamage(this.health);
+    }
+  }
+
+  override onPostKill(scene: Scene): void {
+    if (!this.def.corpseTile || !this.lastDamagedByPlayer) {
+      return;
+    }
+
+    const corpse = new EnemyCorpse(
+      this.pos,
+      this.def.corpseTile,
+      this.width,
+      this.height,
+      this.name,
+    );
+    scene.add(corpse);
+
+    if (!(scene instanceof GameLevel)) {
+      return;
+    }
+
+    const idx = scene.xpPickups.findIndex((p) => !p);
+    if (idx >= 0) {
+      scene.xpPickups[idx] = corpse;
+    } else {
+      scene.xpPickups.push(corpse);
     }
   }
 
