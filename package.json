@@ -30,7 +30,7 @@
     "@tauri-apps/api": "^2",
     "@tauri-apps/plugin-opener": "^2",
     "@excaliburjs/plugin-tiled": "0.31.0",
-    "excalibur": "0.32.0-alpha.1561"
+    "excalibur": "0.32.0-alpha.1579"
   },
   "devDependencies": {
     "@playwright/test": "^1.56.1",
@@ -45,7 +45,7 @@
   },
   "overrides": {
     "@excaliburjs/plugin-tiled": {
-      "excalibur": "0.32.0-alpha.1561"
+      "excalibur": "0.32.0-alpha.1579"
     }
   },
   "pre-commit": [
