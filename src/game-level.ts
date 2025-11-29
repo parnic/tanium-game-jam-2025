@@ -2,7 +2,6 @@ import {
   Actor,
   BoundingBox,
   clamp,
-  Clock,
   DefaultLoader,
   Engine,
   ExcaliburGraphicsContext,
@@ -57,7 +56,7 @@ export class GameLevel extends Scene {
   elemKillCounter: HTMLElement;
   elemXpBar: HTMLElement;
   elemXpLabel: HTMLElement;
-  activateTime = 0;
+  totalElapsed = 0;
 
   constructor(level: TiledResource) {
     super();
@@ -96,16 +95,14 @@ export class GameLevel extends Scene {
     this.elemXpLabel.innerText = xpComp.level.toString();
   }
 
-  updateUI(clock: Clock) {
-    this.updateRoundTimer(clock);
+  updateUI() {
+    this.updateRoundTimer();
     this.updateGiftCounter();
     this.updateKillCounter();
   }
 
-  updateRoundTimer(clock: Clock) {
-    const nowTotalSeconds = Math.floor(
-      (clock.now() - this.activateTime) / 1000,
-    );
+  updateRoundTimer() {
+    const nowTotalSeconds = Math.floor(this.totalElapsed / 1000);
 
     const nowSeconds = nowTotalSeconds % 60;
     const nowMinutes = Math.floor(nowTotalSeconds / 60);
@@ -212,12 +209,11 @@ export class GameLevel extends Scene {
     // Called when Excalibur transitions to this scene
     // Only 1 scene is active at a time
 
-    this.activateTime = context.engine.clock.now();
     // set the camera to the player's position before making it elastic to avoid
     // a big across-the-world ease at the start of a level
     this.camera.pos = this.player!.pos;
     this.activateCameraStrategies();
-    this.updateUI(context.engine.clock);
+    this.updateUI();
   }
 
   activateCameraStrategies() {
@@ -269,8 +265,7 @@ export class GameLevel extends Scene {
     }
 
     // Called before anything updates in the scene
-    const now = engine.clock.now() - this.activateTime;
-    const nowSeconds = now / 1000;
+    const nowSeconds = this.totalElapsed / 1000;
     const lastSeconds = this.lastTime / 1000;
     const nextWaveStartSeconds =
       (this.currentWave + 1) * this.secondsBetweenWaves;
@@ -293,11 +288,12 @@ export class GameLevel extends Scene {
       }
     }
 
-    this.lastTime = now;
+    this.lastTime = this.totalElapsed;
   }
 
   override onPostUpdate(engine: Engine, elapsedMs: number): void {
-    this.updateUI(engine.clock);
+    this.totalElapsed += elapsedMs;
+    this.updateUI();
   }
 
   override onPreDraw(ctx: ExcaliburGraphicsContext, elapsedMs: number): void {

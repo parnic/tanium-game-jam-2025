@@ -12,6 +12,7 @@ export class Weapon extends Entity {
   tile?: Tile;
   spawnIntervalMs = 0;
   lastSpawnedTimeMs?: number;
+  aliveTime = 0;
   owner: GameActor;
 
   constructor(name: string, level: TiledResource, owner: GameActor) {
@@ -41,14 +42,15 @@ export class Weapon extends Entity {
     }
 
     this.tile = weaponTile;
-    this.lastSpawnedTimeMs = engine.clock.now();
     this.spawnIntervalMs = 1000; // todo: get from somewhere
   }
 
-  override onPostUpdate(engine: Engine, elapsed: number): void {
+  override onPostUpdate(engine: Engine, elapsedMs: number): void {
     if ((engine as GameEngine).playersOnly) {
       return;
     }
+
+    this.aliveTime += elapsedMs;
 
     if (this.owner.isKilled()) {
       this.kill();
@@ -57,7 +59,7 @@ export class Weapon extends Entity {
 
     if (
       this.lastSpawnedTimeMs &&
-      this.lastSpawnedTimeMs + this.spawnIntervalMs > engine.clock.now()
+      this.lastSpawnedTimeMs + this.spawnIntervalMs > this.aliveTime
     ) {
       return;
     }
@@ -102,6 +104,6 @@ export class Weapon extends Entity {
     weapon.rotation = weapon.direction.toAngle() + Math.PI / 2;
 
     engine.currentScene.add(weapon);
-    this.lastSpawnedTimeMs = engine.clock.now();
+    this.lastSpawnedTimeMs = this.aliveTime;
   }
 }

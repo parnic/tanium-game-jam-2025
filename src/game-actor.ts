@@ -48,6 +48,7 @@ export abstract class GameActor extends Actor {
   private _isGodMode = false;
   private _isDemigodMode = false;
   protected lastDamagedByPlayer = false;
+  protected aliveTime = 0;
 
   public get activeGraphic(): Graphic | undefined {
     return this.walk ?? this.staticImage;
@@ -166,6 +167,7 @@ export abstract class GameActor extends Actor {
   }
 
   override onPostUpdate(engine: Engine, elapsedMs: number): void {
+    this.aliveTime += elapsedMs;
     this.currMove.clampMagnitude(1);
     if (this.currMove.magnitude > 0 || this.alwaysAnimate) {
       this.walk?.play();
@@ -199,11 +201,10 @@ export abstract class GameActor extends Actor {
       );
     }
 
-    const now = this.scene?.engine.clock.now() ?? 0;
     if (
       this.lastDamaged &&
       !bypassInvulnWindow &&
-      now <= this.lastDamaged + this.invulnerabilityWindowMs
+      this.aliveTime <= this.lastDamaged + this.invulnerabilityWindowMs
     ) {
       Logger.getInstance().info(
         `Suppressing damage done to ${this.name} because it was inside the invulnerability window of ${this.invulnerabilityWindowMs.toString()} milliseconds since the last damage.`,
@@ -216,7 +217,7 @@ export abstract class GameActor extends Actor {
     Logger.getInstance().info(
       `${this.name} took ${damage.toString()} damage, remaining health: ${this.health.toString()}`,
     );
-    this.lastDamaged = now;
+    this.lastDamaged = this.aliveTime;
     if (this.health <= 0) {
       this.onHealthReachedZero();
     } else {
