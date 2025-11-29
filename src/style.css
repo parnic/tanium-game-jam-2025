@@ -27,13 +27,6 @@ body {
   background-color: #333;
 }
 
-.excalibur-scale {
-  /* transform from the top left of the element */
-  transform-origin: 0 0;
-  /* scale the ui */
-  transform: scale(var(--pixel-conversion), var(--pixel-conversion));
-}
-
 .hide {
   display: none !important;
 }
@@ -49,6 +42,14 @@ body {
 #player-healthbar-container {
   left: var(--pointer-x);
   top: var(--pointer-y);
+  width: var(--width);
+  height: 10px;
+  background-color: #f1f1f1;
+}
+
+#player-healthbar {
+  height: 100%;
+  width: var(--healthPercent);
 }
 
 .center {
@@ -79,4 +80,8 @@ body {
 
 .w-100 {
   width: 100%;
+}
+
+.red {
+  background-color: red;
 }

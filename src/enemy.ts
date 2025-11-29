@@ -39,7 +39,7 @@ export class Enemy extends GameActor {
     this.def = def;
     this._spriteFacing = def.facing > 0 ? Vector.Right : Vector.Left;
     this.walk = new Animation({ frames: this.def.walkFrames });
-    this.health = def.health;
+    this._maxHealth = def.health;
   }
 
   public override get speed(): number {

@@ -90,7 +90,7 @@ export class Player extends GameActor {
       "player-healthbar-container",
     )!;
     this.healthbarElem = document.getElementById("player-healthbar")!;
-    this.health = 10;
+    this._maxHealth = 10;
   }
 
   giveWeapon(name: string) {
@@ -204,7 +204,6 @@ export class Player extends GameActor {
       }
     });
 
-    this.healthbarElem.setAttribute("max", this.health.toString());
     showElement(this.healthbarContainerElem);
 
     // todo: temp - determine starting weapon differently
@@ -296,9 +295,9 @@ export class Player extends GameActor {
       );
     }
 
-    const healthbarCoords = engine.screen
-      .worldToPageCoordinates(this.pos)
-      .add(vec(-this.width / 2, this.height / 2));
+    const healthbarCoords = engine.screen.worldToPageCoordinates(
+      this.pos.add(vec(-this.width / 2, this.height / 1.4)),
+    );
     this.healthbarContainerElem.style.setProperty(
       "--pointer-x",
       `${healthbarCoords.x.toString()}px`,
@@ -306,6 +305,10 @@ export class Player extends GameActor {
     this.healthbarContainerElem.style.setProperty(
       "--pointer-y",
       `${healthbarCoords.y.toString()}px`,
+    );
+    this.healthbarContainerElem.style.setProperty(
+      "--width",
+      `${(this.width / 2.5).toString()}px`,
     );
 
     this.tryPickup();
@@ -390,6 +393,9 @@ export class Player extends GameActor {
   }
 
   protected override onHealthChanged(): void {
-    this.healthbarElem.setAttribute("value", this.health.toString());
+    this.healthbarElem.style.setProperty(
+      "--healthPercent",
+      `${(this.healthPercent * 100).toString()}%`,
+    );
   }
 }

@@ -41,6 +41,7 @@ export abstract class GameActor extends Actor {
   protected staticImage?: Graphic;
   protected whiteFlashMaterial: Material | null = null;
   private _health = 10;
+  protected _maxHealth = 10;
   protected lastDamaged?: number;
   protected invulnerabilityWindowMs = 300;
   protected alwaysAnimate = false;
@@ -67,6 +68,14 @@ export abstract class GameActor extends Actor {
   public set health(hp: number) {
     this._health = hp;
     this.onHealthChanged();
+  }
+
+  public get maxHealth(): number {
+    return this._maxHealth;
+  }
+
+  public get healthPercent(): number {
+    return this._health / this._maxHealth;
   }
 
   protected get isGodMode(): boolean {
@@ -125,6 +134,8 @@ export abstract class GameActor extends Actor {
   }
 
   override onInitialize(engine: Engine) {
+    this.health = this.maxHealth;
+
     if (this.walk) {
       this.graphics.use(this.walk);
     } else if (this.staticImage) {

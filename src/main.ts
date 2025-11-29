@@ -1,17 +1,14 @@
-import { DisplayMode, SolverStrategy, vec, Vector } from "excalibur";
+import { DisplayMode, SolverStrategy } from "excalibur";
 import { loader, LevelResources } from "./resources";
 import { GameLevel } from "./game-level";
 import { GameEngine } from "./game-engine";
 
-const calculateExPixelConversion = (screen: ex.Screen) => {
-  const origin = screen.worldToPageCoordinates(Vector.Zero);
-  const singlePixel = screen.worldToPageCoordinates(vec(1, 0)).sub(origin);
-  const pixelConversion = singlePixel.x;
-  document.documentElement.style.setProperty(
-    "--pixel-conversion",
-    pixelConversion.toString(),
-  );
-};
+// const calculateExPixelConversion = (screen: ex.Screen) => {
+//   document.documentElement.style.setProperty(
+//     "--pixel-conversion",
+//     screen.worldToPagePixelRatio.toString(),
+//   );
+// };
 
 const game = new GameEngine({
   displayMode: DisplayMode.FillScreen,
@@ -24,26 +21,20 @@ const game = new GameEngine({
   },
 });
 
-game.screen.events.on("resize", () => {
-  calculateExPixelConversion(game.screen);
-});
+// game.screen.events.on("resize", () => {
+//   calculateExPixelConversion(game.screen);
+// });
 
 await game
   .start("start", {
     loader,
-    // inTransition: new FadeInOut({
-    //   // Optional in transition
-    //   duration: 1000,
-    //   direction: "in",
-    //   color: Color.ExcaliburBlue,
-    // }),
   })
   .then(() => {
-    calculateExPixelConversion(game.screen);
-
     const level = LevelResources[0];
     level.addToScene(game.currentScene);
     if (game.currentScene instanceof GameLevel) {
       game.currentScene.tiledLevel = level;
     }
+
+    // calculateExPixelConversion(game.screen);
   });
