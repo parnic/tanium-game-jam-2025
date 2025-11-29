@@ -66,7 +66,7 @@ export class WeaponActor extends GameActor {
 
     // todo: some weapons will probably want to track their target,
     // others won't have a constant direction
-    this.moveInDirection(this.direction.clampMagnitude(1), elapsedMs);
+    this.currMove = this.direction;
     super.onPostUpdate(engine, elapsedMs);
   }
 
