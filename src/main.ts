@@ -15,14 +15,10 @@ const calculateExPixelConversion = (screen: ex.Screen) => {
 
 const game = new GameEngine({
   displayMode: DisplayMode.FillScreen,
-  pixelArt: false,
   scenes: {
     start: new GameLevel(LevelResources[0]),
   },
-  suppressHiDPIScaling: false,
   antialiasing: false,
-  snapToPixel: true,
-  pixelRatio: 1,
   physics: {
     solver: SolverStrategy.Arcade,
   },
