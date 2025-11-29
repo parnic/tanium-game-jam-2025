@@ -106,15 +106,15 @@ export class GiftOffScreenIndicator extends ScreenElement {
     this.overlay.graphics.isVisible = true;
 
     const playerScreenPos = vec(
-      engine.screen.scaledWidth / 2,
-      engine.screen.scaledHeight / 2,
+      engine.screen.viewport.width / 2,
+      engine.screen.viewport.height / 2,
     );
     const giftLoc = this.gift.pos;
     const giftScreenPos = engine.worldToScreenCoordinates(giftLoc);
     const giftToPlayer = giftScreenPos.sub(playerScreenPos);
     const normGiftToPlayer = vec(
-      giftToPlayer.x / (engine.screen.scaledWidth * 2),
-      giftToPlayer.y / (engine.screen.scaledHeight * 2),
+      giftToPlayer.x / (engine.screen.viewport.width * 2),
+      giftToPlayer.y / (engine.screen.viewport.height * 2),
     );
 
     const div =
