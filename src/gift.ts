@@ -1,11 +1,11 @@
 import {
   Actor,
   Animation,
-  clamp,
   CollisionType,
   Engine,
   Scene,
   ScreenElement,
+  vec,
   Vector,
 } from "excalibur";
 import { GameActor, TiledCollision } from "./game-actor";
@@ -105,15 +105,31 @@ export class GiftOffScreenIndicator extends ScreenElement {
     const playerScreenPos = engine.screen.center;
     const giftLoc = this.gift.pos;
     const giftScreenPos = engine.worldToScreenCoordinates(giftLoc);
-    const dir = giftScreenPos.sub(playerScreenPos).normalize();
-    const tx =
-      ((dir.x > 0 ? engine.screen.width : 0) - playerScreenPos.x) / dir.x;
-    const ty =
-      ((dir.y > 0 ? engine.screen.height : 0) - playerScreenPos.y) / dir.y;
-    const t = Math.min(tx, ty);
-    const indicatorPos = playerScreenPos.add(dir.scale(t));
+    const giftToPlayer = giftScreenPos.sub(playerScreenPos);
 
-    this.pos.x = clamp(indicatorPos.x, 0, engine.screen.width - this.width);
-    this.pos.y = clamp(indicatorPos.y, 0, engine.screen.height - this.height);
+    const normGiftToPlayer = vec(
+      giftToPlayer.x / (engine.screen.width * 2),
+      giftToPlayer.y / (engine.screen.height * 2),
+    );
+
+    const div =
+      Math.abs(normGiftToPlayer.x) > Math.abs(normGiftToPlayer.y)
+        ? Math.abs(normGiftToPlayer.x)
+        : Math.abs(normGiftToPlayer.y);
+
+    const screenNormGiftToPlayer = vec(
+      normGiftToPlayer.x / div,
+      normGiftToPlayer.y / div,
+    );
+
+    const fromCenter = screenNormGiftToPlayer.scale(
+      vec(
+        engine.screen.center.x - this.width,
+        engine.screen.center.y - this.height,
+      ),
+    );
+
+    const indicatorPos = engine.screen.center.add(fromCenter);
+    this.pos = indicatorPos;
   }
 }
