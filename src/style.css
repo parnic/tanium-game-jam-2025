@@ -78,6 +78,10 @@ body {
   -webkit-text-stroke: 0.3vw black;
 }
 
+.outline-01 {
+  -webkit-text-stroke: 0.1vw black;
+}
+
 .fs-3 {
   font-size: 3vw;
 }
@@ -88,4 +92,29 @@ body {
 
 .red {
   background-color: red;
+}
+
+#xp-bar {
+  top: 3.5vw;
+  height: 15px;
+  left: 0;
+  right: 0;
+  width: 90vw;
+  margin: auto;
+  background-color: #333;
+  opacity: 80%;
+  padding: 2px;
+}
+
+#xp-value {
+  height: 100%;
+  width: var(--percent, 0%);
+  background-color: cadetblue;
+}
+
+#xp-label {
+  height: 100%;
+  width: 100%;
+  line-height: 100%;
+  color: #f1f1f1;
 }

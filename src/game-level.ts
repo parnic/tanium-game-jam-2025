@@ -1,6 +1,7 @@
 import {
   Actor,
   BoundingBox,
+  clamp,
   Clock,
   DefaultLoader,
   Engine,
@@ -19,6 +20,8 @@ import { Gift } from "./gift";
 import { TiledResource } from "@excaliburjs/plugin-tiled";
 import { GameEngine } from "./game-engine";
 import { EnemyCorpse } from "./enemy-corpse";
+import { hideElement, showElement } from "./utilities/html";
+import { XpComponent } from "./components/xp-component";
 
 interface Ramp {
   wave: number;
@@ -52,6 +55,8 @@ export class GameLevel extends Scene {
   elemTimer: HTMLElement;
   elemGiftCounter: HTMLElement;
   elemKillCounter: HTMLElement;
+  elemXpBar: HTMLElement;
+  elemXpLabel: HTMLElement;
   activateTime = 0;
 
   constructor(level: TiledResource) {
@@ -61,6 +66,8 @@ export class GameLevel extends Scene {
     this.elemTimer = document.getElementById("round-timer")!;
     this.elemGiftCounter = document.getElementById("gift-counter")!;
     this.elemKillCounter = document.getElementById("kill-counter")!;
+    this.elemXpBar = document.getElementById("xp-bar")!;
+    this.elemXpLabel = document.getElementById("xp-label")!;
   }
 
   override onInitialize(engine: Engine): void {
@@ -71,6 +78,22 @@ export class GameLevel extends Scene {
     this.initializePlayer();
     this.initializeEnemies();
     this.initializeObjectives();
+    showElement(this.elemXpBar);
+  }
+
+  updateXpBar(xpComp: XpComponent) {
+    let percent = xpComp.xpPercentToNextLevel;
+    if (percent <= 0) {
+      percent = 0;
+    } else if (percent >= 1) {
+      percent = 100;
+    } else {
+      percent = clamp(Math.floor(percent * 100), 1, 99);
+    }
+
+    this.elemXpBar.style.setProperty("--percent", `${percent.toString()}%`);
+
+    this.elemXpLabel.innerText = xpComp.level.toString();
   }
 
   updateUI(clock: Clock) {
@@ -233,6 +256,7 @@ export class GameLevel extends Scene {
     this.elemKillCounter.innerText = "";
     this.elemGiftCounter.innerText = "";
     this.elemTimer.innerText = "";
+    hideElement(this.elemXpBar);
   }
 
   override onPreUpdate(engine: Engine, elapsedMs: number): void {

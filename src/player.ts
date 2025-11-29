@@ -24,6 +24,11 @@ import { showElement } from "./utilities/html";
 import { Gift } from "./gift";
 import { Weapon } from "./weapon";
 import { GameEngine } from "./game-engine";
+import {
+  GainedXpEvent,
+  LeveledUpEvent,
+  XpComponent,
+} from "./components/xp-component";
 
 // Actors are the main unit of composition you'll likely use, anything that you want to draw and move around the screen
 // is likely built with an actor
@@ -48,7 +53,7 @@ export class Player extends GameActor {
   giftsCollected = 0;
   giftsNeeded = 0;
   kills = 0;
-  xp = 0;
+  xpComponent: XpComponent;
   weapons: Weapon[] = [];
   pickupDistanceSq = 200 * 200;
 
@@ -91,6 +96,31 @@ export class Player extends GameActor {
     )!;
     this.healthbarElem = document.getElementById("player-healthbar")!;
     this._maxHealth = 10;
+
+    this.xpComponent = new XpComponent();
+    this.addComponent(this.xpComponent);
+    this.xpComponent.events.on("GainedXp", (evt) => {
+      this.onGainedXp(evt);
+    });
+    this.xpComponent.events.on("LeveledUp", (evt) => {
+      this.onLeveledUp(evt);
+    });
+  }
+
+  onGainedXp(evt: GainedXpEvent) {
+    if (!(this.scene instanceof GameLevel)) {
+      return;
+    }
+
+    this.scene.updateXpBar(this.xpComponent);
+  }
+
+  onLeveledUp(evt: LeveledUpEvent) {
+    if (!(this.scene instanceof GameLevel)) {
+      return;
+    }
+
+    this.scene.updateXpBar(this.xpComponent);
   }
 
   giveWeapon(name: string) {

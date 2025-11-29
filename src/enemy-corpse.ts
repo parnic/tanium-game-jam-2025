@@ -73,9 +73,9 @@ export class EnemyCorpse extends GameActor {
 
   onPickedUp() {
     this.kill();
-    this.pickedUpBy!.xp++;
+    this.pickedUpBy!.xpComponent.giveXp(1);
     Logger.getInstance().info(
-      `picked up ${this.name}. new xp=${this.pickedUpBy!.xp.toString()}`,
+      `picked up ${this.name}. new xp=${this.pickedUpBy!.xpComponent.currXp.toString()}`,
     );
     if (this.scene instanceof GameLevel) {
       const idx = this.scene.xpPickups.findIndex((p) => p == this);
