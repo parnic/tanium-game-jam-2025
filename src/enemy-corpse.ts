@@ -2,6 +2,7 @@ import {
   Collider,
   CollisionContact,
   CollisionType,
+  Color,
   Engine,
   Graphic,
   Logger,
@@ -36,6 +37,10 @@ export class EnemyCorpse extends GameActor {
     this.graphics.flipHorizontal = flipHorizontal;
     this.name = `${enemyName}-corpse`;
     this._speed = config.SpeedPickup;
+  }
+
+  onInitialize(engine: Engine): void {
+    this.actions.flash(Color.White, 150);
   }
 
   override onPostUpdate(engine: Engine, elapsedMs: number): void {
