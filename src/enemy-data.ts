@@ -74,6 +74,9 @@ export class EnemyData {
       this._corpseTile = tile.tileset.spritesheet.sprites[corpseTileID];
     }
 
+    // todo: probably would be a good idea to assign this to the graphics of something.
+    // the first time we load a graphic, the browser has to decode and cache the image,
+    // so there's a hitch the first time any new enemy type appears.
     this._walkFrames = tile.animation.map((anim) => {
       return {
         graphic: tile.tileset.spritesheet.sprites[anim.tileid],

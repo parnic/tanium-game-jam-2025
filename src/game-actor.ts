@@ -142,22 +142,23 @@ export abstract class GameActor extends Actor {
       this.graphics.use(this.staticImage);
     }
 
-    this.whiteFlashMaterial = engine.graphicsContext.createMaterial({
-      name: "custom-material",
-      fragmentSource: `#version 300 es
-        precision mediump float;
-        uniform sampler2D u_graphic;
-        in vec2 v_uv;
-        out vec4 color;
-        void main() {
-          vec4 existingColor = texture(u_graphic, v_uv);
-          if (existingColor.a > 0.0) {
-              color = vec4(1.0, 1.0, 1.0, 1.0);
-          } else {
-              color = existingColor;
-          }
-        }`,
-    });
+    // if we need this later, need to find a place to initialize it once globally instead of once per enemy. this is slow.
+    // this.whiteFlashMaterial = engine.graphicsContext.createMaterial({
+    //   name: "custom-material",
+    //   fragmentSource: `#version 300 es
+    //     precision mediump float;
+    //     uniform sampler2D u_graphic;
+    //     in vec2 v_uv;
+    //     out vec4 color;
+    //     void main() {
+    //       vec4 existingColor = texture(u_graphic, v_uv);
+    //       if (existingColor.a > 0.0) {
+    //           color = vec4(1.0, 1.0, 1.0, 1.0);
+    //       } else {
+    //           color = existingColor;
+    //       }
+    //     }`,
+    // });
   }
 
   override onPreUpdate(engine: Engine, elapsed: number): void {
