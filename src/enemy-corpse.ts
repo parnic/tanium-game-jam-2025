@@ -22,6 +22,7 @@ export class EnemyCorpse extends GameActor {
     width: number,
     height: number,
     enemyName: string,
+    flipHorizontal: boolean,
   ) {
     super({
       pos: inPos,
@@ -32,6 +33,7 @@ export class EnemyCorpse extends GameActor {
 
     this.z = config.ZIndexEnemyCorpse;
     this.graphics.use(corpseTile);
+    this.graphics.flipHorizontal = flipHorizontal;
     this.name = `${enemyName}-corpse`;
     this._speed = config.SpeedPickup;
   }

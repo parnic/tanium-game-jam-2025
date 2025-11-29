@@ -112,6 +112,7 @@ export class Enemy extends GameActor {
       this.width,
       this.height,
       this.name,
+      this.graphics.flipHorizontal,
     );
     scene.add(corpse);
 
