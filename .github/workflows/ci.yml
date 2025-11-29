@@ -99,6 +99,8 @@ jobs:
       - name: Setup Node
         id: setup-node
         uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
 
       - name: Install dependencies
         id: install
@@ -155,6 +157,8 @@ jobs:
       - name: Setup Node
         id: setup-node
         uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
 
       - name: Install dependencies
         id: install
