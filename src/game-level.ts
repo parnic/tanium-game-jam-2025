@@ -52,6 +52,7 @@ export class GameLevel extends Scene {
   elemTimer: HTMLElement;
   elemGiftCounter: HTMLElement;
   elemKillCounter: HTMLElement;
+  activateTime = 0;
 
   constructor(level: TiledResource) {
     super();
@@ -79,7 +80,9 @@ export class GameLevel extends Scene {
   }
 
   updateRoundTimer(clock: Clock) {
-    const nowTotalSeconds = Math.floor(clock.now() / 1000);
+    const nowTotalSeconds = Math.floor(
+      (clock.now() - this.activateTime) / 1000,
+    );
 
     const nowSeconds = nowTotalSeconds % 60;
     const nowMinutes = Math.floor(nowTotalSeconds / 60);
@@ -186,6 +189,7 @@ export class GameLevel extends Scene {
     // Called when Excalibur transitions to this scene
     // Only 1 scene is active at a time
 
+    this.activateTime = context.engine.clock.now();
     // set the camera to the player's position before making it elastic to avoid
     // a big across-the-world ease at the start of a level
     this.camera.pos = this.player!.pos;
@@ -241,7 +245,7 @@ export class GameLevel extends Scene {
     }
 
     // Called before anything updates in the scene
-    const now = engine.clock.now();
+    const now = engine.clock.now() - this.activateTime;
     const nowSeconds = now / 1000;
     const lastSeconds = this.lastTime / 1000;
     const nextWaveStartSeconds =
@@ -265,7 +269,7 @@ export class GameLevel extends Scene {
       }
     }
 
-    this.lastTime = engine.clock.now();
+    this.lastTime = now;
   }
 
   override onPostUpdate(engine: Engine, elapsedMs: number): void {
