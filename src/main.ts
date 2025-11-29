@@ -1,10 +1,4 @@
-import {
-  DisplayMode,
-  Resolution,
-  SolverStrategy,
-  vec,
-  Vector,
-} from "excalibur";
+import { DisplayMode, SolverStrategy, vec, Vector } from "excalibur";
 import { loader, LevelResources } from "./resources";
 import { GameLevel } from "./game-level";
 import { GameEngine } from "./game-engine";
@@ -20,8 +14,7 @@ const calculateExPixelConversion = (screen: ex.Screen) => {
 };
 
 const game = new GameEngine({
-  resolution: Resolution.Standard,
-  displayMode: DisplayMode.FitScreenAndFill,
+  displayMode: DisplayMode.FillScreen,
   pixelArt: false,
   scenes: {
     start: new GameLevel(LevelResources[0]),
