@@ -127,16 +127,14 @@ export class GiftOffScreenIndicator extends ScreenElement {
       normGiftToPlayer.y / div,
     );
 
+    const posOffset = vec(this.width / 2, this.height / 2);
     const fromCenter = screenNormGiftToPlayer.scale(
-      vec(
-        playerScreenPos.x - this.width / 2,
-        playerScreenPos.y - this.height / 2,
-      ),
+      vec(playerScreenPos.x - posOffset.x, playerScreenPos.y - posOffset.y),
     );
 
     const indicatorPos = playerScreenPos.add(fromCenter);
     this.pos = indicatorPos;
-    this.pos.x -= this.width / 2;
-    this.pos.y -= this.height / 2;
+    this.pos.x -= posOffset.x;
+    this.pos.y -= posOffset.y;
   }
 }
