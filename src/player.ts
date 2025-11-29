@@ -177,6 +177,17 @@ export class Player extends GameActor {
           }
           break;
 
+        case Keys.L:
+          if (
+            engine.input.keyboard.isHeld(Keys.ShiftLeft) &&
+            this.scene instanceof GameLevel
+          ) {
+            this.scene.enemies.forEach((e) => {
+              e.takeDamage(e.health, true);
+            });
+          }
+          break;
+
         case Keys.G:
           if (engine.input.keyboard.isHeld(Keys.ShiftLeft)) {
             this.isGodMode = !this.isGodMode;
