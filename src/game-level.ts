@@ -56,6 +56,7 @@ export class GameLevel extends Scene {
   elemKillCounter: HTMLElement;
   elemXpBar: HTMLElement;
   elemXpLabel: HTMLElement;
+  elemPause: HTMLElement;
   totalElapsed = 0;
 
   constructor(level: TiledResource) {
@@ -67,6 +68,7 @@ export class GameLevel extends Scene {
     this.elemKillCounter = document.getElementById("kill-counter")!;
     this.elemXpBar = document.getElementById("xp-bar")!;
     this.elemXpLabel = document.getElementById("xp-label")!;
+    this.elemPause = document.getElementById("pause-text")!;
   }
 
   override onInitialize(engine: Engine): void {
@@ -117,6 +119,16 @@ export class GameLevel extends Scene {
 
   updateKillCounter() {
     this.elemKillCounter.innerText = `Kills: ${(this.player?.kills ?? 0).toLocaleString()}`;
+  }
+
+  togglePause() {
+    if (this.engine.clock.isRunning()) {
+      showElement(this.elemPause);
+      this.engine.clock.stop();
+    } else {
+      hideElement(this.elemPause);
+      this.engine.clock.start();
+    }
   }
 
   initializePlayer() {

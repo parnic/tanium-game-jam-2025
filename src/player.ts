@@ -168,6 +168,12 @@ export class Player extends GameActor {
 
     engine.input.keyboard.on("press", (evt) => {
       switch (evt.key) {
+        case Keys.Escape:
+          if (this.scene instanceof GameLevel) {
+            this.scene.togglePause();
+          }
+          break;
+
         case Keys.K:
           if (
             !this.isKilled() &&
