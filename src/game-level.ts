@@ -193,7 +193,7 @@ export class GameLevel extends Scene {
 
   activateCameraStrategies() {
     this.camera.strategy.elasticToActor(this.player!, 0.15, 0.75);
-    // this.camera.zoom = 0.4;
+    this.camera.zoom = 0.4;
 
     const firstLayer = this.tiledLevel.getTileLayers().at(0);
     if (!firstLayer) {
