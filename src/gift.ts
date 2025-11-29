@@ -133,8 +133,6 @@ export class GiftOffScreenIndicator extends ScreenElement {
     );
 
     const indicatorPos = playerScreenPos.add(fromCenter);
-    this.pos = indicatorPos;
-    this.pos.x -= posOffset.x;
-    this.pos.y -= posOffset.y;
+    this.pos = indicatorPos.sub(posOffset);
   }
 }

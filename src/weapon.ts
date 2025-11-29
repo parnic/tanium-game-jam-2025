@@ -100,7 +100,7 @@ export class Weapon extends Entity {
 
     const weapon = new WeaponActor(this.weaponName, this.tile, this.owner);
     weapon.pos = this.owner.pos;
-    weapon.direction = closestEnemy.pos.sub(this.owner.pos);
+    weapon.direction = closestEnemy.pos.sub(this.owner.pos).normalize();
     weapon.rotation = weapon.direction.toAngle() + Math.PI / 2;
 
     engine.currentScene.add(weapon);

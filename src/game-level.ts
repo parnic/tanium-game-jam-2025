@@ -148,10 +148,7 @@ export class GameLevel extends Scene {
     );
 
     const playerTile = playerTileset?.getTilesByClassName("player")[0];
-    this.player = new Player(
-      vec(playerStartActor.pos.x, playerStartActor.pos.y),
-      playerTile!,
-    );
+    this.player = new Player(playerStartActor.pos, playerTile!);
     this.add(this.player);
   }
 

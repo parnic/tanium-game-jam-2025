@@ -130,8 +130,7 @@ export abstract class GameActor extends Actor {
   }
 
   protected moveInDirection(direction: Vector, elapsedMs: number) {
-    this.pos.x += direction.x * this.speed * elapsedMs;
-    this.pos.y += direction.y * this.speed * elapsedMs;
+    this.pos = this.pos.add(direction.scale(this.speed * elapsedMs));
   }
 
   override onInitialize(engine: Engine) {
