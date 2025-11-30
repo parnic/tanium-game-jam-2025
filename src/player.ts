@@ -71,14 +71,11 @@ export class Player extends GameActor {
 
   constructor(inPos: Vector, tile: Tile, characterName: string) {
     super({
-      // Giving your actor a name is optional, but helps in debugging using the dev tools or debug mode
-      // https://github.com/excaliburjs/excalibur-extension/
-      // Chrome: https://chromewebstore.google.com/detail/excalibur-dev-tools/dinddaeielhddflijbbcmpefamfffekc
-      // Firefox: https://addons.mozilla.org/en-US/firefox/addon/excalibur-dev-tools/
       name: "Player",
       pos: inPos,
       width: tile.tileset.tileWidth,
       height: tile.tileset.tileHeight,
+      z: config.ZIndexCharacter,
       collisionType: CollisionType.Active,
       collisionDef: new TiledCollision(tile),
     });
@@ -92,7 +89,6 @@ export class Player extends GameActor {
       );
     }
 
-    this.z = config.ZIndexCharacter;
     this._speed = 0.4;
     this.tile = tile;
     this._spriteFacing =

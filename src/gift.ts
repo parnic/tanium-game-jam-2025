@@ -81,10 +81,10 @@ export class GiftOffScreenIndicator extends ScreenElement {
     super({
       width: background.tileset.tileWidth,
       height: background.tileset.tileHeight,
+      scale: Vector.Half,
+      z: config.ZIndexScreenElements,
     });
 
-    this.z = config.ZIndexScreenElements;
-    this.scale = Vector.Half;
     this.gift = gift;
     this.overlay = new Actor({
       x: this.width / 2 / this.scale.x,

@@ -29,11 +29,11 @@ export class Enemy extends GameActor {
       pos: inPos,
       width: def.textureWidth,
       height: def.textureHeight,
+      z: config.ZIndexEnemy,
       collisionType: CollisionType.Passive,
       collisionDef: def.collisionDef,
     });
 
-    this.z = config.ZIndexEnemy;
     this._speed = 0.35;
     this.def = def;
     this._spriteFacing = def.facing > 0 ? Vector.Right : Vector.Left;
