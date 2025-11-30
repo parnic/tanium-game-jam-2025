@@ -1,3 +1,4 @@
+import { Tile } from "@excaliburjs/plugin-tiled";
 import {
   Actor,
   Animation,
@@ -8,10 +9,10 @@ import {
   vec,
   Vector,
 } from "excalibur";
-import { GameActor, TiledCollision } from "./game-actor";
-import { Tile } from "@excaliburjs/plugin-tiled";
-import { GameLevel } from "./game-level";
 import { config } from "./config";
+import { GameActor, TiledCollision } from "./game-actor";
+import { GameEngine } from "./game-engine";
+import { GameLevel } from "./game-level";
 
 export class Gift extends GameActor {
   offScreen: GiftOffScreenIndicator;
@@ -56,6 +57,20 @@ export class Gift extends GameActor {
   override onPostKill(scene: Scene): void {
     this.offScreen.kill();
   }
+
+  override onPaused(paused: boolean): void {
+    super.onPaused(paused);
+
+    this.offScreen.onPaused(paused);
+  }
+
+  override onPostUpdate(engine: Engine, elapsedMs: number): void {
+    if (engine instanceof GameEngine && (engine.playersOnly || engine.paused)) {
+      return;
+    }
+
+    super.onPostUpdate(engine, elapsedMs);
+  }
 }
 
 export class GiftOffScreenIndicator extends ScreenElement {
@@ -87,6 +102,10 @@ export class GiftOffScreenIndicator extends ScreenElement {
     if (bgGraphic) {
       this.graphics.use(bgGraphic);
     }
+  }
+
+  onPaused(paused: boolean) {
+    // stub
   }
 
   override onPostUpdate(engine: Engine, elapsed: number): void {

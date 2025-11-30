@@ -71,7 +71,8 @@ export class WeaponActor extends GameActor {
   }
 
   override onPostUpdate(engine: Engine, elapsedMs: number): void {
-    if ((engine as GameEngine).playersOnly) {
+    if (engine instanceof GameEngine && (engine.playersOnly || engine.paused)) {
+      this.vel = Vector.Zero;
       return;
     }
 

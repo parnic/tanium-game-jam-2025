@@ -8,13 +8,13 @@ import {
   Side,
   Vector,
 } from "excalibur";
-import { GameLevel } from "./game-level";
+import { config } from "./config";
+import { EnemyCorpse } from "./enemy-corpse";
 import { EnemyData } from "./enemy-data";
 import { GameActor } from "./game-actor";
-import { Player } from "./player";
-import { config } from "./config";
 import { GameEngine } from "./game-engine";
-import { EnemyCorpse } from "./enemy-corpse";
+import { GameLevel } from "./game-level";
+import { Player } from "./player";
 
 export class Enemy extends GameActor {
   addedInWave = 0;
@@ -52,7 +52,7 @@ export class Enemy extends GameActor {
   }
 
   override onPreUpdate(engine: Engine, elapsedMs: number): void {
-    if ((engine as GameEngine).playersOnly) {
+    if (engine instanceof GameEngine && (engine.playersOnly || engine.paused)) {
       return;
     }
 
@@ -70,7 +70,8 @@ export class Enemy extends GameActor {
   }
 
   override onPostUpdate(engine: Engine, elapsedMs: number): void {
-    if ((engine as GameEngine).playersOnly) {
+    if (engine instanceof GameEngine && (engine.playersOnly || engine.paused)) {
+      this.vel = Vector.Zero;
       return;
     }
 

@@ -185,8 +185,8 @@ export class Player extends GameActor {
     engine.input.keyboard.on("press", (evt) => {
       switch (evt.key) {
         case Keys.Escape:
-          if (this.scene instanceof GameLevel) {
-            this.scene.togglePause();
+          if (engine instanceof GameEngine) {
+            engine.togglePause();
           }
           break;
 
@@ -313,24 +313,30 @@ export class Player extends GameActor {
       // claim input from this gamepad
       this.lastUsedGamepad = gamepad;
 
-      // we can't actually use this because "release" events aren't passed, only down, so evt.value is never 0.
-      // switch (evt.button) {
-      //   case Buttons.DpadDown:
-      //     this.lastGamepadDpad.y = evt.value;
-      //     break;
+      // we can't actually use the directional buttons because "release" events aren't passed, only down, so evt.value is never 0.
+      switch (evt.button) {
+        // case Buttons.DpadDown:
+        //   this.lastGamepadDpad.y = evt.value;
+        //   break;
 
-      //   case Buttons.DpadUp:
-      //     this.lastGamepadDpad.y = -evt.value;
-      //     break;
+        // case Buttons.DpadUp:
+        //   this.lastGamepadDpad.y = -evt.value;
+        //   break;
 
-      //   case Buttons.DpadLeft:
-      //     this.lastGamepadDpad.x = -evt.value;
-      //     break;
+        // case Buttons.DpadLeft:
+        //   this.lastGamepadDpad.x = -evt.value;
+        //   break;
 
-      //   case Buttons.DpadRight:
-      //     this.lastGamepadDpad.x = evt.value;
-      //     break;
-      // }
+        // case Buttons.DpadRight:
+        //   this.lastGamepadDpad.x = evt.value;
+        //   break;
+
+        case Buttons.Start:
+          if (this.scene?.engine instanceof GameEngine) {
+            this.scene.engine.togglePause();
+          }
+          break;
+      }
     });
   }
 
@@ -339,11 +345,22 @@ export class Player extends GameActor {
     gamepad.off("button");
   }
 
+  override onPaused(paused: boolean): void {
+    super.onPaused(paused);
+
+    this.lastGamepadAxis = Vector.Zero;
+    this.pointerMoveSource = undefined;
+  }
+
   override onPreUpdate(engine: Engine, elapsedMs: number): void {
     // Put any update logic here runs every frame before Actor builtins
   }
 
   override onPostUpdate(engine: Engine, elapsedMs: number): void {
+    if (engine instanceof GameEngine && engine.paused) {
+      return;
+    }
+
     if (this.lastUsedGamepad) {
       this.currMove = this.currMove.add(this.lastGamepadAxis);
 

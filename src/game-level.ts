@@ -19,7 +19,7 @@ import { EnemyData } from "./enemy-data";
 import { GameEngine } from "./game-engine";
 import { Gift } from "./gift";
 import { Player } from "./player";
-import { hideElement, showElement } from "./utilities/html";
+import { hideElement, showElement, showOrHideElement } from "./utilities/html";
 import { rand } from "./utilities/math";
 
 interface Ramp {
@@ -119,16 +119,6 @@ export class GameLevel extends Scene {
 
   updateKillCounter() {
     this.elemKillCounter.innerText = `Kills: ${(this.player?.kills ?? 0).toLocaleString()}`;
-  }
-
-  togglePause() {
-    if (this.engine.clock.isRunning()) {
-      showElement(this.elemPause);
-      this.engine.clock.stop();
-    } else {
-      hideElement(this.elemPause);
-      this.engine.clock.start();
-    }
   }
 
   initializePlayer() {
@@ -274,12 +264,30 @@ export class GameLevel extends Scene {
     hideElement(this.elemXpBar);
   }
 
+  onPaused(paused: boolean) {
+    this.player?.onPaused(paused);
+
+    for (const enemy of this.enemies) {
+      if (enemy.isKilled()) {
+        continue;
+      }
+
+      enemy.onPaused(paused);
+    }
+
+    for (const gift of this.gifts) {
+      gift.onPaused(paused);
+    }
+
+    showOrHideElement(this.elemPause, paused);
+  }
+
   override onPreUpdate(engine: Engine, elapsedMs: number): void {
     // don't spawn any enemies or adjust the clock/waves after the player dies
     if (this.player?.isKilled() === true) {
       return;
     }
-    if ((engine as GameEngine).playersOnly) {
+    if (engine instanceof GameEngine && (engine.playersOnly || engine.paused)) {
       return;
     }
 
@@ -311,7 +319,12 @@ export class GameLevel extends Scene {
   }
 
   override onPostUpdate(engine: Engine, elapsedMs: number): void {
-    this.totalElapsed += elapsedMs;
+    if (
+      !(engine instanceof GameEngine) ||
+      !(engine.playersOnly || engine.paused)
+    ) {
+      this.totalElapsed += elapsedMs;
+    }
     this.updateUI();
   }
 

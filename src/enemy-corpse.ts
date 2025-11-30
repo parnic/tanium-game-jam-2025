@@ -9,10 +9,11 @@ import {
   Side,
   Vector,
 } from "excalibur";
-import { GameActor } from "./game-actor";
 import { config } from "./config";
-import { Player } from "./player";
+import { GameActor } from "./game-actor";
+import { GameEngine } from "./game-engine";
 import { GameLevel } from "./game-level";
+import { Player } from "./player";
 
 export class EnemyCorpse extends GameActor {
   pickedUpBy?: Player;
@@ -40,11 +41,16 @@ export class EnemyCorpse extends GameActor {
   }
 
   onInitialize(engine: Engine): void {
+    // todo: squish the corpse in the opposite direction of the hit they took, knock them back
+    // in the same direction, reset both and render as grayscale after they hit the "ground"
     this.actions.flash(Color.White, 150);
   }
 
   override onPostUpdate(engine: Engine, elapsedMs: number): void {
     if (!this.pickedUpBy) {
+      return;
+    }
+    if (engine instanceof GameEngine && engine.paused) {
       return;
     }
 
