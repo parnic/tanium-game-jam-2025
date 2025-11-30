@@ -1,7 +1,8 @@
 import { DisplayMode, SolverStrategy } from "excalibur";
-import { loader, LevelResources } from "./resources";
-import { GameLevel } from "./game-level";
 import { GameEngine } from "./game-engine";
+import { LevelResources, loader } from "./resources";
+import { GameLevel } from "./scenes/game-level";
+import * as SceneManager from "./utilities/scene-manager";
 
 // const calculateExPixelConversion = (screen: ex.Screen) => {
 //   document.documentElement.style.setProperty(
@@ -25,16 +26,9 @@ const game = new GameEngine({
 //   calculateExPixelConversion(game.screen);
 // });
 
-await game
-  .start("start", {
-    loader,
-  })
-  .then(() => {
-    const level = LevelResources[0];
-    level.addToScene(game.currentScene);
-    if (game.currentScene instanceof GameLevel) {
-      game.currentScene.tiledLevel = level;
-    }
+await game.start(loader).then(async () => {
+  const firstScene = SceneManager.getFirstSceneData();
+  await SceneManager.goToScene(firstScene, game);
 
-    // calculateExPixelConversion(game.screen);
-  });
+  // calculateExPixelConversion(game.screen);
+});

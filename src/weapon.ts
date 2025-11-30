@@ -3,7 +3,7 @@ import { Actor, Engine, Entity, Logger } from "excalibur";
 import { Enemy } from "./enemy";
 import { GameActor } from "./game-actor";
 import { GameEngine } from "./game-engine";
-import { GameLevel } from "./game-level";
+import { GameLevel } from "./scenes/game-level";
 import { WeaponActor } from "./weapon-actor";
 
 export interface WeaponData {

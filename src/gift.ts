@@ -12,7 +12,7 @@ import {
 import { config } from "./config";
 import { GameActor, TiledCollision } from "./game-actor";
 import { GameEngine } from "./game-engine";
-import { GameLevel } from "./game-level";
+import { GameLevel } from "./scenes/game-level";
 
 export class Gift extends GameActor {
   offScreen: GiftOffScreenIndicator;

@@ -12,8 +12,8 @@ import {
 import { config } from "./config";
 import { GameActor } from "./game-actor";
 import { GameEngine } from "./game-engine";
-import { GameLevel } from "./game-level";
 import { Player } from "./player";
+import { GameLevel } from "./scenes/game-level";
 
 export class EnemyCorpse extends GameActor {
   pickedUpBy?: Player;

@@ -12,6 +12,7 @@ import {
   Logger,
   PointerButton,
   PointerType,
+  Scene,
   Side,
   vec,
   Vector,
@@ -25,10 +26,11 @@ import { config } from "./config";
 import { Enemy } from "./enemy";
 import { GameActor, TiledCollision } from "./game-actor";
 import { GameEngine } from "./game-engine";
-import { GameLevel } from "./game-level";
 import { Gift } from "./gift";
 import { Resources } from "./resources";
+import { GameLevel } from "./scenes/game-level";
 import { showElement } from "./utilities/html";
+import * as SceneManager from "./utilities/scene-manager";
 import { Weapon, WeaponData } from "./weapon";
 
 export interface CharacterData {
@@ -237,6 +239,12 @@ export class Player extends GameActor {
             });
           }
           break;
+
+        case Keys.R:
+          if (engine.input.keyboard.isHeld(Keys.ShiftLeft)) {
+            void SceneManager.reloadCurrentScene(engine);
+          }
+          break;
       }
     });
 
@@ -247,6 +255,9 @@ export class Player extends GameActor {
     engine.input.gamepads.on("disconnect", (evt) => {
       this.unhookGamepadEvents(evt.gamepad);
     });
+    for (const gamepad of engine.input.gamepads.getValidGamepads()) {
+      this.hookGamepadEvents(gamepad);
+    }
 
     engine.input.pointers.primary.on("down", (evt) => {
       // disable gamepad input
@@ -268,6 +279,9 @@ export class Player extends GameActor {
     });
 
     showElement(this.healthbarContainerElem);
+    if (this.scene instanceof GameLevel) {
+      this.scene.updateXpBar(this.xpComponent);
+    }
 
     if (this.characterData) {
       const weapon = Resources.WeaponData.data.find(
@@ -281,6 +295,18 @@ export class Player extends GameActor {
         this.giveWeapon(weapon);
       }
     }
+  }
+
+  unhookAllEvents(scene: Scene): void {
+    scene.engine.input.keyboard.off("hold");
+    scene.engine.input.keyboard.off("press");
+    scene.engine.input.gamepads.off("connect");
+    scene.engine.input.gamepads.off("disconnect");
+    for (const gamepad of scene.engine.input.gamepads.getValidGamepads()) {
+      this.unhookGamepadEvents(gamepad);
+    }
+    scene.engine.input.pointers.primary.off("down");
+    scene.engine.input.pointers.primary.off("up");
   }
 
   hookGamepadEvents(gamepad: Gamepad): void {
@@ -353,7 +379,7 @@ export class Player extends GameActor {
   }
 
   override onPreUpdate(engine: Engine, elapsedMs: number): void {
-    // Put any update logic here runs every frame before Actor builtins
+    super.onPreUpdate(engine, elapsedMs);
   }
 
   override onPostUpdate(engine: Engine, elapsedMs: number): void {

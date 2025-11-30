@@ -58,6 +58,11 @@ body {
   right: 0;
 }
 
+.abscenter {
+  left: 50%;
+  transform: translateX(-50%);
+}
+
 .text-start {
   text-align: start;
 }
@@ -109,6 +114,18 @@ body {
 
 .red {
   color: red;
+}
+
+.z-100 {
+  z-index: 100;
+}
+
+.t-50 {
+  top: 50%;
+}
+
+.m-5vw {
+  margin-top: 5vw;
 }
 
 #xp-bar {

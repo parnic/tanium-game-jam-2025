@@ -13,8 +13,8 @@ import { EnemyCorpse } from "./enemy-corpse";
 import { EnemyData } from "./enemy-data";
 import { GameActor } from "./game-actor";
 import { GameEngine } from "./game-engine";
-import { GameLevel } from "./game-level";
 import { Player } from "./player";
+import { GameLevel } from "./scenes/game-level";
 
 export class Enemy extends GameActor {
   addedInWave = 0;

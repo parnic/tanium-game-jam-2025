@@ -1,5 +1,5 @@
 import { Engine } from "excalibur";
-import { GameLevel } from "./game-level";
+import { GameLevel } from "./scenes/game-level";
 
 export class GameEngine extends Engine {
   playersOnly = false;
