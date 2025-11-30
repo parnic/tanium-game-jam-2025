@@ -1,11 +1,18 @@
 import { TiledResource } from "@excaliburjs/plugin-tiled";
-import { FontSource, Loader } from "excalibur";
+import { FontSource, Loader, Resource } from "excalibur";
 import { config } from "./config";
+import { CharacterData } from "./player";
+import { WeaponData } from "./weapon";
 
 export const Resources = {
   FontSilkscreen: new FontSource(
     "./fonts/Silkscreen-Regular.ttf",
     "Silkscreen",
+  ),
+  WeaponData: new Resource<WeaponData[]>("./data/weapons.json", "json"),
+  CharacterData: new Resource<CharacterData[]>(
+    "./data/characters.json",
+    "json",
   ),
 } as const;
 

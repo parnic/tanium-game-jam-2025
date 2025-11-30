@@ -1,3 +1,4 @@
+import { Tile } from "@excaliburjs/plugin-tiled";
 import {
   Animation,
   Axes,
@@ -15,20 +16,25 @@ import {
   vec,
   Vector,
 } from "excalibur";
-import { Tile } from "@excaliburjs/plugin-tiled";
-import { GameLevel } from "./game-level";
-import { GameActor, TiledCollision } from "./game-actor";
-import { Enemy } from "./enemy";
-import { config } from "./config";
-import { showElement } from "./utilities/html";
-import { Gift } from "./gift";
-import { Weapon } from "./weapon";
-import { GameEngine } from "./game-engine";
 import {
   GainedXpEvent,
   LeveledUpEvent,
   XpComponent,
 } from "./components/xp-component";
+import { config } from "./config";
+import { Enemy } from "./enemy";
+import { GameActor, TiledCollision } from "./game-actor";
+import { GameEngine } from "./game-engine";
+import { GameLevel } from "./game-level";
+import { Gift } from "./gift";
+import { Resources } from "./resources";
+import { showElement } from "./utilities/html";
+import { Weapon, WeaponData } from "./weapon";
+
+export interface CharacterData {
+  name: string;
+  startingWeapon: string;
+}
 
 // Actors are the main unit of composition you'll likely use, anything that you want to draw and move around the screen
 // is likely built with an actor
@@ -56,11 +62,12 @@ export class Player extends GameActor {
   xpComponent: XpComponent;
   weapons: Weapon[] = [];
   pickupDistanceSq = 200 * 200;
+  characterData?: CharacterData;
 
   healthbarContainerElem: HTMLElement;
   healthbarElem: HTMLElement;
 
-  constructor(inPos: Vector, tile: Tile) {
+  constructor(inPos: Vector, tile: Tile, characterName: string) {
     super({
       // Giving your actor a name is optional, but helps in debugging using the dev tools or debug mode
       // https://github.com/excaliburjs/excalibur-extension/
@@ -73,6 +80,15 @@ export class Player extends GameActor {
       collisionType: CollisionType.Active,
       collisionDef: new TiledCollision(tile),
     });
+
+    this.characterData = Resources.CharacterData.data.find(
+      (d) => d.name === characterName,
+    );
+    if (!this.characterData) {
+      Logger.getInstance().error(
+        `Unable to locate CharacterData for chosen character ${characterName}`,
+      );
+    }
 
     this.z = config.ZIndexCharacter;
     this._speed = 0.4;
@@ -123,12 +139,12 @@ export class Player extends GameActor {
     this.scene.updateXpBar(this.xpComponent);
   }
 
-  giveWeapon(name: string) {
+  giveWeapon(weaponData: WeaponData) {
     if (!(this.scene instanceof GameLevel)) {
       return;
     }
 
-    const weapon = new Weapon(name, this.scene.tiledLevel, this);
+    const weapon = new Weapon(weaponData, this.scene.tiledLevel, this);
     this.scene.add(weapon);
     this.weapons.push(weapon);
   }
@@ -253,8 +269,18 @@ export class Player extends GameActor {
 
     showElement(this.healthbarContainerElem);
 
-    // todo: temp - determine starting weapon differently
-    this.giveWeapon("rocket-small");
+    if (this.characterData) {
+      const weapon = Resources.WeaponData.data.find(
+        (w) => w.name === this.characterData!.startingWeapon,
+      );
+      if (!weapon) {
+        Logger.getInstance().error(
+          `Unable to give starting weapon ${this.characterData.startingWeapon} because no matching weapon data could be found.`,
+        );
+      } else {
+        this.giveWeapon(weapon);
+      }
+    }
   }
 
   hookGamepadEvents(gamepad: Gamepad): void {

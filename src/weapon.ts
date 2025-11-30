@@ -1,26 +1,34 @@
 import { Tile, TiledResource } from "@excaliburjs/plugin-tiled";
-import { Engine, Entity, Logger } from "excalibur";
-import { WeaponActor } from "./weapon-actor";
-import { GameLevel } from "./game-level";
+import { Actor, Engine, Entity, Logger } from "excalibur";
 import { Enemy } from "./enemy";
-import { GameEngine } from "./game-engine";
 import { GameActor } from "./game-actor";
+import { GameEngine } from "./game-engine";
+import { GameLevel } from "./game-level";
+import { WeaponActor } from "./weapon-actor";
+
+export interface WeaponData {
+  name: string;
+  baseSpeed: number;
+  baseDamage: number;
+  baseSpawnIntervalMs: number;
+  spawnBehavior: "targetNearestEnemy" | undefined;
+  targetBehavior: "tracking" | undefined;
+}
 
 export class Weapon extends Entity {
-  weaponName: string;
   level: TiledResource;
   tile?: Tile;
-  spawnIntervalMs = 0;
   lastSpawnedTimeMs?: number;
   aliveTime = 0;
   owner: GameActor;
+  definition: WeaponData;
 
-  constructor(name: string, level: TiledResource, owner: GameActor) {
+  constructor(data: WeaponData, level: TiledResource, owner: GameActor) {
     super({
-      name: `weapon-${name}`,
+      name: `weapon-${data.name}`,
     });
 
-    this.weaponName = name;
+    this.definition = data;
     this.level = level;
     this.owner = owner;
   }
@@ -33,16 +41,15 @@ export class Weapon extends Entity {
       .map((t) => t.getTilesByClassName("weapon"))
       .flat();
     const weaponTile = weapons.find(
-      (w) => w.properties.get("name") === this.weaponName,
+      (w) => w.properties.get("name") === this.definition.name,
     );
     if (!weaponTile) {
       Logger.getInstance().error(
-        `Unable to find weapon by name ${this.weaponName}`,
+        `Unable to find weapon by name ${this.definition.name}`,
       );
     }
 
     this.tile = weaponTile;
-    this.spawnIntervalMs = 1000; // todo: get from somewhere
   }
 
   override onPostUpdate(engine: Engine, elapsedMs: number): void {
@@ -59,7 +66,8 @@ export class Weapon extends Entity {
 
     if (
       this.lastSpawnedTimeMs &&
-      this.lastSpawnedTimeMs + this.spawnIntervalMs > this.aliveTime
+      this.lastSpawnedTimeMs + this.definition.baseSpawnIntervalMs >
+        this.aliveTime
     ) {
       return;
     }
@@ -91,18 +99,15 @@ export class Weapon extends Entity {
       return;
     }
 
-    const closestEnemy = this.getNearestLivingEnemy(engine.currentScene);
-    // todo: this behavior should probably be data-driven. some weapons don't need a target enemy,
-    // some probably won't want to always target the nearest, etc.
-    if (!closestEnemy) {
-      return;
+    let target: Actor | undefined = undefined;
+    if (this.definition.spawnBehavior === "targetNearestEnemy") {
+      target = this.getNearestLivingEnemy(engine.currentScene);
+      if (!target) {
+        return;
+      }
     }
 
-    const weapon = new WeaponActor(this.weaponName, this.tile, this.owner);
-    weapon.pos = this.owner.pos;
-    weapon.direction = closestEnemy.pos.sub(this.owner.pos).normalize();
-    weapon.rotation = weapon.direction.toAngle() + Math.PI / 2;
-
+    const weapon = new WeaponActor(this, target);
     engine.currentScene.add(weapon);
     this.lastSpawnedTimeMs = this.aliveTime;
   }

@@ -1,6 +1,5 @@
-import { Tile } from "@excaliburjs/plugin-tiled";
-import { GameActor, TiledCollision } from "./game-actor";
 import {
+  Actor,
   Animation,
   Collider,
   CollisionContact,
@@ -9,30 +8,39 @@ import {
   Side,
   Vector,
 } from "excalibur";
-import { Enemy } from "./enemy";
 import { config } from "./config";
+import { Enemy } from "./enemy";
+import { GameActor, TiledCollision } from "./game-actor";
 import { GameEngine } from "./game-engine";
 import { Player } from "./player";
+import { Weapon } from "./weapon";
 
 export class WeaponActor extends GameActor {
   static weaponCounter = new Uint32Array([1]);
   direction = Vector.Zero;
-  damage = 5; // tmp
+  damage: number;
   instigator: GameActor;
+  weapon: Weapon;
+  target?: Actor;
 
-  constructor(name: string, tile: Tile, instigator: GameActor) {
+  constructor(weapon: Weapon, target?: Actor) {
     const myNum = Atomics.add(WeaponActor.weaponCounter, 0, 1);
+    const tile = weapon.tile!;
     super({
-      name: `${name}-${myNum.toString()}`,
+      name: `${weapon.name}-${myNum.toString()}`,
       width: tile.tileset.tileWidth,
       height: tile.tileset.tileHeight,
       collisionType: CollisionType.Passive,
       collisionDef: new TiledCollision(tile),
     });
 
-    this.instigator = instigator;
+    this.weapon = weapon;
+    this.target = target;
+    this.pos = this.weapon.owner.pos;
+    this.instigator = weapon.owner;
     this.z = config.ZIndexWeapon;
-    this._speed = 1;
+    this._speed = weapon.definition.baseSpeed;
+    this.damage = weapon.definition.baseDamage;
     if (tile.animation.length) {
       this.walk = new Animation({
         frames: tile.animation.map((anim) => {
@@ -49,6 +57,17 @@ export class WeaponActor extends GameActor {
 
   override onInitialize(engine: Engine): void {
     super.onInitialize(engine);
+
+    this.conditionalUpdateTarget();
+  }
+
+  conditionalUpdateTarget() {
+    if (!this.target) {
+      return;
+    }
+
+    this.direction = this.target.pos.sub(this.pos).normalize();
+    this.rotation = this.direction.toAngle() + Math.PI / 2;
   }
 
   override onPostUpdate(engine: Engine, elapsedMs: number): void {
@@ -64,8 +83,10 @@ export class WeaponActor extends GameActor {
       return;
     }
 
-    // todo: some weapons will probably want to track their target,
-    // others won't have a constant direction
+    if (this.weapon.definition.targetBehavior === "tracking") {
+      this.conditionalUpdateTarget();
+    }
+
     this.currMove = this.direction;
     super.onPostUpdate(engine, elapsedMs);
   }

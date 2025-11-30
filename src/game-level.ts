@@ -1,3 +1,4 @@
+import { TiledResource } from "@excaliburjs/plugin-tiled";
 import {
   Actor,
   BoundingBox,
@@ -11,16 +12,15 @@ import {
   vec,
   Vector,
 } from "excalibur";
-import { Enemy } from "./enemy";
-import { Player } from "./player";
-import { EnemyData } from "./enemy-data";
-import { rand } from "./utilities/math";
-import { Gift } from "./gift";
-import { TiledResource } from "@excaliburjs/plugin-tiled";
-import { GameEngine } from "./game-engine";
-import { EnemyCorpse } from "./enemy-corpse";
-import { hideElement, showElement } from "./utilities/html";
 import { XpComponent } from "./components/xp-component";
+import { Enemy } from "./enemy";
+import { EnemyCorpse } from "./enemy-corpse";
+import { EnemyData } from "./enemy-data";
+import { GameEngine } from "./game-engine";
+import { Gift } from "./gift";
+import { Player } from "./player";
+import { hideElement, showElement } from "./utilities/html";
+import { rand } from "./utilities/math";
 
 interface Ramp {
   wave: number;
@@ -147,8 +147,18 @@ export class GameLevel extends Scene {
       (ch) => ch.getTilesByClassName("player").length > 0,
     );
 
-    const playerTile = playerTileset?.getTilesByClassName("player")[0];
-    this.player = new Player(playerStartActor.pos, playerTile!);
+    const playerTiles = playerTileset?.getTilesByClassName("player");
+    const chosenCharacter = "purple"; // todo: have user choose in ui
+    const playerTile = playerTiles?.find(
+      (t) => t.properties.get("name") === chosenCharacter,
+    );
+    if (!playerTile) {
+      Logger.getInstance().error(
+        `Unable to spawn chosen player ${chosenCharacter} - no tile found with that name set.`,
+      );
+      return;
+    }
+    this.player = new Player(playerStartActor.pos, playerTile, chosenCharacter);
     this.add(this.player);
   }
 
