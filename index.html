@@ -11,34 +11,33 @@
 
 <body>
   <script type="module" src="./src/main.ts"></script>
-  <div>
-    <span id="gift-counter" class="outline outline-03 fs-3 absolute text-start w-100" />
-  </div>
-  <div>
-    <span id="round-timer" class="outline outline-03 fs-3 absolute text-center w-100" />
-  </div>
-  <div>
-    <span id="kill-counter" class="outline outline-03 fs-3 absolute text-end w-100" />
-  </div>
-  <div>
-    <div id="xp-bar" class="absolute w-100 hide">
-      <div id="xp-value">
-        <span id="xp-label" class="outline outline-01 absolute text-center w-100">1</span>
+  <main>
+    <canvas id="game"></canvas>
+    <div id="ui-root" class="hide p-relative excalibur-scale w-100 d-inline-block pe-none">
+      <div class="d-flex justify-space-between fs-3 outline outline-03 m-1vw">
+        <span id="gift-counter"></span>
+        <span id="round-timer"></span>
+        <span id="kill-counter"></span>
+      </div>
+      <div id="xp-bar" class="hide ml-2vw mr-2vw">
+        <div id="xp-value">
+          <span id="xp-label" class="outline outline-01 absolute text-center w-100">1</span>
+        </div>
       </div>
     </div>
-  </div>
-  <div id="pause-text" class="absolute hide fs-10 outline outline-03 text-center w-100 h-100 vcenter red">
-    PAUSED
-  </div>
-  <div id="you-died">
-    <div id="you-died-text" class="absolute hide fs-10 outline outline-03 text-center w-100 h-100 vcenter red z-100">
-      YOU DIED
+    <div id="pause-text" class="absolute hide fs-10 outline outline-03 text-center w-100 h-100 vcenter red pe-none">
+      PAUSED
     </div>
-    <button id="restart" class="absolute hide abscenter t-50 m-5vw z-100">Restart</button>
-  </div>
-  <div id="player-healthbar-container" class="hide absolute">
-    <div id="player-healthbar" class="bg-red" />
-  </div>
+    <div id="you-died">
+      <div id="you-died-text" class="absolute hide fs-10 outline outline-03 text-center w-100 h-100 vcenter red z-100">
+        YOU DIED
+      </div>
+      <button id="restart" class="absolute hide abscenter t-50 mt-5vw z-100">Restart</button>
+    </div>
+    <div id="player-healthbar-container" class="hide absolute pe-none">
+      <div id="player-healthbar" class="bg-red" />
+    </div>
+  </main>
 </body>
 
 </html>

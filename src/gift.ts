@@ -81,9 +81,15 @@ export class GiftOffScreenIndicator extends ScreenElement {
     super({
       width: background.tileset.tileWidth,
       height: background.tileset.tileHeight,
-      scale: Vector.Half,
+      // scale: Vector.Half,
       z: config.ZIndexScreenElements,
     });
+
+    // do not pass this into the super args. doing so causes the given height and width to get reduced *twice*
+    // instead of once, so passing in a width of 128 ends up setting the width to 32 instead of 64 when using a canvas.
+    // setting it here instead avoids that issue.
+    // i've reported this to Excalibur's Discord with a repro.
+    this.scale = Vector.Half;
 
     this.gift = gift;
     this.overlay = new Actor({

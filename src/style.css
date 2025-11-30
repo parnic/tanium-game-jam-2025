@@ -15,6 +15,13 @@ span {
   -webkit-user-select: none !important;
 }
 
+#game {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
 html,
 body,
 main {
@@ -37,6 +44,26 @@ body {
 
 .absolute {
   position: absolute;
+}
+
+.p-relative {
+  position: relative;
+}
+
+.d-inline-block {
+  display: inline-block;
+}
+
+.d-flex {
+  display: flex;
+}
+
+.justify-space-between {
+  justify-content: space-between;
+}
+
+.pe-none {
+  pointer-events: none;
 }
 
 #player-healthbar-container {
@@ -124,7 +151,19 @@ body {
   top: 50%;
 }
 
-.m-5vw {
+.m-1vw {
+  margin: 1vw;
+}
+
+.ml-2vw {
+  margin-left: 2vw;
+}
+
+.mr-2vw {
+  margin-right: 2vw;
+}
+
+.mt-5vw {
   margin-top: 5vw;
 }
 
@@ -133,8 +172,6 @@ body {
   height: 15px;
   left: 0;
   right: 0;
-  width: 90vw;
-  margin: auto;
   background-color: #333;
   opacity: 80%;
   padding: 2px;

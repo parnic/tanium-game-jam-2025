@@ -19,7 +19,12 @@ import { EnemyData } from "../enemy-data";
 import { GameEngine } from "../game-engine";
 import { Gift } from "../gift";
 import { Player } from "../player";
-import { hideElement, showElement, showOrHideElement } from "../utilities/html";
+import {
+  hideElement,
+  showElement,
+  showOrHideElement,
+  unhideElement,
+} from "../utilities/html";
 import { rand } from "../utilities/math";
 import * as SceneManager from "../utilities/scene-manager";
 
@@ -52,6 +57,7 @@ export class GameLevel extends Scene {
   gifts: Gift[] = [];
   xpPickups: (EnemyCorpse | undefined)[] = [];
   lastTime = 0;
+  elemUIRoot: HTMLElement;
   elemTimer: HTMLElement;
   elemGiftCounter: HTMLElement;
   elemKillCounter: HTMLElement;
@@ -66,6 +72,7 @@ export class GameLevel extends Scene {
     super();
 
     this.tiledLevel = level;
+    this.elemUIRoot = document.getElementById("ui-root")!;
     this.elemTimer = document.getElementById("round-timer")!;
     this.elemGiftCounter = document.getElementById("gift-counter")!;
     this.elemKillCounter = document.getElementById("kill-counter")!;
@@ -94,6 +101,7 @@ export class GameLevel extends Scene {
     this.initializeEnemies();
     this.initializeObjectives();
     showElement(this.elemXpBar);
+    unhideElement(this.elemUIRoot);
   }
 
   updateXpBar(xpComp: XpComponent) {
