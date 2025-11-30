@@ -34,7 +34,8 @@ export type GameActorArgs = ActorArgs & {
 };
 
 export abstract class GameActor extends Actor {
-  protected currMove = Vector.Zero;
+  protected _currMove = Vector.Zero;
+  private _lastMove = Vector.Zero;
   protected _speed = 0.4;
   protected _spriteFacing = Vector.Left;
   protected walk?: Animation;
@@ -49,6 +50,17 @@ export abstract class GameActor extends Actor {
   private _isDemigodMode = false;
   protected lastDamagedByPlayer = false;
   protected aliveTime = 0;
+
+  protected get currMove() {
+    return this._currMove;
+  }
+
+  protected set currMove(dir: Vector) {
+    this._currMove = dir;
+    if (!dir.equals(Vector.Zero)) {
+      this._lastMove = dir;
+    }
+  }
 
   public get activeGraphic(): Graphic | undefined {
     return this.walk ?? this.staticImage;
@@ -77,6 +89,10 @@ export abstract class GameActor extends Actor {
 
   public get healthPercent(): number {
     return this._health / this._maxHealth;
+  }
+
+  public get moveDir(): Vector {
+    return this._lastMove;
   }
 
   protected get isGodMode(): boolean {
@@ -186,7 +202,7 @@ export abstract class GameActor extends Actor {
       this.graphics.flipHorizontal =
         Math.sign(this.currMove.x) != Math.sign(this.facing.x);
     }
-    this.currMove = Vector.Zero;
+    this._currMove = Vector.Zero;
   }
 
   takeDamage(

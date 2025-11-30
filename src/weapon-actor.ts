@@ -17,11 +17,16 @@ import { Weapon } from "./weapon";
 
 export class WeaponActor extends GameActor {
   static weaponCounter = new Uint32Array([1]);
-  direction = Vector.Zero;
+  _direction = Vector.Zero;
   damage: number;
   instigator: GameActor;
   weapon: Weapon;
   target?: Actor;
+
+  private set direction(dir: Vector) {
+    this._direction = dir;
+    this.rotation = dir.toAngle() + Math.PI / 2;
+  }
 
   constructor(weapon: Weapon, target?: Actor) {
     const myNum = Atomics.add(WeaponActor.weaponCounter, 0, 1);
@@ -30,17 +35,18 @@ export class WeaponActor extends GameActor {
       name: `${weapon.name}-${myNum.toString()}`,
       width: tile.tileset.tileWidth,
       height: tile.tileset.tileHeight,
+      pos: weapon.owner.pos,
+      z: config.ZIndexWeapon,
       collisionType: CollisionType.Passive,
       collisionDef: new TiledCollision(tile),
     });
 
     this.weapon = weapon;
     this.target = target;
-    this.pos = this.weapon.owner.pos;
     this.instigator = weapon.owner;
-    this.z = config.ZIndexWeapon;
     this._speed = weapon.definition.baseSpeed;
     this.damage = weapon.definition.baseDamage;
+
     if (tile.animation.length) {
       this.walk = new Animation({
         frames: tile.animation.map((anim) => {
@@ -59,6 +65,12 @@ export class WeaponActor extends GameActor {
     super.onInitialize(engine);
 
     this.conditionalUpdateTarget();
+
+    if (this.weapon.definition.spawnBehavior === "ownerFacing") {
+      this.direction = !this.instigator.moveDir.equals(Vector.Zero)
+        ? this.instigator.moveDir.normalize()
+        : Vector.Right;
+    }
   }
 
   conditionalUpdateTarget() {
@@ -67,7 +79,6 @@ export class WeaponActor extends GameActor {
     }
 
     this.direction = this.target.pos.sub(this.pos).normalize();
-    this.rotation = this.direction.toAngle() + Math.PI / 2;
   }
 
   override onPostUpdate(engine: Engine, elapsedMs: number): void {
@@ -88,7 +99,7 @@ export class WeaponActor extends GameActor {
       this.conditionalUpdateTarget();
     }
 
-    this.currMove = this.direction;
+    this.currMove = this._direction;
     super.onPostUpdate(engine, elapsedMs);
   }
 

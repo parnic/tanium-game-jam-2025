@@ -5,5 +5,12 @@
     "baseDamage": 2,
     "baseSpawnIntervalMs": 1000,
     "spawnBehavior": "targetNearestEnemy"
+  },
+  {
+    "name": "bullet-circle",
+    "baseSpeed": 1,
+    "baseDamage": 2,
+    "baseSpawnIntervalMs": 1000,
+    "spawnBehavior": "ownerFacing"
   }
 ]
