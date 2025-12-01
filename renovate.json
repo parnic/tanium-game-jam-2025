@@ -1,5 +1,5 @@
 {
-  "extends": ["config:base"],
+  "extends": ["config:recommended"],
   "commitMessagePrefix": "chore:",
   "automerge": true,
   "major": {
