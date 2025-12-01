@@ -124,6 +124,8 @@ jobs:
     name: GitHub Pages deploy
     needs: build-pages
     runs-on: ubuntu-latest
+    concurrency:
+      group: deploy
     permissions:
       id-token: write
       contents: write
@@ -145,6 +147,8 @@ jobs:
     name: Itch.io deploy web-playable version
     needs: ci
     runs-on: ubuntu-latest
+    concurrency:
+      group: itchio-deploy-html
     permissions:
       contents: read
     if: github.ref == 'refs/heads/main' && success()
