@@ -79,15 +79,13 @@ export class GameLevel extends Scene {
     this.elemXpBar = document.getElementById("xp-bar")!;
     this.elemXpLabel = document.getElementById("xp-label")!;
     this.elemPause = document.getElementById("pause-text")!;
-    this.elemGameOver = document.getElementById("you-died-text")!;
+    this.elemGameOver = document.getElementById("you-died")!;
     this.elemRestart = document.getElementById("restart")!;
-
-    hideElement(this.elemGameOver);
-    hideElement(this.elemRestart);
   }
 
   private _restartClickHandler = () => {
     void SceneManager.reloadCurrentScene(this.engine);
+    hideElement(this.elemGameOver);
   };
 
   override onInitialize(engine: Engine): void {
@@ -100,8 +98,6 @@ export class GameLevel extends Scene {
     this.initializePlayer();
     this.initializeEnemies();
     this.initializeObjectives();
-    showElement(this.elemXpBar);
-    unhideElement(this.elemUIRoot);
   }
 
   updateXpBar(xpComp: XpComponent) {
@@ -173,7 +169,6 @@ export class GameLevel extends Scene {
     this.player = new Player(playerStartActor.pos, playerTile, chosenCharacter);
     this.player.on("postkill", () => {
       showElement(this.elemGameOver);
-      showElement(this.elemRestart);
     });
     this.add(this.player);
   }
@@ -244,6 +239,7 @@ export class GameLevel extends Scene {
     // Called when Excalibur transitions to this scene
     // Only 1 scene is active at a time
 
+    unhideElement(this.elemUIRoot);
     this.elemRestart.addEventListener("click", this._restartClickHandler);
 
     // set the camera to the player's position before making it elastic to avoid
@@ -289,7 +285,7 @@ export class GameLevel extends Scene {
     this.elemKillCounter.innerText = "";
     this.elemGiftCounter.innerText = "";
     this.elemTimer.innerText = "";
-    hideElement(this.elemXpBar);
+    hideElement(this.elemUIRoot);
 
     this.player?.unhookAllEvents(this);
     this.elemRestart.removeEventListener("click", this._restartClickHandler);

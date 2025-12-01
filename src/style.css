@@ -46,6 +46,10 @@ body {
   position: absolute;
 }
 
+.top-0 {
+  top: 0;
+}
+
 .p-relative {
   position: relative;
 }
@@ -60,6 +64,10 @@ body {
 
 .justify-space-between {
   justify-content: space-between;
+}
+
+.justify-center {
+  justify-content: center;
 }
 
 .pe-none {
@@ -77,17 +85,6 @@ body {
 #player-healthbar {
   height: 100%;
   width: var(--healthPercent);
-}
-
-.center {
-  margin: 0 auto;
-  left: 0;
-  right: 0;
-}
-
-.abscenter {
-  left: 50%;
-  transform: translateX(-50%);
 }
 
 .text-start {
@@ -130,8 +127,7 @@ body {
   height: 100%;
 }
 
-.vcenter {
-  display: grid;
+.align-items-center {
   align-items: center;
 }
 

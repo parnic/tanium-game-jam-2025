@@ -19,20 +19,24 @@
         <span id="round-timer"></span>
         <span id="kill-counter"></span>
       </div>
-      <div id="xp-bar" class="hide ml-2vw mr-2vw">
+      <div id="xp-bar" class="ml-2vw mr-2vw">
         <div id="xp-value">
           <span id="xp-label" class="outline outline-01 absolute text-center w-100">1</span>
         </div>
       </div>
     </div>
-    <div id="pause-text" class="absolute hide fs-10 outline outline-03 text-center w-100 h-100 vcenter red pe-none">
+    <div id="pause-text" class="absolute top-0 hide fs-10 outline outline-03 h-100 w-100 d-flex align-items-center justify-center red pe-none">
       PAUSED
     </div>
-    <div id="you-died">
-      <div id="you-died-text" class="absolute hide fs-10 outline outline-03 text-center w-100 h-100 vcenter red z-100">
-        YOU DIED
+    <div id="you-died" class="absolute top-0 hide w-100 h-100 w-100 d-flex align-items-center justify-center">
+      <div>
+        <div id="you-died-text" class="fs-10 outline outline-03 text-center red">
+          YOU DIED
+        </div>
+        <div class="w-100 text-center">
+          <button id="restart">Restart</button>
+        </div>
       </div>
-      <button id="restart" class="absolute hide abscenter t-50 mt-5vw z-100">Restart</button>
     </div>
     <div id="player-healthbar-container" class="hide absolute pe-none">
       <div id="player-healthbar" class="bg-red" />
