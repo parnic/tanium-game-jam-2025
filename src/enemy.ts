@@ -1,16 +1,16 @@
 import {
   Animation,
-  Collider,
-  CollisionContact,
+  type Collider,
+  type CollisionContact,
   CollisionType,
-  Engine,
-  Scene,
-  Side,
+  type Engine,
+  type Scene,
+  type Side,
   Vector,
 } from "excalibur";
 import { config } from "./config";
 import { EnemyCorpse } from "./enemy-corpse";
-import { EnemyData } from "./enemy-data";
+import type { EnemyData } from "./enemy-data";
 import { GameActor } from "./game-actor";
 import { GameEngine } from "./game-engine";
 import { Player } from "./player";

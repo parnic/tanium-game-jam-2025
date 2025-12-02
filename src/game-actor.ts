@@ -1,16 +1,16 @@
-import { Tile } from "@excaliburjs/plugin-tiled";
+import type { Tile } from "@excaliburjs/plugin-tiled";
 import {
   Actor,
-  ActorArgs,
-  Animation,
+  type ActorArgs,
+  type Animation,
   Color,
-  Engine,
-  Graphic,
+  type Engine,
+  type Graphic,
   Logger,
-  Material,
+  type Material,
   Shape,
-  vec,
   Vector,
+  vec,
 } from "excalibur";
 
 export class TiledCollision {
@@ -200,7 +200,7 @@ export abstract class GameActor extends Actor {
 
     if (this.currMove.x !== 0) {
       this.graphics.flipHorizontal =
-        Math.sign(this.currMove.x) != Math.sign(this.facing.x);
+        Math.sign(this.currMove.x) !== Math.sign(this.facing.x);
     }
     this._currMove = Vector.Zero;
   }

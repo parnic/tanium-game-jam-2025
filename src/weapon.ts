@@ -1,7 +1,7 @@
-import { Tile, TiledResource } from "@excaliburjs/plugin-tiled";
-import { Actor, Engine, Entity, Logger } from "excalibur";
-import { Enemy } from "./enemy";
-import { GameActor } from "./game-actor";
+import type { Tile, TiledResource } from "@excaliburjs/plugin-tiled";
+import { type Actor, type Engine, Entity, Logger } from "excalibur";
+import type { Enemy } from "./enemy";
+import type { GameActor } from "./game-actor";
 import { GameEngine } from "./game-engine";
 import { GameLevel } from "./scenes/game-level";
 import { WeaponActor } from "./weapon-actor";
@@ -37,9 +37,9 @@ export class Weapon extends Entity {
     const weaponsTilesets = this.level
       .getTilesetByProperty("has-weapons")
       .filter((t) => t.properties.get("has-weapons") === true);
-    const weapons = weaponsTilesets
-      .map((t) => t.getTilesByClassName("weapon"))
-      .flat();
+    const weapons = weaponsTilesets.flatMap((t) =>
+      t.getTilesByClassName("weapon"),
+    );
     const weaponTile = weapons.find(
       (w) => w.properties.get("name") === this.definition.name,
     );
@@ -76,7 +76,7 @@ export class Weapon extends Entity {
   }
 
   getNearestLivingEnemy(level: GameLevel): Enemy | undefined {
-    let closestEnemy: Enemy | undefined = undefined;
+    let closestEnemy: Enemy | undefined;
     for (const e of level.enemies) {
       if (e.isKilled()) {
         continue;
@@ -99,7 +99,7 @@ export class Weapon extends Entity {
       return;
     }
 
-    let target: Actor | undefined = undefined;
+    let target: Actor | undefined;
     if (this.definition.spawnBehavior === "targetNearestEnemy") {
       target = this.getNearestLivingEnemy(engine.currentScene);
       if (!target) {

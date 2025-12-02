@@ -1,5 +1,5 @@
-import { Tile } from "@excaliburjs/plugin-tiled";
-import { Frame, Graphic } from "excalibur";
+import type { Tile } from "@excaliburjs/plugin-tiled";
+import type { Frame, Graphic } from "excalibur";
 import { TiledCollision } from "./game-actor";
 
 export class EnemyData {

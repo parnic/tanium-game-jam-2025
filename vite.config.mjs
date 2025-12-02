@@ -14,7 +14,7 @@ const tiledPlugin = () => {
       order: "pre",
       handler(sourceId, importer, options) {
         if (!sourceId.endsWith(".tsx")) return;
-        return { id: "tileset:" + sourceId, external: "relative" };
+        return { id: `tileset:${sourceId}`, external: "relative" };
       },
     },
   };

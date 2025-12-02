@@ -1,20 +1,20 @@
-import { TiledResource } from "@excaliburjs/plugin-tiled";
+import type { TiledResource } from "@excaliburjs/plugin-tiled";
 import {
   Actor,
   BoundingBox,
   clamp,
-  DefaultLoader,
-  Engine,
-  ExcaliburGraphicsContext,
+  type DefaultLoader,
+  type Engine,
+  type ExcaliburGraphicsContext,
   Logger,
   Scene,
-  SceneActivationContext,
-  vec,
+  type SceneActivationContext,
   Vector,
+  vec,
 } from "excalibur";
-import { XpComponent } from "../components/xp-component";
+import type { XpComponent } from "../components/xp-component";
 import { Enemy } from "../enemy";
-import { EnemyCorpse } from "../enemy-corpse";
+import type { EnemyCorpse } from "../enemy-corpse";
 import { EnemyData } from "../enemy-data";
 import { GameEngine } from "../game-engine";
 import { Gift } from "../gift";

@@ -1,13 +1,13 @@
-import { Tile } from "@excaliburjs/plugin-tiled";
+import type { Tile } from "@excaliburjs/plugin-tiled";
 import {
   Actor,
   Animation,
   CollisionType,
-  Engine,
-  Scene,
+  type Engine,
+  type Scene,
   ScreenElement,
-  vec,
   Vector,
+  vec,
 } from "excalibur";
 import { config } from "./config";
 import { GameActor, TiledCollision } from "./game-actor";

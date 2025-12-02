@@ -1,8 +1,8 @@
+import { execFile } from "node:child_process";
+import fs from "node:fs";
+import process from "node:process";
+import { promisify } from "node:util";
 import * as core from "@actions/core";
-import fs from "fs";
-import process from "process";
-import { execFile } from "child_process";
-import { promisify } from "util";
 
 const butlerPath = core.getInput("butler");
 if (!fs.existsSync(butlerPath)) {
@@ -50,26 +50,31 @@ const options = {
 };
 
 const promises = [];
-uploadFiles.forEach(f => {
-  const extension = f.split('.').pop();
+uploadFiles.forEach((f) => {
+  const extension = f.split(".").pop();
   const args = ["push", f, `${project}:${channel}-${extension}`];
   if (version) {
     args.concat(["--userversion", version]);
   }
   core.info(`From ${process.cwd()}, Running ${butlerPath} ${args.join(" ")}`);
   const promise = promisify(execFile);
-  const promisedUpload = promise(butlerPath, args, options, (error, stdout, stderr) => {
-    if (error) {
-      core.warning(`execFile error: ${error}`);
-    }
+  const promisedUpload = promise(
+    butlerPath,
+    args,
+    options,
+    (error, stdout, stderr) => {
+      if (error) {
+        core.warning(`execFile error: ${error}`);
+      }
 
-    core.info(`stdout: ${stdout}`);
-    core.warning(`stderr: ${stderr}`);
-  });
+      core.info(`stdout: ${stdout}`);
+      core.warning(`stderr: ${stderr}`);
+    },
+  );
   promises.push(promisedUpload);
 });
 
-Promise.allSettled(promises).then(results => {
+Promise.allSettled(promises).then((results) => {
   core.info("All Butler calls complete:");
   core.info(results);
 });

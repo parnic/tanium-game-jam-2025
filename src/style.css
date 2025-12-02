@@ -13,6 +13,7 @@ div,
 span {
   -webkit-touch-callout: none !important;
   -webkit-user-select: none !important;
+  user-select: none !important;
 }
 
 #game {
@@ -29,7 +30,7 @@ main {
 }
 
 body {
-  font-family: "Silkscreen";
+  font-family: Silkscreen, sans-serif;
   color: #dff6f5;
   background-color: #333;
 }
@@ -212,7 +213,7 @@ body {
   color: #fff;
   font-weight: 800;
   font-size: 1rem;
-  font-family: "Silkscreen";
+  font-family: Silkscreen, sans-serif;
   background-color: #404663;
   border: none;
   border-radius: 0.7rem;

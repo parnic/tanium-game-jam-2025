@@ -1,5 +1,5 @@
-import { TiledResource } from "@excaliburjs/plugin-tiled";
-import { Engine } from "excalibur";
+import type { TiledResource } from "@excaliburjs/plugin-tiled";
+import type { Engine } from "excalibur";
 import { LevelResources } from "../resources";
 import { GameLevel } from "../scenes/game-level";
 import { TransitionScene } from "../scenes/transition-scene";
@@ -39,9 +39,9 @@ const sceneList: SceneData[] = [
 
 export function getCurrentSceneData(engine: Engine): SceneData | undefined {
   const currentSceneDataIdx = sceneList.findIndex(
-    (s) => s.name == engine.currentSceneName,
+    (s) => s.name === engine.currentSceneName,
   );
-  if (currentSceneDataIdx == -1) {
+  if (currentSceneDataIdx === -1) {
     return undefined;
   }
 
@@ -50,22 +50,22 @@ export function getCurrentSceneData(engine: Engine): SceneData | undefined {
 
 export function isFinalStage(engine: Engine): boolean {
   const currentSceneDataIdx = sceneList.findIndex(
-    (s) => s.name == engine.currentSceneName,
+    (s) => s.name === engine.currentSceneName,
   );
-  return currentSceneDataIdx == sceneList.length - 1;
+  return currentSceneDataIdx === sceneList.length - 1;
 }
 
 export function getNextSceneData(engine: Engine): SceneData | undefined {
   const currentSceneDataIdx = sceneList.findIndex(
-    (s) => s.name == engine.currentSceneName,
+    (s) => s.name === engine.currentSceneName,
   );
-  if (currentSceneDataIdx == -1) {
+  if (currentSceneDataIdx === -1) {
     throw Error(
       `cannot find scene data for current active scene ${engine.currentSceneName}`,
     );
   }
 
-  if (currentSceneDataIdx == sceneList.length - 1) {
+  if (currentSceneDataIdx === sceneList.length - 1) {
     return undefined;
   }
 

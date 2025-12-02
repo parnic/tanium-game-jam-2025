@@ -1,11 +1,11 @@
 import {
-  Actor,
+  type Actor,
   Animation,
-  Collider,
-  CollisionContact,
+  type Collider,
+  type CollisionContact,
   CollisionType,
-  Engine,
-  Side,
+  type Engine,
+  type Side,
   Vector,
 } from "excalibur";
 import { config } from "./config";
@@ -13,7 +13,7 @@ import { Enemy } from "./enemy";
 import { GameActor, TiledCollision } from "./game-actor";
 import { GameEngine } from "./game-engine";
 import { Player } from "./player";
-import { Weapon } from "./weapon";
+import type { Weapon } from "./weapon";
 
 export class WeaponActor extends GameActor {
   static weaponCounter = new Uint32Array([1]);

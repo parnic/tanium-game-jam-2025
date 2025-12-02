@@ -1,9 +1,9 @@
 {
-    "name": "itch.io upload",
-    "version": "0.0.1",
-    "main": "src/main.js",
-    "license": "MIT",
-    "dependencies": {
-        "@actions/core": "^1.11.1"
-    }
+  "name": "itch.io upload",
+  "version": "0.0.1",
+  "main": "src/main.js",
+  "license": "MIT",
+  "dependencies": {
+    "@actions/core": "^1.11.1"
+  }
 }

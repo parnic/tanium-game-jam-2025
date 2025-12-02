@@ -1,4 +1,4 @@
-import { Component, Entity, EventEmitter, GameEvent } from "excalibur";
+import { Component, type Entity, EventEmitter, GameEvent } from "excalibur";
 
 interface XpEvents {
   LeveledUp: LeveledUpEvent;
@@ -79,7 +79,7 @@ export class XpComponent extends Component {
       return 0;
     }
 
-    return level * 5 + Math.pow(level, 2);
+    return level * 5 + level ** 2;
   }
 
   levelForXp(inXp: number): number {

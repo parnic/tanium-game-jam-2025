@@ -1,30 +1,30 @@
-import { Tile } from "@excaliburjs/plugin-tiled";
+import type { Tile } from "@excaliburjs/plugin-tiled";
 import {
   Animation,
   Axes,
   Buttons,
-  Collider,
-  CollisionContact,
+  type Collider,
+  type CollisionContact,
   CollisionType,
-  Engine,
-  Gamepad,
+  type Engine,
+  type Gamepad,
   Keys,
   Logger,
   PointerButton,
   PointerType,
-  Scene,
-  Side,
-  vec,
+  type Scene,
+  type Side,
   Vector,
+  vec,
 } from "excalibur";
 import { UpgradeComponent } from "./components/upgrade-component";
 import {
-  GainedXpEvent,
-  LeveledUpEvent,
+  type GainedXpEvent,
+  type LeveledUpEvent,
   XpComponent,
 } from "./components/xp-component";
 import { config } from "./config";
-import { Enemy } from "./enemy";
+import type { Enemy } from "./enemy";
 import { GameActor, TiledCollision } from "./game-actor";
 import { GameEngine } from "./game-engine";
 import { Gift } from "./gift";
@@ -32,7 +32,7 @@ import { Resources } from "./resources";
 import { GameLevel } from "./scenes/game-level";
 import { showElement } from "./utilities/html";
 import * as SceneManager from "./utilities/scene-manager";
-import { Weapon, WeaponData } from "./weapon";
+import { Weapon, type WeaponData } from "./weapon";
 
 export interface CharacterData {
   name: string;
@@ -347,7 +347,7 @@ export class Player extends GameActor {
 
   hookGamepadEvents(gamepad: Gamepad): void {
     gamepad.on("axis", (evt) => {
-      if (evt.axis == Axes.LeftStickX) {
+      if (evt.axis === Axes.LeftStickX) {
         if (Math.abs(evt.value) < this.gamepadDeadzone) {
           if (gamepad === this.lastUsedGamepad) {
             this.lastGamepadAxis.x = 0;
@@ -358,7 +358,7 @@ export class Player extends GameActor {
           this.lastGamepadAxis.x = evt.value;
         }
       }
-      if (evt.axis == Axes.LeftStickY) {
+      if (evt.axis === Axes.LeftStickY) {
         if (Math.abs(evt.value) < this.gamepadDeadzone) {
           if (gamepad === this.lastUsedGamepad) {
             this.lastGamepadAxis.y = 0;

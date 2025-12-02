@@ -1,18 +1,18 @@
 import {
-  Collider,
-  CollisionContact,
+  type Collider,
+  type CollisionContact,
   CollisionType,
   Color,
-  Engine,
-  Graphic,
+  type Engine,
+  type Graphic,
   Logger,
-  Side,
+  type Side,
   Vector,
 } from "excalibur";
 import { config } from "./config";
 import { GameActor } from "./game-actor";
 import { GameEngine } from "./game-engine";
-import { Player } from "./player";
+import type { Player } from "./player";
 import { GameLevel } from "./scenes/game-level";
 
 export class EnemyCorpse extends GameActor {
@@ -86,7 +86,7 @@ export class EnemyCorpse extends GameActor {
       `picked up ${this.name}. new xp=${this.pickedUpBy!.xpComponent.currXp.toString()}`,
     );
     if (this.scene instanceof GameLevel) {
-      const idx = this.scene.xpPickups.findIndex((p) => p == this);
+      const idx = this.scene.xpPickups.indexOf(this);
       if (idx >= 0) {
         this.scene.xpPickups[idx] = undefined;
       }
