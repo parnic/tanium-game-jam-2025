@@ -9,4 +9,6 @@
         "source.removeUnusedImports": "always",
         "source.sortImports": "never"
     },
+    "files.trimFinalNewlines": false,
+    "files.insertFinalNewline": true
 }
