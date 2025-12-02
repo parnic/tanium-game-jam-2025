@@ -1,5 +1,5 @@
 {
-  "name": "itch.io upload",
+  "name": "itch.io-upload",
   "version": "0.0.1",
   "main": "src/main.js",
   "license": "MIT",
