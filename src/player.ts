@@ -17,6 +17,7 @@ import {
   vec,
   Vector,
 } from "excalibur";
+import { UpgradeComponent } from "./components/upgrade-component";
 import {
   GainedXpEvent,
   LeveledUpEvent,
@@ -62,6 +63,7 @@ export class Player extends GameActor {
   giftsNeeded = 0;
   kills = 0;
   xpComponent: XpComponent;
+  upgradeComponent: UpgradeComponent;
   weapons: Weapon[] = [];
   pickupDistanceSq = 200 * 200;
   characterData?: CharacterData;
@@ -119,6 +121,9 @@ export class Player extends GameActor {
     this.xpComponent.events.on("LeveledUp", (evt) => {
       this.onLeveledUp(evt);
     });
+
+    this.upgradeComponent = new UpgradeComponent();
+    this.addComponent(this.upgradeComponent);
   }
 
   onGainedXp(evt: GainedXpEvent) {
@@ -239,6 +244,12 @@ export class Player extends GameActor {
         case Keys.R:
           if (engine.input.keyboard.isHeld(Keys.ShiftLeft)) {
             void SceneManager.reloadCurrentScene(engine);
+          }
+          break;
+
+        case Keys.U:
+          if (engine.input.keyboard.isHeld(Keys.ShiftLeft)) {
+            this.upgradeComponent.chooseUpgrade();
           }
           break;
       }
