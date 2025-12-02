@@ -51,6 +51,8 @@ export class EnemyCorpse extends GameActor {
       return;
     }
     if (engine instanceof GameEngine && engine.paused) {
+      this.currMove = Vector.Zero;
+      super.onPostUpdate(engine, elapsedMs);
       return;
     }
 
