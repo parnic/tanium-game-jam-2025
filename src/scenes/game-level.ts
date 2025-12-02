@@ -291,7 +291,7 @@ export class GameLevel extends Scene {
     this.elemRestart.removeEventListener("click", this._restartClickHandler);
   }
 
-  onPaused(paused: boolean) {
+  onPaused(paused: boolean, showPauseUI?: boolean) {
     this.player?.onPaused(paused);
 
     for (const enemy of this.enemies) {
@@ -306,7 +306,9 @@ export class GameLevel extends Scene {
       gift.onPaused(paused);
     }
 
-    showOrHideElement(this.elemPause, paused);
+    if (showPauseUI) {
+      showOrHideElement(this.elemPause, paused);
+    }
   }
 
   override onPreUpdate(engine: Engine, elapsedMs: number): void {

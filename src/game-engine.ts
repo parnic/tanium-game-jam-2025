@@ -9,11 +9,11 @@ export class GameEngine extends Engine {
     this.playersOnly = enabled ?? !this.playersOnly;
   }
 
-  togglePause(enabled?: boolean) {
+  togglePause(enabled?: boolean, showPauseUI?: boolean) {
     this.paused = enabled ?? !this.paused;
 
     if (this.currentScene instanceof GameLevel) {
-      this.currentScene.onPaused(this.paused);
+      this.currentScene.onPaused(this.paused, showPauseUI);
     }
   }
 }
