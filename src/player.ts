@@ -140,6 +140,35 @@ export class Player extends GameActor {
     }
 
     this.scene.updateXpBar(this.xpComponent);
+
+    this.chooseAndPresentUpgrades();
+  }
+
+  chooseAndPresentUpgrades() {
+    // todo: generate and use real data
+    this.upgradeComponent.presentUpgrades([
+      {
+        name: this.weapons[0].name,
+        label: "5% damage",
+        img: this.weapons[0].tile!.tileset.spritesheet.sprites[
+          this.weapons[0].tile!.id
+        ].image.data,
+      },
+      {
+        name: this.weapons[0].name,
+        label: "10% speed",
+        img: this.weapons[0].tile!.tileset.spritesheet.sprites[
+          this.weapons[0].tile!.id
+        ].image.data,
+      },
+      {
+        name: this.weapons[0].name,
+        label: "7.5% refire",
+        img: this.weapons[0].tile!.tileset.spritesheet.sprites[
+          this.weapons[0].tile!.id
+        ].image.data,
+      },
+    ]);
   }
 
   giveWeapon(weaponData: WeaponData) {
@@ -249,7 +278,7 @@ export class Player extends GameActor {
 
         case Keys.U:
           if (engine.input.keyboard.isHeld(Keys.ShiftLeft)) {
-            this.upgradeComponent.chooseUpgrade();
+            this.chooseAndPresentUpgrades();
           }
           break;
       }
