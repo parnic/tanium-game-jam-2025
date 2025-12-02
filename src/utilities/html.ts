@@ -1,4 +1,4 @@
-export function showOrHideElement(elem: HTMLElement, show: boolean) {
+export function showOrHideElement(elem: Element, show: boolean) {
   if (show) {
     showElement(elem);
     return;
@@ -7,7 +7,7 @@ export function showOrHideElement(elem: HTMLElement, show: boolean) {
   hideElement(elem);
 }
 
-export function unhideOrHideElement(elem: HTMLElement, show: boolean) {
+export function unhideOrHideElement(elem: Element, show: boolean) {
   if (show) {
     showElement(elem);
   }
@@ -16,22 +16,22 @@ export function unhideOrHideElement(elem: HTMLElement, show: boolean) {
 }
 
 // adds the 'show' class to an element (which is "display: block") and removes the 'hide' class
-export function showElement(elem: HTMLElement) {
+export function showElement(elem: Element) {
   unhideElement(elem);
   elem.classList.add("show");
 }
 
 // removes the 'hide' class from an element
-export function unhideElement(elem: HTMLElement) {
+export function unhideElement(elem: Element) {
   elem.classList.remove("hide");
 }
 
 // adds the 'hide' class from an element and removes the 'show' class if it exists
-export function hideElement(elem: HTMLElement) {
+export function hideElement(elem: Element) {
   elem.classList.remove("show");
   elem.classList.add("hide");
 }
 
-export function elementIsVisible(elem: HTMLElement) {
+export function elementIsVisible(elem: Element) {
   return !elem.classList.contains("hide");
 }
