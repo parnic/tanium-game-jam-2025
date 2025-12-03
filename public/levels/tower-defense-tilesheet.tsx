@@ -4,6 +4,14 @@
   <property name="has-weapons" type="bool" value="true"/>
  </properties>
  <image source="../images/towerDefense_tilesheet@2.png" width="2944" height="1664"/>
+ <tile id="246" type="weapon">
+  <properties>
+   <property name="name" value="orbiter"/>
+  </properties>
+  <objectgroup draworder="index" id="2">
+   <object id="1" type="collision" x="40" y="36" width="48" height="56"/>
+  </objectgroup>
+ </tile>
  <tile id="251" type="weapon">
   <properties>
    <property name="name" value="rocket-small"/>
