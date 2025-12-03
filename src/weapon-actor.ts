@@ -6,7 +6,9 @@ import {
   CollisionType,
   type Engine,
   type Side,
+  toRadians,
   Vector,
+  vec,
 } from "excalibur";
 import { config } from "./config";
 import { Enemy } from "./enemy";
@@ -21,11 +23,20 @@ export class WeaponActor extends GameActor {
   damage: number;
   instigator: GameActor;
   weapon: Weapon;
+  shouldFaceDirection: boolean;
   target?: Actor;
+  orbitDurationMs = 2000;
+  orbitDistanceScale = 1.1;
 
   private set direction(dir: Vector) {
     this._direction = dir;
-    this.rotation = dir.toAngle() + Math.PI / 2;
+    if (this.shouldFaceDirection) {
+      this.rotation = dir.toAngle() + Math.PI / 2;
+    }
+  }
+
+  private get lifetime(): number | undefined {
+    return this.weapon.definition.baseLifetime;
   }
 
   constructor(weapon: Weapon, target?: Actor) {
@@ -46,6 +57,13 @@ export class WeaponActor extends GameActor {
     this.instigator = weapon.owner;
     this._speed = weapon.definition.baseSpeed;
     this.damage = weapon.definition.baseDamage;
+    this.shouldFaceDirection = weapon.definition.spawnBehavior !== "orbit";
+    if (weapon.definition.baseScale) {
+      this.scale = vec(
+        weapon.definition.baseScale,
+        weapon.definition.baseScale,
+      );
+    }
 
     if (tile.animation.length) {
       this.walk = new Animation({
@@ -56,6 +74,7 @@ export class WeaponActor extends GameActor {
           };
         }),
       });
+      this.alwaysAnimate = true;
     } else {
       this.staticImage = tile.tileset.spritesheet.sprites.at(tile.tiledTile.id);
     }
@@ -88,36 +107,64 @@ export class WeaponActor extends GameActor {
     }
 
     if (
-      !this.scene?.engine.screen.getWorldBounds().overlaps(this.graphics.bounds)
+      !this.scene?.engine.screen
+        .getWorldBounds()
+        .overlaps(this.graphics.bounds) ||
+      (this.aliveTime && this.lifetime && this.aliveTime >= this.lifetime)
     ) {
-      // or the weapon has lived out its lifetime
       this.kill();
       return;
     }
 
     if (this.weapon.definition.targetBehavior === "tracking") {
       this.conditionalUpdateTarget();
+    } else if (this.weapon.definition.spawnBehavior === "orbit") {
+      const aliveSeconds =
+        (this.aliveTime % this.orbitDurationMs) / this.orbitDurationMs || 1;
+      // determine where in orbit we should be given the current time
+      const degreeScaledSeconds = 360 * aliveSeconds * this.speed;
+      const t = toRadians(degreeScaledSeconds);
+      // position us an appropriate distance from the source
+      const dist = this.instigator.width * this.orbitDistanceScale;
+      // offset from our owner
+      const destination = vec(dist, dist).rotate(t).add(this.instigator.pos);
+      this.pos = destination;
+      super.onPostUpdate(engine, elapsedMs);
+      // i'm not good enough at math to use the vel to get the same result as directly setting pos.
+      // todo: should probably make this work eventually.
+      this.vel = Vector.Zero;
+      return;
     }
 
     this.currMove = this._direction;
     super.onPostUpdate(engine, elapsedMs);
   }
 
-  override onCollisionStart(
+  shouldKillOnCollision() {
+    return (
+      this.weapon.definition.spawnBehavior !== "orbit" &&
+      this.weapon.definition.spawnBehavior !== "ownerLocation"
+    );
+  }
+
+  override onPreCollisionResolve(
     self: Collider,
     other: Collider,
     side: Side,
     contact: CollisionContact,
   ): void {
-    // prevent killing multiple enemies when we touched multiple on the same frame
     if (this.isKilled()) {
       return;
     }
 
     if (other.owner instanceof Enemy && !other.owner.isKilled()) {
+      // these collision events will only fire every Physics.sleepEpsilon time, so we
+      // automatically get a "cooldown" period of sorts where a weapon won't hit the
+      // same enemy every single frame they overlap.
       other.owner.takeDamage(this.damage, this.instigator instanceof Player);
-      // todo: don't kill depending on what the weapon def wants to happen when it hits something
-      this.kill();
+      if (this.shouldKillOnCollision()) {
+        this.kill();
+      }
     }
   }
 }

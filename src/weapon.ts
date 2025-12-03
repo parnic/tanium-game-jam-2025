@@ -11,7 +11,15 @@ export interface WeaponData {
   baseSpeed: number;
   baseDamage: number;
   baseSpawnIntervalMs: number;
-  spawnBehavior: "targetNearestEnemy" | "ownerFacing" | undefined;
+  baseLifetime?: number;
+  baseScale?: number;
+  spawnBehavior:
+    | "targetNearestEnemy"
+    | "ownerFacing"
+    | "orbit"
+    | "ownerLocation"
+    | undefined;
+  spawns?: string;
   targetBehavior: "tracking" | undefined;
 }
 
