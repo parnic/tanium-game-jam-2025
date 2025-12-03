@@ -2,10 +2,19 @@ import { Component, Logger } from "excalibur";
 import { GameEngine } from "../game-engine";
 import { hideElement, showElement, unhideElement } from "../utilities/html";
 
-export interface UpgradeData {
+export interface UpgradeUIData {
   name: string;
   label: string;
   img: HTMLImageElement;
+}
+
+export enum UpgradeAttribute {
+  Speed, // how quickly the weapon actor moves
+  Damage, // how much damage the weapon deals
+  Size, // how much space the weapon actor occupies on the screen
+  Interval, // how quickly the next weapon actor spawns
+  Amount, // how many of the weapon actors are spawned at a time
+  Lifetime, // how long the weapon actor stays active before despawning
 }
 
 export class UpgradeComponent extends Component {
@@ -15,9 +24,24 @@ export class UpgradeComponent extends Component {
     super();
 
     this.elemUpgrade = document.querySelector("#upgrades")!;
+
+    this.hookEvents();
   }
 
-  presentUpgrades(upgrades: UpgradeData[]) {
+  private hookEvents() {
+    this.elemUpgrade.querySelectorAll(".upgrade").forEach((elem) => {
+      elem.addEventListener("click", () => {
+        Logger.getInstance().info(`Choosing upgrade ${elem.id}`);
+        hideElement(this.elemUpgrade);
+
+        if (this.owner?.scene?.engine instanceof GameEngine) {
+          this.owner.scene.engine.togglePause(false);
+        }
+      });
+    });
+  }
+
+  presentUpgrades(upgrades: UpgradeUIData[]) {
     if (this.owner?.scene?.engine instanceof GameEngine) {
       this.owner.scene.engine.togglePause(true);
     }
@@ -39,16 +63,5 @@ export class UpgradeComponent extends Component {
       elem.querySelector(".img")?.replaceChildren(img);
     }
     unhideElement(this.elemUpgrade);
-
-    this.elemUpgrade.querySelectorAll(".upgrade").forEach((elem) => {
-      elem.addEventListener("click", () => {
-        Logger.getInstance().info(`Choosing upgrade ${elem.id}`);
-        hideElement(this.elemUpgrade);
-
-        if (this.owner?.scene?.engine instanceof GameEngine) {
-          this.owner.scene.engine.togglePause(false);
-        }
-      });
-    });
   }
 }
