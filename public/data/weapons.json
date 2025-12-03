@@ -4,7 +4,15 @@
     "baseSpeed": 1,
     "baseDamage": 2,
     "baseSpawnIntervalMs": 1000,
-    "spawnBehavior": "targetNearestEnemy"
+    "spawnBehavior": "targetNearestEnemy",
+    "targetBehavior": "tracking"
+  },
+  {
+    "name": "rocket-big",
+    "baseSpeed": 0.5,
+    "baseDamage": 5,
+    "baseSpawnIntervalMs": 3000,
+    "spawnBehavior": "ownerFacing"
   },
   {
     "name": "bullet-circle",
@@ -12,5 +20,39 @@
     "baseDamage": 2,
     "baseSpawnIntervalMs": 1000,
     "spawnBehavior": "ownerFacing"
+  },
+  {
+    "name": "orbiter",
+    "baseSpeed": 1,
+    "baseDamage": 1,
+    "baseSpawnIntervalMs": 3111,
+    "baseLifetime": 2500,
+    "spawnBehavior": "orbit"
+  },
+  {
+    "name": "bullet-elongated",
+    "baseSpeed": 1,
+    "baseDamage": 0.5,
+    "baseSpawnIntervalMs": 1000,
+    "baseCount": 5,
+    "spawnBehavior": "ownerFacing"
+  },
+  {
+    "name": "fire",
+    "baseSpeed": 1,
+    "baseDamage": 0.42,
+    "baseSpawnIntervalMs": 850,
+    "baseLifetime": 2250,
+    "spawnBehavior": "ownerLocation",
+    "baseScale": 1.5
+  },
+  {
+    "name": "plane",
+    "baseSpeed": 0.2,
+    "baseDamage": 2,
+    "baseSpawnIntervalMs": 10000,
+    "baseLifetime": 5000,
+    "spawnBehavior": "orbit",
+    "spawns": "bullet-circle"
   }
 ]
