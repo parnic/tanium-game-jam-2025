@@ -17,7 +17,10 @@ import {
   Vector,
   vec,
 } from "excalibur";
-import { UpgradeComponent } from "./components/upgrade-component";
+import {
+  type UpgradeChosenEvent,
+  UpgradeComponent,
+} from "./components/upgrade-component";
 import {
   type GainedXpEvent,
   type LeveledUpEvent,
@@ -65,6 +68,7 @@ export class Player extends GameActor {
   xpComponent: XpComponent;
   upgradeComponent: UpgradeComponent;
   weapons: Weapon[] = [];
+  maxWeapons = 3;
   pickupDistanceSq = 200 * 200;
   characterData?: CharacterData;
 
@@ -123,6 +127,9 @@ export class Player extends GameActor {
     });
 
     this.upgradeComponent = new UpgradeComponent();
+    this.upgradeComponent.events.on("UpgradeChosen", (evt) => {
+      this.onUpgradeChosen(evt);
+    });
     this.addComponent(this.upgradeComponent);
   }
 
@@ -144,31 +151,15 @@ export class Player extends GameActor {
     this.chooseAndPresentUpgrades();
   }
 
+  onUpgradeChosen(evt: UpgradeChosenEvent) {
+    if (evt.upgrade.weapon) {
+      this.giveWeapon(evt.upgrade.weapon);
+    }
+  }
+
   chooseAndPresentUpgrades() {
-    // todo: generate and use real data
-    this.upgradeComponent.presentUpgrades([
-      {
-        name: this.weapons[0].definition.displayName,
-        label: "5% damage",
-        img: this.weapons[0].tile!.tileset.spritesheet.sprites[
-          this.weapons[0].tile!.id
-        ],
-      },
-      {
-        name: this.weapons[0].definition.displayName,
-        label: "10% speed",
-        img: this.weapons[0].tile!.tileset.spritesheet.sprites[
-          this.weapons[0].tile!.id
-        ],
-      },
-      {
-        name: this.weapons[0].definition.displayName,
-        label: "7.5% refire",
-        img: this.weapons[0].tile!.tileset.spritesheet.sprites[
-          this.weapons[0].tile!.id
-        ],
-      },
-    ]);
+    const upgrades = this.upgradeComponent.rollUpgrades(this);
+    this.upgradeComponent.presentUpgrades(upgrades);
   }
 
   giveWeapon(weaponData: WeaponData) {

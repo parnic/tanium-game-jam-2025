@@ -1,5 +1,11 @@
 import type { Tile, TiledResource } from "@excaliburjs/plugin-tiled";
-import { type Actor, type Engine, Entity, Logger } from "excalibur";
+import {
+  type Actor,
+  type Engine,
+  Entity,
+  Logger,
+  type Sprite,
+} from "excalibur";
 import type { Enemy } from "./enemy";
 import type { GameActor } from "./game-actor";
 import { GameEngine } from "./game-engine";
@@ -41,6 +47,25 @@ export class Weapon extends Entity {
     this.definition = data;
     this.level = level;
     this.owner = owner;
+  }
+
+  static getSprite(data: WeaponData, level: GameLevel): Sprite | undefined {
+    const weaponsTilesets = level.tiledLevel
+      .getTilesetByProperty("has-weapons")
+      .filter((t) => t.properties.get("has-weapons") === true);
+    const weapons = weaponsTilesets.flatMap((t) =>
+      t.getTilesByClassName("weapon"),
+    );
+    const weaponTile = weapons.find(
+      (w) => w.properties.get("name") === data.name,
+    );
+
+    if (!weaponTile) {
+      return undefined;
+    }
+
+    const sprite = weaponTile.tileset.spritesheet.sprites.at(weaponTile.id);
+    return sprite;
   }
 
   override onInitialize(engine: Engine): void {
