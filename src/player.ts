@@ -148,25 +148,25 @@ export class Player extends GameActor {
     // todo: generate and use real data
     this.upgradeComponent.presentUpgrades([
       {
-        name: this.weapons[0].name,
+        name: this.weapons[0].definition.displayName,
         label: "5% damage",
         img: this.weapons[0].tile!.tileset.spritesheet.sprites[
           this.weapons[0].tile!.id
-        ].image.data,
+        ],
       },
       {
-        name: this.weapons[0].name,
+        name: this.weapons[0].definition.displayName,
         label: "10% speed",
         img: this.weapons[0].tile!.tileset.spritesheet.sprites[
           this.weapons[0].tile!.id
-        ].image.data,
+        ],
       },
       {
-        name: this.weapons[0].name,
+        name: this.weapons[0].definition.displayName,
         label: "7.5% refire",
         img: this.weapons[0].tile!.tileset.spritesheet.sprites[
           this.weapons[0].tile!.id
-        ].image.data,
+        ],
       },
     ]);
   }

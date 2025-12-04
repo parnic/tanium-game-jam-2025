@@ -170,6 +170,10 @@ body {
   top: 50%;
 }
 
+.m-auto {
+  margin: auto;
+}
+
 .m-1vw {
   margin: 1vw;
 }
@@ -250,4 +254,11 @@ body {
   .big-box {
     flex-direction: column;
   }
+}
+
+.bg-img {
+  background-image: var(--background-image);
+  background-position: var(--background-x) var(--background-y);
+  height: var(--height);
+  width: var(--width);
 }

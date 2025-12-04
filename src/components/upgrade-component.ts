@@ -1,11 +1,11 @@
-import { Component, Logger } from "excalibur";
+import { Component, Logger, type Sprite } from "excalibur";
 import { GameEngine } from "../game-engine";
 import { hideElement, showElement, unhideElement } from "../utilities/html";
 
 export interface UpgradeUIData {
   name: string;
   label: string;
-  img: HTMLImageElement;
+  img: Sprite;
 }
 
 export enum UpgradeAttribute {
@@ -58,9 +58,27 @@ export class UpgradeComponent extends Component {
       showElement(elem);
       elem.querySelector(".name")!.innerHTML = upgrades[i].name;
       elem.querySelector(".label")!.innerHTML = upgrades[i].label;
-      const img = upgrades[i].img.cloneNode() as HTMLImageElement;
-      img.style.setProperty("width", "100%");
-      elem.querySelector(".img")?.replaceChildren(img);
+      const imgElem = elem.querySelector(".img") as HTMLElement;
+      imgElem.style.setProperty(
+        "--background-image",
+        `url(${upgrades[i].img.image.data.src})`,
+      );
+      imgElem.style.setProperty(
+        "--background-x",
+        `-${upgrades[i].img.sourceView.x.toString()}px`,
+      );
+      imgElem.style.setProperty(
+        "--background-y",
+        `-${upgrades[i].img.sourceView.y.toString()}px`,
+      );
+      imgElem.style.setProperty(
+        "--width",
+        `${upgrades[i].img.sourceView.width.toString()}px`,
+      );
+      imgElem.style.setProperty(
+        "--height",
+        `${upgrades[i].img.sourceView.height.toString()}px`,
+      );
     }
     unhideElement(this.elemUpgrade);
   }

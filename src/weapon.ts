@@ -8,11 +8,13 @@ import { WeaponActor } from "./weapon-actor";
 
 export interface WeaponData {
   name: string;
+  displayName: string;
   baseSpeed: number;
   baseDamage: number;
   baseSpawnIntervalMs: number;
   baseLifetime?: number;
   baseScale?: number;
+  baseAmount?: number;
   spawnBehavior:
     | "targetNearestEnemy"
     | "ownerFacing"

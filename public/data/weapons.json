@@ -1,6 +1,7 @@
 [
   {
     "name": "rocket-small",
+    "displayName": "Seeker rocket",
     "baseSpeed": 1,
     "baseDamage": 2,
     "baseSpawnIntervalMs": 1000,
@@ -9,6 +10,7 @@
   },
   {
     "name": "rocket-big",
+    "displayName": "Big boomer",
     "baseSpeed": 0.5,
     "baseDamage": 5,
     "baseSpawnIntervalMs": 3000,
@@ -16,13 +18,15 @@
   },
   {
     "name": "bullet-circle",
-    "baseSpeed": 1,
-    "baseDamage": 2,
-    "baseSpawnIntervalMs": 1000,
+    "displayName": "Minigun",
+    "baseSpeed": 1.5,
+    "baseDamage": 0.25,
+    "baseSpawnIntervalMs": 170,
     "spawnBehavior": "ownerFacing"
   },
   {
     "name": "orbiter",
+    "displayName": "Shield bash",
     "baseSpeed": 1,
     "baseDamage": 1,
     "baseSpawnIntervalMs": 3111,
@@ -31,14 +35,16 @@
   },
   {
     "name": "bullet-elongated",
-    "baseSpeed": 1,
-    "baseDamage": 0.5,
-    "baseSpawnIntervalMs": 1000,
-    "baseCount": 5,
+    "displayName": "Shotgun",
+    "baseSpeed": 2,
+    "baseDamage": 0.4,
+    "baseSpawnIntervalMs": 1500,
+    "baseAmount": 5,
     "spawnBehavior": "ownerFacing"
   },
   {
     "name": "fire",
+    "displayName": "Burn trap",
     "baseSpeed": 1,
     "baseDamage": 0.42,
     "baseSpawnIntervalMs": 850,
@@ -48,6 +54,7 @@
   },
   {
     "name": "plane",
+    "displayName": "Personal drone",
     "baseSpeed": 0.2,
     "baseDamage": 2,
     "baseSpawnIntervalMs": 10000,
