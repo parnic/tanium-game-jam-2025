@@ -1,5 +1,6 @@
 import type { Tile, TiledResource } from "@excaliburjs/plugin-tiled";
 import {
+  ActionsComponent,
   type Actor,
   type Engine,
   Entity,
@@ -15,7 +16,8 @@ import type { Enemy } from "./enemy";
 import type { GameActor } from "./game-actor";
 import { GameEngine } from "./game-engine";
 import { GameLevel } from "./scenes/game-level";
-import { WeaponActor } from "./weapon-actor";
+import { rand } from "./utilities/math";
+import { OrbitDurationMs, WeaponActor } from "./weapon-actor";
 
 export interface WeaponData {
   name: string;
@@ -36,6 +38,8 @@ export interface WeaponData {
   targetBehavior: "tracking" | undefined;
 }
 
+const multiSpawnDelaySeconds = 0.1;
+
 export class Weapon extends Entity {
   level: TiledResource;
   tile?: Tile;
@@ -49,11 +53,16 @@ export class Weapon extends Entity {
   intervalMs: number;
   amount: number;
   lifetimeMs?: number;
+  actions: ActionsComponent;
+  pendingDelayedSpawnAmount = 0;
 
   constructor(data: WeaponData, level: TiledResource, owner: GameActor) {
     super({
       name: `weapon-${data.name}`,
     });
+
+    this.actions = new ActionsComponent();
+    this.addComponent(this.actions);
 
     this.definition = data;
     this.level = level;
@@ -166,10 +175,23 @@ export class Weapon extends Entity {
     }
 
     const amount = Math.floor(this.amount);
+    const delay =
+      this.definition.spawnBehavior === "orbit"
+        ? OrbitDurationMs / amount
+        : multiSpawnDelaySeconds;
     for (let i = 0; i < amount; i++) {
-      // todo: need to vary the spawn position or timing a bit for multi-spawns
-      const weapon = new WeaponActor(this, target);
-      engine.currentScene.add(weapon);
+      if (this.definition.spawnBehavior === "ownerFacing") {
+        const weapon = new WeaponActor(this, target);
+        engine.currentScene.add(weapon);
+        if (amount > 1) {
+          weapon.spawnRotationVarianceDegrees = rand.floating(0, 5);
+        }
+      } else {
+        this.actions.delay(i * delay).callMethod(() => {
+          const weapon = new WeaponActor(this, target);
+          engine.currentScene.add(weapon);
+        });
+      }
     }
     this.lastSpawnedTimeMs = this.aliveTime;
   }

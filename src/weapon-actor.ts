@@ -16,7 +16,10 @@ import { GameActor, TiledCollision } from "./game-actor";
 import { GameEngine } from "./game-engine";
 import { Player } from "./player";
 import type { GameLevel } from "./scenes/game-level";
+import { rand } from "./utilities/math";
 import type { Weapon } from "./weapon";
+
+export const OrbitDurationMs = 2000;
 
 export class WeaponActor extends GameActor {
   static weaponCounter = new Uint32Array([1]);
@@ -27,8 +30,12 @@ export class WeaponActor extends GameActor {
   weapon: Weapon;
   shouldFaceDirection: boolean;
   target?: Actor;
-  orbitDurationMs = 2000;
   orbitDistanceScale = 1.1;
+  spawnRotationVarianceDegrees = 0;
+
+  private get direction() {
+    return this._direction;
+  }
 
   private set direction(dir: Vector) {
     this._direction = dir;
@@ -57,8 +64,15 @@ export class WeaponActor extends GameActor {
     this.damage = weapon.damage;
     this.lifetime = weapon.lifetimeMs;
     this.shouldFaceDirection = weapon.definition.spawnBehavior !== "orbit";
-    if (weapon.definition.baseScale) {
-      this.scale = vec(weapon.size, weapon.size);
+    this.scale = vec(weapon.size, weapon.size);
+
+    // set a default direction so that if we spawned from a delayed action
+    // and we're supposed to track a target but there's no target to track,
+    // we at least don't just stop dead.
+    if (weapon.definition.spawnBehavior !== "ownerLocation") {
+      this.direction = !this.instigator.moveDir.equals(Vector.Zero)
+        ? this.instigator.moveDir.normalize()
+        : Vector.Right;
     }
 
     if (tile.animation.length) {
@@ -85,6 +99,17 @@ export class WeaponActor extends GameActor {
       this.direction = !this.instigator.moveDir.equals(Vector.Zero)
         ? this.instigator.moveDir.normalize()
         : Vector.Right;
+
+      if (this.spawnRotationVarianceDegrees) {
+        this.direction = this.direction.rotate(
+          toRadians(
+            rand.floating(
+              -this.spawnRotationVarianceDegrees,
+              this.spawnRotationVarianceDegrees,
+            ),
+          ),
+        );
+      }
     }
   }
 
@@ -123,7 +148,7 @@ export class WeaponActor extends GameActor {
       this.conditionalUpdateTarget();
     } else if (this.weapon.definition.spawnBehavior === "orbit") {
       const aliveSeconds =
-        (this.aliveTime % this.orbitDurationMs) / this.orbitDurationMs || 1;
+        (this.aliveTime % OrbitDurationMs) / OrbitDurationMs || 1;
       // determine where in orbit we should be given the current time
       const degreeScaledSeconds = 360 * aliveSeconds * this.speed;
       const t = toRadians(degreeScaledSeconds);
