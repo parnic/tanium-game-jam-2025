@@ -371,7 +371,10 @@ export class UpgradeComponent extends Component {
         // todo: can/should we support special upgrade types like allowing a weapon to bounce to another enemy
         // or go through X number of enemies? won't apply to everything...
 
-        let labelAmount = upgradeData.amount.toPrecision(1);
+        let labelAmount =
+          upgradeData.amount > 1
+            ? upgradeData.amount.toPrecision(2)
+            : upgradeData.amount.toPrecision(1);
         if (upgradeData.meta?.units === "%") {
           labelAmount = Math.round(upgradeData.amount * 100).toString();
         }
