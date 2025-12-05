@@ -5,6 +5,7 @@ import {
   Entity,
   Logger,
   type Sprite,
+  type Vector,
 } from "excalibur";
 import {
   UpgradeAttribute,
@@ -126,7 +127,10 @@ export class Weapon extends Entity {
     this.spawnWeapon(engine);
   }
 
-  getNearestLivingEnemy(level: GameLevel): Enemy | undefined {
+  getNearestLivingEnemyToPosition(
+    level: GameLevel,
+    pos: Vector,
+  ): Enemy | undefined {
     let closestEnemy: Enemy | undefined;
     for (const e of level.enemies) {
       if (e.isKilled()) {
@@ -135,14 +139,17 @@ export class Weapon extends Entity {
 
       if (
         !closestEnemy ||
-        e.pos.squareDistance(this.owner.pos) <
-          closestEnemy.pos.squareDistance(this.owner.pos)
+        e.pos.squareDistance(pos) < closestEnemy.pos.squareDistance(pos)
       ) {
         closestEnemy = e;
       }
     }
 
     return closestEnemy;
+  }
+
+  getNearestLivingEnemy(level: GameLevel): Enemy | undefined {
+    return this.getNearestLivingEnemyToPosition(level, this.owner.pos);
   }
 
   spawnWeapon(engine: Engine) {

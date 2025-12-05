@@ -15,6 +15,7 @@ import { Enemy } from "./enemy";
 import { GameActor, TiledCollision } from "./game-actor";
 import { GameEngine } from "./game-engine";
 import { Player } from "./player";
+import type { GameLevel } from "./scenes/game-level";
 import type { Weapon } from "./weapon";
 
 export class WeaponActor extends GameActor {
@@ -88,6 +89,13 @@ export class WeaponActor extends GameActor {
   }
 
   conditionalUpdateTarget() {
+    if (this.target?.isKilled()) {
+      this.target = this.weapon.getNearestLivingEnemyToPosition(
+        this.scene as GameLevel,
+        this.pos,
+      );
+    }
+
     if (!this.target) {
       return;
     }
