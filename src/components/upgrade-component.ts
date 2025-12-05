@@ -83,12 +83,15 @@ export class UpgradeComponent extends Component {
 
   rollUpgrades(forPlayer: Player, numToRoll = 3): UpgradeUIData[] {
     const upgrades: UpgradeUIData[] = [];
+    const chosenWeapons: WeaponData[] = [];
 
     for (let i = 0; i < numToRoll; i++) {
       // first, choose if we're getting a weapon or passive (todo: create passives)
       // second, decide if we get an upgrade or a new unlock
       const availableWeapons = Resources.WeaponData.data.filter(
-        (wd) => !forPlayer.weapons.find((w) => w.definition === wd),
+        (wd) =>
+          !forPlayer.weapons.find((w) => w.definition === wd) &&
+          !chosenWeapons.find((w) => w === wd),
       );
       const canGetNew =
         availableWeapons.length > 0 &&
@@ -96,6 +99,7 @@ export class UpgradeComponent extends Component {
       const chooseNew = canGetNew && rand.bool();
       if (chooseNew) {
         const choice = rand.pickOne(availableWeapons);
+        chosenWeapons.push(choice);
         upgrades.push({
           name: choice.displayName,
           img: Weapon.getSprite(choice, forPlayer.scene as GameLevel)!,
