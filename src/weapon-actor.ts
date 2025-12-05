@@ -21,6 +21,7 @@ export class WeaponActor extends GameActor {
   static weaponCounter = new Uint32Array([1]);
   _direction = Vector.Zero;
   damage: number;
+  lifetime?: number;
   instigator: GameActor;
   weapon: Weapon;
   shouldFaceDirection: boolean;
@@ -33,10 +34,6 @@ export class WeaponActor extends GameActor {
     if (this.shouldFaceDirection) {
       this.rotation = dir.toAngle() + Math.PI / 2;
     }
-  }
-
-  private get lifetime(): number | undefined {
-    return this.weapon.definition.baseLifetime;
   }
 
   constructor(weapon: Weapon, target?: Actor) {
@@ -55,14 +52,12 @@ export class WeaponActor extends GameActor {
     this.weapon = weapon;
     this.target = target;
     this.instigator = weapon.owner;
-    this._speed = weapon.definition.baseSpeed;
-    this.damage = weapon.definition.baseDamage;
+    this._speed = weapon.speed;
+    this.damage = weapon.damage;
+    this.lifetime = weapon.lifetimeMs;
     this.shouldFaceDirection = weapon.definition.spawnBehavior !== "orbit";
     if (weapon.definition.baseScale) {
-      this.scale = vec(
-        weapon.definition.baseScale,
-        weapon.definition.baseScale,
-      );
+      this.scale = vec(weapon.size, weapon.size);
     }
 
     if (tile.animation.length) {

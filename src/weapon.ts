@@ -6,6 +6,10 @@ import {
   Logger,
   type Sprite,
 } from "excalibur";
+import {
+  UpgradeAttribute,
+  type UpgradeUIData,
+} from "./components/upgrade-component";
 import type { Enemy } from "./enemy";
 import type { GameActor } from "./game-actor";
 import { GameEngine } from "./game-engine";
@@ -17,10 +21,10 @@ export interface WeaponData {
   displayName: string;
   baseSpeed: number;
   baseDamage: number;
-  baseSpawnIntervalMs: number;
-  baseLifetime?: number;
   baseScale?: number;
+  baseSpawnIntervalMs: number;
   baseAmount?: number;
+  baseLifetime?: number;
   spawnBehavior:
     | "targetNearestEnemy"
     | "ownerFacing"
@@ -38,6 +42,12 @@ export class Weapon extends Entity {
   aliveTime = 0;
   owner: GameActor;
   definition: WeaponData;
+  speed: number;
+  damage: number;
+  size: number;
+  intervalMs: number;
+  amount: number;
+  lifetimeMs?: number;
 
   constructor(data: WeaponData, level: TiledResource, owner: GameActor) {
     super({
@@ -47,6 +57,13 @@ export class Weapon extends Entity {
     this.definition = data;
     this.level = level;
     this.owner = owner;
+
+    this.speed = data.baseSpeed;
+    this.damage = data.baseDamage;
+    this.size = data.baseScale ?? 1;
+    this.intervalMs = data.baseSpawnIntervalMs;
+    this.amount = data.baseAmount ?? 1;
+    this.lifetimeMs = data.baseLifetime;
   }
 
   static getSprite(data: WeaponData, level: GameLevel): Sprite | undefined {
@@ -101,8 +118,7 @@ export class Weapon extends Entity {
 
     if (
       this.lastSpawnedTimeMs &&
-      this.lastSpawnedTimeMs + this.definition.baseSpawnIntervalMs >
-        this.aliveTime
+      this.lastSpawnedTimeMs + this.intervalMs > this.aliveTime
     ) {
       return;
     }
@@ -142,8 +158,46 @@ export class Weapon extends Entity {
       }
     }
 
-    const weapon = new WeaponActor(this, target);
-    engine.currentScene.add(weapon);
+    const amount = Math.floor(this.amount);
+    for (let i = 0; i < amount; i++) {
+      // todo: need to vary the spawn position or timing a bit for multi-spawns
+      const weapon = new WeaponActor(this, target);
+      engine.currentScene.add(weapon);
+    }
     this.lastSpawnedTimeMs = this.aliveTime;
+  }
+
+  applyUpgrade(upgrade: UpgradeUIData) {
+    switch (upgrade.data?.meta?.attribute) {
+      case UpgradeAttribute.Amount:
+        this.amount += upgrade.data.amount;
+        break;
+
+      case UpgradeAttribute.Damage:
+        this.damage += this.definition.baseDamage * upgrade.data.amount;
+        break;
+
+      case UpgradeAttribute.Interval:
+        this.intervalMs += upgrade.data.amount * 1000; // these should always be negative values
+        break;
+
+      case UpgradeAttribute.Lifetime:
+        if (this.lifetimeMs) {
+          this.lifetimeMs = this.lifetimeMs + upgrade.data.amount * 1000;
+        } else {
+          Logger.getInstance().error(
+            `${this.name} told to apply Lifetime upgrade, but no lifetime is set.`,
+          );
+        }
+        break;
+
+      case UpgradeAttribute.Size:
+        this.size += (this.definition.baseScale ?? 1) * upgrade.data.amount;
+        break;
+
+      case UpgradeAttribute.Speed:
+        this.speed += upgrade.data.amount;
+        break;
+    }
   }
 }

@@ -152,7 +152,12 @@ export class Player extends GameActor {
   }
 
   onUpgradeChosen(evt: UpgradeChosenEvent) {
-    if (evt.upgrade.weapon) {
+    if (evt.upgrade.data) {
+      const weapon = this.weapons.find(
+        (w) => w.definition === evt.upgrade.weapon,
+      );
+      weapon?.applyUpgrade(evt.upgrade);
+    } else if (evt.upgrade.weapon) {
       this.giveWeapon(evt.upgrade.weapon);
     }
   }
