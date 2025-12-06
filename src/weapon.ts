@@ -5,7 +5,6 @@ import {
   type Engine,
   Entity,
   Logger,
-  type Sprite,
   type Vector,
 } from "excalibur";
 import {
@@ -76,7 +75,10 @@ export class Weapon extends Entity {
     this.lifetimeMs = data.baseLifetime;
   }
 
-  static getSprite(data: WeaponData, level: GameLevel): Sprite | undefined {
+  static getSprite(
+    data: WeaponData,
+    level: GameLevel,
+  ): Promise<HTMLImageElement> | undefined {
     const weaponsTilesets = level.tiledLevel
       .getTilesetByProperty("has-weapons")
       .filter((t) => t.properties.get("has-weapons") === true);
@@ -92,7 +94,15 @@ export class Weapon extends Entity {
     }
 
     const sprite = weaponTile.tileset.spritesheet.sprites.at(weaponTile.id);
-    return sprite;
+    if (!sprite) {
+      return undefined;
+    }
+
+    const prom = weaponTile.tileset.spritesheet.getSpriteAsImage(
+      sprite.sourceView.x / sprite.sourceView.width,
+      sprite.sourceView.y / sprite.sourceView.height,
+    );
+    return prom;
   }
 
   override onInitialize(engine: Engine): void {
@@ -162,13 +172,13 @@ export class Weapon extends Entity {
   }
 
   spawnWeapon(engine: Engine) {
-    if (!this.tile || !(engine.currentScene instanceof GameLevel)) {
+    if (!this.tile || !(this.scene instanceof GameLevel)) {
       return;
     }
 
     let target: Actor | undefined;
     if (this.definition.spawnBehavior === "targetNearestEnemy") {
-      target = this.getNearestLivingEnemy(engine.currentScene);
+      target = this.getNearestLivingEnemy(this.scene);
       if (!target) {
         return;
       }
@@ -182,14 +192,14 @@ export class Weapon extends Entity {
     for (let i = 0; i < amount; i++) {
       if (this.definition.spawnBehavior === "ownerFacing") {
         const weapon = new WeaponActor(this, target);
-        engine.currentScene.add(weapon);
+        this.scene.add(weapon);
         if (amount > 1) {
           weapon.spawnRotationVarianceDegrees = rand.floating(0, 5);
         }
       } else {
         this.actions.delay(i * delay).callMethod(() => {
           const weapon = new WeaponActor(this, target);
-          engine.currentScene.add(weapon);
+          this.scene?.add(weapon);
         });
       }
     }

@@ -1,10 +1,4 @@
-import {
-  Component,
-  EventEmitter,
-  GameEvent,
-  Logger,
-  type Sprite,
-} from "excalibur";
+import { Component, EventEmitter, GameEvent, Logger } from "excalibur";
 import { GameEngine } from "../game-engine";
 import type { Player } from "../player";
 import { Resources } from "../resources";
@@ -16,7 +10,7 @@ import { Weapon, type WeaponData } from "../weapon";
 export interface UpgradeUIData {
   name: string;
   label?: string;
-  img: Sprite;
+  img: Promise<HTMLImageElement>;
   weapon?: WeaponData;
   data?: RolledUpgradeData;
 }
@@ -384,7 +378,9 @@ export class UpgradeComponent extends Component {
             choice.definition,
             forPlayer.scene as GameLevel,
           )!,
-          label: `${labelAmount}${upgradeData.meta?.units ?? ""} ${UpgradeAttribute[upgradeData.meta?.attribute ?? 0]}`,
+          label: `${labelAmount}${upgradeData.meta?.units ?? ""} ${
+            UpgradeAttribute[upgradeData.meta?.attribute ?? 0]
+          }`,
           weapon: choice.definition,
           data: upgradeData,
         });
@@ -414,26 +410,10 @@ export class UpgradeComponent extends Component {
       elem.querySelector(".name")!.innerHTML = upgrades[i].name;
       elem.querySelector(".label")!.innerHTML = upgrades[i].label ?? "";
       const imgElem = elem.querySelector(".img") as HTMLElement;
-      imgElem.style.setProperty(
-        "--background-image",
-        `url(${upgrades[i].img.image.data.src})`,
-      );
-      imgElem.style.setProperty(
-        "--background-x",
-        `-${upgrades[i].img.sourceView.x.toString()}px`,
-      );
-      imgElem.style.setProperty(
-        "--background-y",
-        `-${upgrades[i].img.sourceView.y.toString()}px`,
-      );
-      imgElem.style.setProperty(
-        "--width",
-        `${upgrades[i].img.sourceView.width.toString()}px`,
-      );
-      imgElem.style.setProperty(
-        "--height",
-        `${upgrades[i].img.sourceView.height.toString()}px`,
-      );
+      imgElem.replaceChildren(); // todo: should be a loading image, maybe? but the callback hits almost immediately so maybe not.
+      upgrades[i].img.then((v) => {
+        imgElem.replaceChildren(v);
+      });
     }
     unhideElement(this.elemUpgrade);
   }

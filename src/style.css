@@ -255,10 +255,3 @@ body {
     flex-direction: column;
   }
 }
-
-.bg-img {
-  background-image: var(--background-image);
-  background-position: var(--background-x) var(--background-y);
-  height: var(--height);
-  width: var(--width);
-}
