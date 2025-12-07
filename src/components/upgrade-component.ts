@@ -357,9 +357,23 @@ export class UpgradeComponent extends Component {
       } else {
         const choice = rand.pickOne(forPlayer.weapons);
         let attribute = attributes.pop()!;
+        // if the weapon doesn't have a lifetime, don't choose the Lifetime upgrade attribute
         if (!choice.lifetimeMs && attribute === UpgradeAttribute.Lifetime) {
           attribute = attributes.pop()!;
+          // put it back into the pool in case we somehow run through them all
+          attributes.push(UpgradeAttribute.Lifetime);
         }
+
+        // if the weapon doesn't move, don't choose the Speed upgrade attribute
+        if (
+          choice.definition.spawnBehavior === "ownerLocation" &&
+          attribute === UpgradeAttribute.Speed
+        ) {
+          attribute = attributes.pop()!;
+          // put it back into the pool in case we somehow run through them all
+          attributes.push(UpgradeAttribute.Speed);
+        }
+
         const rarity = this.getRandomRarity();
         const upgradeData = this.getUpgradeAmount(rarity, attribute);
         // todo: can/should we support special upgrade types like allowing a weapon to bounce to another enemy
