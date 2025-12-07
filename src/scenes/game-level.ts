@@ -7,6 +7,7 @@ import {
   type Engine,
   type ExcaliburGraphicsContext,
   Logger,
+  lerp,
   Scene,
   type SceneActivationContext,
   Vector,
@@ -77,6 +78,8 @@ export class GameLevel extends Scene {
     this.elemPause = document.getElementById("pause-text")!;
   }
 
+  private _screenResizeHandler = () => this.activateCameraStrategies();
+
   override onInitialize(engine: Engine): void {
     // Scene.onInitialize is where we recommend you perform the composition for your game
     // const pointerSystem = this.world.systemManager.get(PointerSystem);
@@ -87,6 +90,8 @@ export class GameLevel extends Scene {
     this.initializePlayer();
     this.initializeEnemies();
     this.initializeObjectives();
+
+    engine.screen.events.on("resize", this._screenResizeHandler);
   }
 
   updateXpBar(xpComp: XpComponent) {
@@ -236,7 +241,8 @@ export class GameLevel extends Scene {
 
   activateCameraStrategies() {
     this.camera.strategy.elasticToActor(this.player!, 0.15, 0.75);
-    this.camera.zoom = 0.4;
+
+    this.setScaledZoom();
 
     const firstLayer = this.tiledLevel.getTileLayers().at(0);
     if (!firstLayer) {
@@ -264,6 +270,24 @@ export class GameLevel extends Scene {
     this.camera.strategy.limitCameraBounds(bounds);
   }
 
+  private setScaledZoom() {
+    const minZoom = 0.2;
+    const maxZoom = 0.4;
+    const maxViewportWidth = 2000;
+    const minViewportWidth = 500;
+    const clampedWidth = clamp(
+      this.engine.screen.viewport.width,
+      minViewportWidth,
+      maxViewportWidth,
+    );
+    const scaledZoom = lerp(
+      minZoom,
+      maxZoom,
+      (clampedWidth - minViewportWidth) / (maxViewportWidth - minViewportWidth),
+    );
+    this.camera.zoom = scaledZoom;
+  }
+
   override onDeactivate(context: SceneActivationContext): void {
     // Called when Excalibur transitions away from this scene
     // Only 1 scene is active at a time
@@ -273,6 +297,7 @@ export class GameLevel extends Scene {
     hideElement(this.elemUIRoot);
 
     this.player?.unhookAllEvents(this);
+    context.engine.screen.events.off("resize", this._screenResizeHandler);
   }
 
   onPaused(paused: boolean, showPauseUI?: boolean) {
