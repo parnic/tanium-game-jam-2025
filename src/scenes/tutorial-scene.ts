@@ -15,8 +15,8 @@ export class TutorialScene extends GameLevel {
 
   private readonly _tutorialSteps = [
     "The gifts you're supposed to deliver to Santa were scattered in the crash! Move with W/A/S/D, arrow keys, the left joystick of a gamepad, or tap-/click-and-drag with a virtual joystick.",
-    "Collect the gifts scattered around the level while dealing with the native fauna. Get back to your ship once you've collected them all!",
-    "If you collect enough enemy remains, you might just be able to improve your weapons...",
+    "Collect the gifts scattered around the area while dealing with the native fauna. Get back to your ship once you've collected them all!",
+    "If you collect enough enemy remains, you might just be able to use them to improve your weapons...",
   ];
 
   private readonly _seenTutorialKey = "seenTutorial";
