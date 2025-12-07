@@ -4,14 +4,18 @@ import {
   Animation,
   CollisionType,
   type Engine,
+  Font,
+  FontUnit,
   type Scene,
   ScreenElement,
+  Text,
   Vector,
   vec,
 } from "excalibur";
 import { config } from "./config";
 import { GameActor, TiledCollision } from "./game-actor";
 import { GameEngine } from "./game-engine";
+import { Resources } from "./resources";
 import { GameLevel } from "./scenes/game-level";
 
 export class Gift extends GameActor {
@@ -75,6 +79,8 @@ export class Gift extends GameActor {
 
 export class GiftOffScreenIndicator extends ScreenElement {
   overlay: Actor;
+  distanceLabel: Text;
+  distanceLabelActor: Actor;
   gift: Gift;
 
   constructor(gift: Gift, background: Tile) {
@@ -108,6 +114,21 @@ export class GiftOffScreenIndicator extends ScreenElement {
     if (bgGraphic) {
       this.graphics.use(bgGraphic);
     }
+
+    this.distanceLabel = new Text({
+      text: "24m",
+      font: new Font({
+        size: 20,
+        unit: FontUnit.Px,
+        family: Resources.FontSilkscreen.family,
+      }),
+    });
+    this.distanceLabelActor = new Actor({
+      x: this.width / 2 / this.scale.x,
+      y: (this.height - this.height / 5) / this.scale.y,
+    });
+    this.distanceLabelActor.graphics.use(this.distanceLabel);
+    this.addChild(this.distanceLabelActor);
   }
 
   onPaused(paused: boolean) {
@@ -125,10 +146,12 @@ export class GiftOffScreenIndicator extends ScreenElement {
     if (!this.gift.isOffScreen) {
       this.graphics.isVisible = false;
       this.overlay.graphics.isVisible = false;
+      this.distanceLabelActor.graphics.isVisible = false;
       return;
     }
     this.graphics.isVisible = true;
     this.overlay.graphics.isVisible = true;
+    this.distanceLabelActor.graphics.isVisible = true;
 
     const playerScreenPos = vec(
       engine.screen.viewport.width / 2,
@@ -159,5 +182,8 @@ export class GiftOffScreenIndicator extends ScreenElement {
 
     const indicatorPos = playerScreenPos.add(fromCenter);
     this.pos = indicatorPos.sub(posOffset);
+
+    const worldDist = giftLoc.distance(this.scene.player.pos);
+    this.distanceLabel.text = `${Math.round(worldDist / 1000).toString()}m`;
   }
 }
