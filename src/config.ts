@@ -6,5 +6,5 @@ export const config = {
   ZIndexWeapon: 20,
   ZIndexScreenElements: 100,
 
-  SpeedPickup: 2,
+  SpeedPickup: 3,
 } as const;
