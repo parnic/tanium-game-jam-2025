@@ -44,7 +44,7 @@ export abstract class GameActor extends Actor {
   private _health = 10;
   protected _maxHealth = 10;
   protected lastDamaged?: number;
-  protected invulnerabilityWindowMs = 300;
+  protected invulnerabilityWindowMs = 0;
   protected alwaysAnimate = false;
   private _isGodMode = false;
   private _isDemigodMode = false;

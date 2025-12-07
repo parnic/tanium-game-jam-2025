@@ -97,7 +97,7 @@ export class Enemy extends GameActor {
       // todo: we probably don't want to kill every enemy type that hits the player, e.g. the minibosses.
       // those should probably stop moving for a second or so.
       other.owner.onHitByEnemy(this);
-      this.takeDamage(this.health);
+      this.takeDamage(this.health, false, true);
     }
   }
 

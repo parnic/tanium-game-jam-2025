@@ -111,6 +111,7 @@ export class Player extends GameActor {
       );
     }
 
+    this.invulnerabilityWindowMs = 300;
     this._speed = 0.4;
     this.tile = tile;
     this._spriteFacing =
