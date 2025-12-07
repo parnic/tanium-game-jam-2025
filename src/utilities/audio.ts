@@ -9,12 +9,13 @@ function currBgmIdx(): number {
   return bgmOrder[currBgmOrderIdx % bgmOrder.length];
 }
 
-const musicVolume = 0.6;
-const enemyDeathSfxVolume = 0.65;
+const enemyDeathSfxVolume = 0.4;
+const levelCompleteSfxVolume = 0.8;
+const levelUpSfxVolume = 0.8;
+const musicVolume = 0.3;
 const pickupGiftSfxVolume = 1.0;
-const levelUpSfxVolume = 1.0;
-const selectUpgradeSfxVolume = 1.0;
-const playerTakeDamageSfxVolume = 1.0;
+const playerTakeDamageSfxVolume = 0.8;
+const selectUpgradeSfxVolume = 0.8;
 
 let _masterVolumeMultiplier = 1.0;
 export function masterVolumeMultiplier(): number {
@@ -43,25 +44,25 @@ export function playSound(snd: Sound, volume: number) {
   snd.play();
 }
 
-export function playMusic() {
-  currBgmOrderIdx++;
-  playSound(SfxResources.bgm[currBgmIdx()], musicVolume);
-}
-
 export function playEnemyDeathSfx() {
   playSound(rand.pickOne(SfxResources.enemyDeath), enemyDeathSfxVolume);
 }
 
-export function playPickupGiftSfx() {
-  playSound(rand.pickOne(SfxResources.pickupGift), pickupGiftSfxVolume);
+export function playLevelCompleteSfx() {
+  playSound(rand.pickOne(SfxResources.levelComplete), levelCompleteSfxVolume);
 }
 
 export function playLevelUpSfx() {
   playSound(rand.pickOne(SfxResources.levelUp), levelUpSfxVolume);
 }
 
-export function playSelectUpgradeSfx() {
-  playSound(rand.pickOne(SfxResources.selectUpgrade), selectUpgradeSfxVolume);
+export function playMusic() {
+  currBgmOrderIdx++;
+  playSound(SfxResources.bgm[currBgmIdx()], musicVolume);
+}
+
+export function playPickupGiftSfx() {
+  playSound(rand.pickOne(SfxResources.pickupGift), pickupGiftSfxVolume);
 }
 
 export function playPlayerTakeDamageSfx() {
@@ -69,4 +70,8 @@ export function playPlayerTakeDamageSfx() {
     rand.pickOne(SfxResources.playerTakeDamage),
     playerTakeDamageSfxVolume,
   );
+}
+
+export function playSelectUpgradeSfx() {
+  playSound(rand.pickOne(SfxResources.selectUpgrade), selectUpgradeSfxVolume);
 }

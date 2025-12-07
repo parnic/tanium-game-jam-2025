@@ -24,6 +24,11 @@ export const LevelResources: TiledResource[] = [
 ];
 
 export const SfxResources = {
+  bgm: [
+    new Sound("./music/countach-2050-main-version-41372-03-44.mp3"),
+    new Sound("./music/dyadic-adam-tell-main-version-42333-03-13.mp3"),
+    new Sound("./music/labyrinth-sky-toes-main-version-24037-04-18.mp3"),
+  ],
   enemyDeath: [
     new Sound("./sfx/hurt-a.ogg"),
     new Sound("./sfx/hurt-c.ogg"),
@@ -36,22 +41,26 @@ export const SfxResources = {
     new Sound("./sfx/shoot-f.ogg"),
     new Sound("./sfx/shoot-g.ogg"),
   ],
+  levelComplete: [
+    new Sound(
+      "./sfx/zapsplat_multimedia_game_sound_coin_collect_win_bonus_113269.mp3",
+    ),
+  ],
   levelUp: [
     new Sound(
       "./sfx/pmsfx_UIAlert_UI_Notification_Message_PopUP_8_PMSFXZAPSPLAT_ZSUIEX.mp3",
     ),
   ],
+  pickupGift: [
+    new Sound(
+      "./sfx/zapsplat_multimedia_game_sound_win_gold_coins_or_treasure_hit_twinkle_74544.mp3",
+    ),
+  ],
+  playerTakeDamage: [new Sound("./sfx/sfx_hurt.ogg")],
   selectUpgrade: [
     new Sound(
       "./sfx/pmsfx_UIClick_UI_Click_Coin_Metalic_2_PMSFXZAPSPLAT_ZSUIEX.mp3",
     ),
-  ],
-  pickupGift: [new Sound("./sfx/coin-c.ogg"), new Sound("./sfx/sfx_gem.ogg")],
-  playerTakeDamage: [new Sound("./sfx/sfx_hurt.ogg")],
-  bgm: [
-    new Sound("./music/countach-2050-main-version-41372-03-44.mp3"),
-    new Sound("./music/dyadic-adam-tell-main-version-42333-03-13.mp3"),
-    new Sound("./music/labyrinth-sky-toes-main-version-24037-04-18.mp3"),
   ],
 };
 
