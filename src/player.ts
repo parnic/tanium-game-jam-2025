@@ -498,7 +498,7 @@ export class Player extends GameActor {
     );
     this.healthbarContainerElem.style.setProperty(
       "--width",
-      `${(this.width / 2.5).toString()}px`,
+      `${(this.width * (this.scene?.camera.zoom ?? 0.4)).toString()}px`,
     );
 
     this.tryPickup();
