@@ -1,25 +1,17 @@
 import type { Tile } from "@excaliburjs/plugin-tiled";
 import {
-  Actor,
   Animation,
   CollisionType,
   type Engine,
-  Font,
-  FontUnit,
   type Scene,
-  ScreenElement,
-  Text,
-  Vector,
-  vec,
+  type Vector,
 } from "excalibur";
-import { config } from "./config";
 import { GameActor, TiledCollision } from "./game-actor";
 import { GameEngine } from "./game-engine";
-import { Resources } from "./resources";
-import { GameLevel } from "./scenes/game-level";
+import { OffScreenIndicator } from "./off-screen-indicator";
 
 export class Gift extends GameActor {
-  offScreen: GiftOffScreenIndicator;
+  offScreen: OffScreenIndicator;
 
   constructor(inPos: Vector, name: string, tile: Tile) {
     super({
@@ -47,7 +39,7 @@ export class Gift extends GameActor {
       }),
     });
 
-    this.offScreen = new GiftOffScreenIndicator(this, bg!);
+    this.offScreen = new OffScreenIndicator(this, bg!);
   }
 
   override onAdd(engine: Engine): void {
@@ -74,116 +66,5 @@ export class Gift extends GameActor {
     }
 
     super.onPostUpdate(engine, elapsedMs);
-  }
-}
-
-export class GiftOffScreenIndicator extends ScreenElement {
-  overlay: Actor;
-  distanceLabel: Text;
-  distanceLabelActor: Actor;
-  gift: Gift;
-
-  constructor(gift: Gift, background: Tile) {
-    super({
-      width: background.tileset.tileWidth,
-      height: background.tileset.tileHeight,
-      // scale: Vector.Half,
-      z: config.ZIndexScreenElements,
-    });
-
-    // do not pass this into the super args. doing so causes the given height and width to get reduced *twice*
-    // instead of once, so passing in a width of 128 ends up setting the width to 32 instead of 64 when using a canvas.
-    // setting it here instead avoids that issue.
-    // i've reported this to Excalibur's Discord with a repro.
-    this.scale = Vector.Half;
-
-    this.gift = gift;
-    this.overlay = new Actor({
-      x: this.width / 2 / this.scale.x,
-      y: this.height / 2 / this.scale.y,
-    });
-
-    if (gift.activeGraphic) {
-      this.overlay.graphics.use(gift.activeGraphic);
-    }
-    this.addChild(this.overlay);
-
-    const bgGraphic = background.tileset.spritesheet.sprites.at(
-      background.tiledTile.id,
-    );
-    if (bgGraphic) {
-      this.graphics.use(bgGraphic);
-    }
-
-    this.distanceLabel = new Text({
-      text: "24m",
-      font: new Font({
-        size: 20,
-        unit: FontUnit.Px,
-        family: Resources.FontSilkscreen.family,
-      }),
-    });
-    this.distanceLabelActor = new Actor({
-      x: this.width / 2 / this.scale.x,
-      y: (this.height - this.height / 5) / this.scale.y,
-    });
-    this.distanceLabelActor.graphics.use(this.distanceLabel);
-    this.addChild(this.distanceLabelActor);
-  }
-
-  onPaused(paused: boolean) {
-    // stub
-  }
-
-  override onPostUpdate(engine: Engine, elapsed: number): void {
-    if (!(this.scene instanceof GameLevel)) {
-      return;
-    }
-    if (!this.scene.player || this.scene.player.isKilled()) {
-      return;
-    }
-
-    if (!this.gift.isOffScreen) {
-      this.graphics.isVisible = false;
-      this.overlay.graphics.isVisible = false;
-      this.distanceLabelActor.graphics.isVisible = false;
-      return;
-    }
-    this.graphics.isVisible = true;
-    this.overlay.graphics.isVisible = true;
-    this.distanceLabelActor.graphics.isVisible = true;
-
-    const playerScreenPos = vec(
-      engine.screen.viewport.width / 2,
-      engine.screen.viewport.height / 2,
-    );
-    const giftLoc = this.gift.pos;
-    const giftScreenPos = engine.worldToScreenCoordinates(giftLoc);
-    const giftToPlayer = giftScreenPos.sub(playerScreenPos);
-    const normGiftToPlayer = vec(
-      giftToPlayer.x / (engine.screen.viewport.width * 2),
-      giftToPlayer.y / (engine.screen.viewport.height * 2),
-    );
-
-    const div =
-      Math.abs(normGiftToPlayer.x) > Math.abs(normGiftToPlayer.y)
-        ? Math.abs(normGiftToPlayer.x)
-        : Math.abs(normGiftToPlayer.y);
-
-    const screenNormGiftToPlayer = vec(
-      normGiftToPlayer.x / div,
-      normGiftToPlayer.y / div,
-    );
-
-    const posOffset = vec(this.width / 2, this.height / 2);
-    const fromCenter = screenNormGiftToPlayer.scale(
-      vec(playerScreenPos.x - posOffset.x, playerScreenPos.y - posOffset.y),
-    );
-
-    const indicatorPos = playerScreenPos.add(fromCenter);
-    this.pos = indicatorPos.sub(posOffset);
-
-    const worldDist = giftLoc.distance(this.scene.player.pos);
-    this.distanceLabel.text = `${Math.round(worldDist / 1000).toString()}m`;
   }
 }
