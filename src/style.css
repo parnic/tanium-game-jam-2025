@@ -221,14 +221,22 @@ body {
   background-color: #404663;
   border: none;
   border-radius: 0.7rem;
-  display: flex;
-  flex-direction: row;
-  gap: 1rem;
   padding: 0.5rem 1rem;
   box-shadow:
     5px 5px 7px rgb(0 0 0 / 0.11),
     10px 10px 15px rgb(0 0 0 / 0.11),
     50px 50px 60px rgb(0 0 0 / 0.11);
+}
+
+.responsive-flex-row {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+}
+
+.flex-column {
+  display: flex;
+  flex-direction: column;
 }
 
 .small-box {
@@ -251,7 +259,7 @@ body {
 }
 
 @media (max-width: 800px) {
-  .big-box {
+  .responsive-flex-row {
     flex-direction: column;
   }
 }
