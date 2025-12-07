@@ -21,12 +21,10 @@ import { Gift } from "../gift";
 import { Player } from "../player";
 import {
   hideElement,
-  showElement,
   showOrHideElement,
   unhideElement,
 } from "../utilities/html";
 import { rand } from "../utilities/math";
-import * as SceneManager from "../utilities/scene-manager";
 
 interface Ramp {
   wave: number;
@@ -64,8 +62,6 @@ export class GameLevel extends Scene {
   elemXpBar: HTMLElement;
   elemXpLabel: HTMLElement;
   elemPause: HTMLElement;
-  elemGameOver: HTMLElement;
-  elemRestart: HTMLElement;
   totalElapsed = 0;
 
   constructor(level: TiledResource) {
@@ -79,14 +75,7 @@ export class GameLevel extends Scene {
     this.elemXpBar = document.getElementById("xp-bar")!;
     this.elemXpLabel = document.getElementById("xp-label")!;
     this.elemPause = document.getElementById("pause-text")!;
-    this.elemGameOver = document.getElementById("you-died")!;
-    this.elemRestart = document.getElementById("restart")!;
   }
-
-  private _restartClickHandler = () => {
-    void SceneManager.reloadCurrentScene(this.engine);
-    hideElement(this.elemGameOver);
-  };
 
   override onInitialize(engine: Engine): void {
     // Scene.onInitialize is where we recommend you perform the composition for your game
@@ -167,9 +156,6 @@ export class GameLevel extends Scene {
       return;
     }
     this.player = new Player(playerStartActor.pos, playerTile, chosenCharacter);
-    this.player.on("postkill", () => {
-      showElement(this.elemGameOver);
-    });
     this.add(this.player);
   }
 
@@ -240,7 +226,6 @@ export class GameLevel extends Scene {
     // Only 1 scene is active at a time
 
     unhideElement(this.elemUIRoot);
-    this.elemRestart.addEventListener("click", this._restartClickHandler);
 
     // set the camera to the player's position before making it elastic to avoid
     // a big across-the-world ease at the start of a level
@@ -288,7 +273,6 @@ export class GameLevel extends Scene {
     hideElement(this.elemUIRoot);
 
     this.player?.unhookAllEvents(this);
-    this.elemRestart.removeEventListener("click", this._restartClickHandler);
   }
 
   onPaused(paused: boolean, showPauseUI?: boolean) {

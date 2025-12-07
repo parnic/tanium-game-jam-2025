@@ -3,11 +3,25 @@ import type { Engine } from "excalibur";
 import { LevelResources } from "../resources";
 import { GameLevel } from "../scenes/game-level";
 import { TransitionScene } from "../scenes/transition-scene";
+import { TutorialScene } from "../scenes/tutorial-scene";
+import * as html from "./html";
 
 enum SceneType {
   Tutorial,
   Game,
 }
+
+let _engine: Engine;
+
+const elemGameOver = document.getElementById("you-died")!;
+const elemRestart = document.getElementById("restart")!;
+
+const restartClickHandler = () => {
+  void reloadCurrentScene(_engine);
+  html.hideElement(elemGameOver);
+};
+
+elemRestart.addEventListener("click", restartClickHandler);
 
 export class SceneData {
   name = "";
@@ -33,7 +47,7 @@ const sceneList: SceneData[] = [
     name: "level1",
     map: LevelResources[0],
     nextScene: "",
-    type: SceneType.Game,
+    type: SceneType.Tutorial,
   },
 ];
 
@@ -81,6 +95,8 @@ export async function goToScene(
   engine: Engine,
   currentSceneData?: SceneData,
 ) {
+  _engine = engine;
+
   const t = new TransitionScene();
   engine.addScene("transition", t);
   await engine.goToScene("transition");
@@ -88,19 +104,26 @@ export async function goToScene(
     engine.removeScene(currentSceneData.name);
   }
 
+  let nextScene: GameLevel;
+
   if (nextSceneData.type === SceneType.Tutorial) {
-    // engine.addScene(
-    //   nextSceneData.name,
-    //   new TutorialScene(nextSceneData.map, {
-    //     showTutorial: !currentSceneData,
-    //   }),
-    // );
+    nextScene = new TutorialScene(nextSceneData.map, {
+      showTutorial: !currentSceneData,
+    });
   } else {
-    engine.addScene(nextSceneData.name, new GameLevel(nextSceneData.map));
+    nextScene = new GameLevel(nextSceneData.map);
   }
+
+  engine.addScene(nextSceneData.name, nextScene);
 
   await engine.goToScene(nextSceneData.name);
   engine.removeScene("transition");
+
+  nextScene.player?.on("postkill", () => {
+    html.showElement(elemGameOver);
+
+    nextScene.player?.events.on("ButtonPressed", restartClickHandler);
+  });
 }
 
 export async function goToNextScene(engine: Engine) {

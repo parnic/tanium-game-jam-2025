@@ -1,5 +1,6 @@
 import type { Tile } from "@excaliburjs/plugin-tiled";
 import {
+  type ActorEvents,
   Animation,
   Axes,
   Buttons,
@@ -7,6 +8,8 @@ import {
   type CollisionContact,
   CollisionType,
   type Engine,
+  EventEmitter,
+  GameEvent,
   type Gamepad,
   Keys,
   Logger,
@@ -35,13 +38,22 @@ import { Resources } from "./resources";
 import { GameLevel } from "./scenes/game-level";
 import * as Audio from "./utilities/audio";
 import { showElement } from "./utilities/html";
-import * as SceneManager from "./utilities/scene-manager";
 import { Weapon, type WeaponData } from "./weapon";
 
 export interface CharacterData {
   name: string;
   startingWeapon: string;
 }
+
+interface PlayerEvents {
+  ButtonPressed: ButtonPressedEvent;
+}
+
+export class ButtonPressedEvent extends GameEvent<void> {}
+
+export const PlayerEvents = {
+  ButtonPressed: "ButtonPressed",
+} as const;
 
 // Actors are the main unit of composition you'll likely use, anything that you want to draw and move around the screen
 // is likely built with an actor
@@ -56,6 +68,8 @@ export interface CharacterData {
 // actor.pointer
 
 export class Player extends GameActor {
+  public events = new EventEmitter<ActorEvents & PlayerEvents>();
+
   movementEnabled = true;
   tile: Tile;
   pointerMoveSource?: Vector;
@@ -240,6 +254,8 @@ export class Player extends GameActor {
     });
 
     engine.input.keyboard.on("press", (evt) => {
+      this.events.emit("ButtonPressed", new ButtonPressedEvent());
+
       switch (evt.key) {
         case Keys.Escape:
           if (engine instanceof GameEngine) {
@@ -292,12 +308,6 @@ export class Player extends GameActor {
                 p.pickedUpBy = this;
               }
             });
-          }
-          break;
-
-        case Keys.R:
-          if (engine.input.keyboard.isHeld(Keys.ShiftLeft)) {
-            void SceneManager.reloadCurrentScene(engine);
           }
           break;
 
@@ -397,6 +407,8 @@ export class Player extends GameActor {
     });
 
     gamepad.on("button", (evt) => {
+      this.events.emit("ButtonPressed", new ButtonPressedEvent());
+
       // claim input from this gamepad
       this.lastUsedGamepad = gamepad;
 
