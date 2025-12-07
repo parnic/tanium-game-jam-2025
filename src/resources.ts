@@ -1,5 +1,5 @@
 import { TiledResource } from "@excaliburjs/plugin-tiled";
-import { FontSource, Loader, Resource } from "excalibur";
+import { FontSource, Loader, Resource, Sound } from "excalibur";
 import { config } from "./config";
 import type { CharacterData } from "./player";
 import type { WeaponData } from "./weapon";
@@ -23,6 +23,38 @@ export const LevelResources: TiledResource[] = [
   }),
 ];
 
+export const SfxResources = {
+  enemyDeath: [
+    new Sound("./sfx/hurt-a.ogg"),
+    new Sound("./sfx/hurt-c.ogg"),
+    new Sound("./sfx/hurt-d.ogg"),
+    new Sound("./sfx/shoot-a.ogg"),
+    new Sound("./sfx/shoot-b.ogg"),
+    new Sound("./sfx/shoot-c.ogg"),
+    new Sound("./sfx/shoot-d.ogg"),
+    new Sound("./sfx/shoot-e.ogg"),
+    new Sound("./sfx/shoot-f.ogg"),
+    new Sound("./sfx/shoot-g.ogg"),
+  ],
+  levelUp: [
+    new Sound(
+      "./sfx/pmsfx_UIAlert_UI_Notification_Message_PopUP_8_PMSFXZAPSPLAT_ZSUIEX.mp3",
+    ),
+  ],
+  selectUpgrade: [
+    new Sound(
+      "./sfx/pmsfx_UIClick_UI_Click_Coin_Metalic_2_PMSFXZAPSPLAT_ZSUIEX.mp3",
+    ),
+  ],
+  pickupGift: [new Sound("./sfx/coin-c.ogg"), new Sound("./sfx/sfx_gem.ogg")],
+  playerTakeDamage: [new Sound("./sfx/sfx_hurt.ogg")],
+  bgm: [
+    new Sound("./music/countach-2050-main-version-41372-03-44.mp3"),
+    new Sound("./music/dyadic-adam-tell-main-version-42333-03-13.mp3"),
+    new Sound("./music/labyrinth-sky-toes-main-version-24037-04-18.mp3"),
+  ],
+};
+
 export const loader = new Loader(LevelResources);
 loader.backgroundColor = "#000";
 loader.logo =
@@ -32,4 +64,10 @@ loader.logoHeight = 128;
 
 for (const res of Object.values(Resources)) {
   loader.addResource(res);
+}
+
+for (const soundGrp of Object.values(SfxResources)) {
+  for (const sound of soundGrp) {
+    loader.addResource(sound);
+  }
 }

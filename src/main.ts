@@ -2,6 +2,7 @@ import { DisplayMode, ImageFiltering, SolverStrategy } from "excalibur";
 import { GameEngine } from "./game-engine";
 import { LevelResources, loader } from "./resources";
 import { GameLevel } from "./scenes/game-level";
+import * as Audio from "./utilities/audio";
 import * as SceneManager from "./utilities/scene-manager";
 
 // const calculateExPixelConversion = (screen: ex.Screen) => {
@@ -31,8 +32,12 @@ const game = new GameEngine({
 // });
 
 await game.start(loader).then(async () => {
+  Audio.init();
+
   const firstScene = SceneManager.getFirstSceneData();
   await SceneManager.goToScene(firstScene, game);
 
   // calculateExPixelConversion(game.screen);
+
+  Audio.playMusic();
 });

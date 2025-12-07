@@ -33,6 +33,7 @@ import { GameEngine } from "./game-engine";
 import { Gift } from "./gift";
 import { Resources } from "./resources";
 import { GameLevel } from "./scenes/game-level";
+import * as Audio from "./utilities/audio";
 import { showElement } from "./utilities/html";
 import * as SceneManager from "./utilities/scene-manager";
 import { Weapon, type WeaponData } from "./weapon";
@@ -155,6 +156,8 @@ export class Player extends GameActor {
   }
 
   onUpgradeChosen(evt: UpgradeChosenEvent) {
+    Audio.playSelectUpgradeSfx();
+
     if (evt.upgrade.data) {
       const weapon = this.weapons.find(
         (w) => w.definition === evt.upgrade.weapon,
@@ -166,6 +169,7 @@ export class Player extends GameActor {
   }
 
   chooseAndPresentUpgrades() {
+    Audio.playLevelUpSfx();
     const upgrades = this.upgradeComponent.rollUpgrades(this);
     this.upgradeComponent.presentUpgrades(upgrades);
   }
@@ -533,6 +537,7 @@ export class Player extends GameActor {
       // todo: spawn some cool effect, shake screen maybe, celebrate
       other.owner.kill();
       this.giftsCollected++;
+      Audio.playPickupGiftSfx();
       Logger.getInstance().info(
         `Player collected gift ${this.giftsCollected.toString()} out of ${this.giftsNeeded.toString()}.`,
       );
@@ -556,6 +561,8 @@ export class Player extends GameActor {
   }
 
   onHitByEnemy(enemy: Enemy): void {
+    Audio.playPlayerTakeDamageSfx();
+
     this.takeDamage(1);
   }
 

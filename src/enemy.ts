@@ -15,6 +15,7 @@ import { GameActor } from "./game-actor";
 import { GameEngine } from "./game-engine";
 import { Player } from "./player";
 import { GameLevel } from "./scenes/game-level";
+import * as Audio from "./utilities/audio";
 
 export class Enemy extends GameActor {
   addedInWave = 0;
@@ -104,6 +105,8 @@ export class Enemy extends GameActor {
     if (!this.def.corpseTile || !this.lastDamagedByPlayer) {
       return;
     }
+
+    Audio.playEnemyDeathSfx();
 
     const corpse = new EnemyCorpse(
       this.pos,

@@ -6,7 +6,7 @@ All code and content built 100% by real humans. No form of AI, generative or oth
 
 ## Play
 
-To play, visit https://parnic.github.io/tanium-game-jam-2025
+To play, visit <https://parnic.github.io/tanium-game-jam-2025>
 
 To play locally:
 
@@ -60,3 +60,5 @@ GitHub actions are configured to build and deploy the project to its supported h
 - Programming, stage design: [Parnic](https://github.com/parnic)
 - Engine: [Excalibur.js](https://excaliburjs.com)
 - Art: [Kenney.nl](https://kenney.nl) and Parnic's lovely wife
+- SFX: [Kenney.nl](https://kenney.nl), Zapsplat.com
+- Music from #Uppbeat (free for Creators!): <https://uppbeat.io/t/adam-tell/dyadic>, <https://uppbeat.io/t/sky-toes/labyrinth>, <https://uppbeat.io/t/2050-music/countach>
