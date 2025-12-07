@@ -74,6 +74,7 @@ export class Player extends GameActor {
 
   healthbarContainerElem: HTMLElement;
   healthbarElem: HTMLElement;
+  equipmentBarElem: HTMLElement;
 
   constructor(inPos: Vector, tile: Tile, characterName: string) {
     super({
@@ -116,6 +117,8 @@ export class Player extends GameActor {
     )!;
     this.healthbarElem = document.getElementById("player-healthbar")!;
     this._maxHealth = 10;
+
+    this.equipmentBarElem = document.getElementById("equipment-bar")!;
 
     this.xpComponent = new XpComponent();
     this.addComponent(this.xpComponent);
@@ -175,6 +178,28 @@ export class Player extends GameActor {
     const weapon = new Weapon(weaponData, this.scene.tiledLevel, this);
     this.scene.add(weapon);
     this.weapons.push(weapon);
+
+    const idx = this.weapons.length - 1;
+    const slots = this.equipmentBarElem.querySelectorAll(".eq-img");
+    if (slots.length <= idx) {
+      Logger.getInstance().error(
+        "tried to add more weapons than we support showing on the ui; add code to dynamically create a new container",
+      );
+      return;
+    }
+    const prom = Weapon.getSprite(weaponData, this.scene);
+    prom?.then((v) => {
+      const cloned = v.cloneNode() as HTMLImageElement;
+      cloned.style.setProperty(
+        "width",
+        (slots[idx] as HTMLElement).style.getPropertyValue("width"),
+      );
+      cloned.style.setProperty(
+        "height",
+        (slots[idx] as HTMLElement).style.getPropertyValue("height"),
+      );
+      slots[idx].replaceChildren(cloned);
+    });
   }
 
   override onInitialize(engine: Engine) {
