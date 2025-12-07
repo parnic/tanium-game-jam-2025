@@ -37,7 +37,7 @@ export interface WeaponData {
   targetBehavior: "tracking" | undefined;
 }
 
-const multiSpawnDelaySeconds = 0.1;
+const multiSpawnDelayMs = 100;
 
 export class Weapon extends Entity {
   level: TiledResource;
@@ -188,7 +188,7 @@ export class Weapon extends Entity {
     const delay =
       this.definition.spawnBehavior === "orbit"
         ? OrbitDurationMs / amount
-        : multiSpawnDelaySeconds;
+        : multiSpawnDelayMs;
     for (let i = 0; i < amount; i++) {
       if (this.definition.spawnBehavior === "ownerFacing") {
         const weapon = new WeaponActor(this, target);
