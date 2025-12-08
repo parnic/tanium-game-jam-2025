@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" class="level1" orientation="orthogonal" renderorder="right-down" width="30" height="20" tilewidth="128" tileheight="128" infinite="1" nextlayerid="4" nextobjectid="32">
+<map version="1.10" tiledversion="1.11.2" class="level1" orientation="orthogonal" renderorder="right-down" width="30" height="20" tilewidth="128" tileheight="128" infinite="1" nextlayerid="4" nextobjectid="33">
  <properties>
   <property name="enemies" value="snail,worm-yellow,mouse-gray,fly,block-green"/>
   <property name="num-gifts-to-spawn" type="int" value="5"/>
@@ -32,7 +32,7 @@
   </object>
  </objectgroup>
  <objectgroup id="3" name="spawn locations">
-  <object id="8" name="pStart" type="playerStart" x="9472" y="-2176" visible="0">
+  <object id="8" name="pStart" type="playerStart" x="9472" y="-2176">
    <properties>
     <property name="collisiontype" value="PreventCollision"/>
    </properties>
@@ -66,6 +66,12 @@
    <point/>
   </object>
   <object id="31" name="gift10" type="gift" x="2678" y="-9978">
+   <point/>
+  </object>
+  <object id="32" name="ship" type="exit" x="9856" y="-2188">
+   <properties>
+    <property name="collisiontype" value="PreventCollision"/>
+   </properties>
    <point/>
   </object>
  </objectgroup>

@@ -14,14 +14,18 @@ enum SceneType {
 let _engine: Engine;
 
 const elemGameOver = document.getElementById("you-died")!;
+const elemWon = document.getElementById("you-won")!;
 const elemRestart = document.getElementById("restart")!;
+const elemRestartWin = document.getElementById("restart-win")!;
 
 const restartClickHandler = () => {
   void reloadCurrentScene(_engine);
   html.hideElement(elemGameOver);
+  html.hideElement(elemWon);
 };
 
 elemRestart.addEventListener("click", restartClickHandler);
+elemRestartWin.addEventListener("click", restartClickHandler);
 
 export class SceneData {
   name = "";
@@ -120,7 +124,11 @@ export async function goToScene(
   engine.removeScene("transition");
 
   nextScene.player?.on("postkill", () => {
-    html.showElement(elemGameOver);
+    if (nextScene.player?.reachedExit) {
+      html.showElement(elemWon);
+    } else {
+      html.showElement(elemGameOver);
+    }
 
     nextScene.player?.events.on("ButtonPressed", restartClickHandler);
   });

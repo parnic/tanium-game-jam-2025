@@ -17,6 +17,7 @@ import type { XpComponent } from "../components/xp-component";
 import { Enemy } from "../enemy";
 import type { EnemyCorpse } from "../enemy-corpse";
 import { EnemyData } from "../enemy-data";
+import { LevelExit } from "../exit";
 import { GameEngine } from "../game-engine";
 import { Gift } from "../gift";
 import { Player } from "../player";
@@ -51,6 +52,7 @@ export class GameLevel extends Scene {
 
   tiledLevel: TiledResource;
   player?: Player;
+  exit?: LevelExit;
   enemyData: EnemyData[] = [];
   enemies: Enemy[] = [];
   gifts: Gift[] = [];
@@ -88,6 +90,7 @@ export class GameLevel extends Scene {
     this.tiledLevel.addToScene(this);
 
     this.initializePlayer();
+    this.initializeExit();
     this.initializeEnemies();
     this.initializeObjectives();
 
@@ -162,6 +165,23 @@ export class GameLevel extends Scene {
     }
     this.player = new Player(playerStartActor.pos, playerTile, chosenCharacter);
     this.add(this.player);
+
+    this.player.events.on("GiftCollected", (evt) => {
+      this.gifts = this.gifts.filter((g) => g !== evt.gift);
+    });
+  }
+
+  initializeExit() {
+    const levelExitActor = this.tiledLevel.getEntitiesByClassName("exit").at(0);
+    if (!(levelExitActor instanceof Actor)) {
+      Logger.getInstance().error(
+        "exit not found or not correct type; exit will not spawn",
+      );
+      return;
+    }
+
+    this.exit = new LevelExit(levelExitActor.pos);
+    this.add(this.exit);
   }
 
   initializeEnemies() {

@@ -20,10 +20,10 @@ export class OffScreenIndicator extends ScreenElement {
   distanceLabelActor: Actor;
   target: GameActor;
 
-  constructor(target: GameActor, background: Tile) {
+  constructor(target: GameActor, background?: Tile, overlayScale?: Vector) {
     super({
-      width: background.tileset.tileWidth,
-      height: background.tileset.tileHeight,
+      width: background?.tileset.tileWidth ?? 32,
+      height: background?.tileset.tileHeight ?? 32,
       scale: Vector.Half,
       z: config.ZIndexScreenElements,
     });
@@ -32,6 +32,7 @@ export class OffScreenIndicator extends ScreenElement {
     this.overlay = new Actor({
       x: this.width / 2 / this.scale.x,
       y: this.height / 2 / this.scale.y,
+      scale: overlayScale,
     });
 
     if (this.target.activeGraphic) {
@@ -39,7 +40,7 @@ export class OffScreenIndicator extends ScreenElement {
     }
     this.addChild(this.overlay);
 
-    const bgGraphic = background.tileset.spritesheet.sprites.at(
+    const bgGraphic = background?.tileset.spritesheet.sprites.at(
       background.tiledTile.id,
     );
     if (bgGraphic) {

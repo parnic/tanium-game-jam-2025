@@ -1,5 +1,6 @@
 export const config = {
-  ZIndexBackground: -10,
+  ZIndexBackground: -20,
+  ZIndexExit: -10,
   ZIndexEnemyCorpse: -5,
   ZIndexCharacter: 0,
   ZIndexEnemy: 10,

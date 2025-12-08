@@ -31,13 +31,14 @@ import {
 } from "./components/xp-component";
 import { config } from "./config";
 import type { Enemy } from "./enemy";
+import { LevelExit } from "./exit";
 import { GameActor, TiledCollision } from "./game-actor";
 import { GameEngine } from "./game-engine";
 import { Gift } from "./gift";
 import { Resources } from "./resources";
 import { GameLevel } from "./scenes/game-level";
 import * as Audio from "./utilities/audio";
-import { showElement } from "./utilities/html";
+import { hideElement, showElement } from "./utilities/html";
 import { Weapon, type WeaponData } from "./weapon";
 
 export interface CharacterData {
@@ -47,12 +48,23 @@ export interface CharacterData {
 
 interface PlayerEvents {
   ButtonPressed: ButtonPressedEvent;
+  GiftCollected: GiftCollectedEvent;
 }
 
 export class ButtonPressedEvent extends GameEvent<void> {}
 
+export class GiftCollectedEvent extends GameEvent<void> {
+  gift: Gift;
+
+  constructor(gift: Gift) {
+    super();
+    this.gift = gift;
+  }
+}
+
 export const PlayerEvents = {
   ButtonPressed: "ButtonPressed",
+  GiftCollected: "GiftCollected",
 } as const;
 
 // Actors are the main unit of composition you'll likely use, anything that you want to draw and move around the screen
@@ -86,6 +98,7 @@ export class Player extends GameActor {
   maxWeapons = 3;
   pickupDistanceSq = 200 * 200;
   characterData?: CharacterData;
+  reachedExit = false;
 
   healthbarContainerElem: HTMLElement;
   healthbarElem: HTMLElement;
@@ -317,6 +330,12 @@ export class Player extends GameActor {
             this.chooseAndPresentUpgrades();
           }
           break;
+
+        case Keys.O:
+          if (engine.input.keyboard.isHeld(Keys.ShiftLeft)) {
+            this.onPickedUpGift((this.scene as GameLevel).gifts[0]);
+          }
+          break;
       }
     });
 
@@ -506,6 +525,12 @@ export class Player extends GameActor {
     super.onPostUpdate(engine, elapsedMs);
   }
 
+  override onPostKill(scene: Scene): void {
+    hideElement(this.healthbarContainerElem);
+
+    super.onPostKill(scene);
+  }
+
   tryPickup() {
     if (!(this.scene instanceof GameLevel)) {
       return;
@@ -547,20 +572,30 @@ export class Player extends GameActor {
     contact: CollisionContact,
   ): void {
     if (other.owner instanceof Gift) {
-      // todo: spawn some cool effect, shake screen maybe, celebrate
-      other.owner.kill();
-      this.giftsCollected++;
-      Audio.playPickupGiftSfx();
-      Logger.getInstance().info(
-        `Player collected gift ${this.giftsCollected.toString()} out of ${this.giftsNeeded.toString()}.`,
-      );
-
+      this.onPickedUpGift(other.owner);
+    } else if (other.owner instanceof LevelExit) {
       if (this.giftsCollected === this.giftsNeeded) {
-        // todo: hint player to return to ship
-        Logger.getInstance().info(
-          "All gifts collected! Get outta here, you rascal.",
-        );
+        this.reachedExit = true;
+        this.kill();
       }
+    }
+  }
+
+  private onPickedUpGift(gift: Gift) {
+    // todo: spawn some cool effect, shake screen maybe, celebrate
+    gift.kill();
+    this.events.emit("GiftCollected", new GiftCollectedEvent(gift));
+    this.giftsCollected++;
+    Audio.playPickupGiftSfx();
+    Logger.getInstance().info(
+      `Player collected gift ${this.giftsCollected.toString()} out of ${this.giftsNeeded.toString()}.`,
+    );
+
+    if (this.giftsCollected === this.giftsNeeded) {
+      // todo: hint player to return to ship
+      Logger.getInstance().info(
+        "All gifts collected! Get outta here, you rascal.",
+      );
     }
   }
 
@@ -580,7 +615,7 @@ export class Player extends GameActor {
   }
 
   protected override onHealthReachedZero(): void {
-    // todo: spawn corpse/effect? need to show a "you died" ui for sure
+    // todo: spawn corpse/effect?
     this.kill();
     this.weapons = [];
   }

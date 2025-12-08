@@ -1,5 +1,5 @@
 import { TiledResource } from "@excaliburjs/plugin-tiled";
-import { FontSource, Loader, Resource, Sound } from "excalibur";
+import { FontSource, ImageSource, Loader, Resource, Sound } from "excalibur";
 import { config } from "./config";
 import type { CharacterData } from "./player";
 import type { WeaponData } from "./weapon";
@@ -14,6 +14,7 @@ export const Resources = {
     "./data/characters.json",
     "json",
   ),
+  ExitImage: new ImageSource("./images/spaceRockets_001.png"),
 } as const;
 
 export const LevelResources: TiledResource[] = [

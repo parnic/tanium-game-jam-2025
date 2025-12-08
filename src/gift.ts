@@ -39,7 +39,7 @@ export class Gift extends GameActor {
       }),
     });
 
-    this.offScreen = new OffScreenIndicator(this, bg!);
+    this.offScreen = new OffScreenIndicator(this, bg);
   }
 
   override onAdd(engine: Engine): void {
