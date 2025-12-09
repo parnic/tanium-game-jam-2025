@@ -6,6 +6,7 @@ import {
   type Scene,
   type Shader,
   type Vector,
+  vec,
 } from "excalibur";
 import { GameActor, TiledCollision } from "./game-actor";
 import { GameEngine } from "./game-engine";
@@ -24,6 +25,9 @@ export class Gift extends GameActor {
       collisionType: CollisionType.Passive,
       collisionDef: new TiledCollision(tile),
     });
+
+    // applying this in the constructor causes collision to be offset. do it here instead.
+    this.scale = vec(1.5, 1.5);
 
     // todo: determine if we should be using the on-dark image or not (probably from the level's properties)
     const bgs = tile.tileset.getTilesByClassName("offscreen-indicator");
