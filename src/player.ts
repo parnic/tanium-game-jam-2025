@@ -125,7 +125,7 @@ export class Player extends GameActor {
     }
 
     this.invulnerabilityWindowMs = 300;
-    this._speed = 0.4;
+    this._speed = 0.6;
     this.tile = tile;
     this._spriteFacing =
       (this.tile.properties.get("facing") as number) < 0

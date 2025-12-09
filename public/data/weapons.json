@@ -2,7 +2,7 @@
   {
     "name": "rocket-small",
     "displayName": "Seeker rocket",
-    "baseSpeed": 1,
+    "baseSpeed": 1.4,
     "baseDamage": 2,
     "baseSpawnIntervalMs": 1000,
     "spawnBehavior": "targetNearestEnemy",
