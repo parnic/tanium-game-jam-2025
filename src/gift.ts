@@ -4,10 +4,12 @@ import {
   CollisionType,
   type Engine,
   type Scene,
+  type Shader,
   type Vector,
 } from "excalibur";
 import { GameActor, TiledCollision } from "./game-actor";
 import { GameEngine } from "./game-engine";
+import { createOutlineMaterial } from "./materials/outline";
 import { OffScreenIndicator } from "./off-screen-indicator";
 
 export class Gift extends GameActor {
@@ -40,6 +42,17 @@ export class Gift extends GameActor {
     });
 
     this.offScreen = new OffScreenIndicator(this, bg);
+  }
+
+  override onInitialize(engine: Engine): void {
+    super.onInitialize(engine);
+
+    this.graphics.material = createOutlineMaterial(engine);
+
+    this.graphics.material?.update((s: Shader) => {
+      // set color in HSL
+      s.trySetUniform("uniform3f", "u_outline_color", 285 / 360, 0.62, 0.86);
+    });
   }
 
   override onAdd(engine: Engine): void {
