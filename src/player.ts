@@ -374,6 +374,11 @@ export class Player extends GameActor {
       this.scene.updateXpBar(this.xpComponent);
     }
 
+    const eqSlots = this.equipmentBarElem.querySelectorAll(".eq-img");
+    eqSlots.forEach((eq) => {
+      eq.replaceChildren();
+    });
+
     if (this.characterData) {
       const weapon = Resources.WeaponData.data.find(
         (w) => w.name === this.characterData!.startingWeapon,
