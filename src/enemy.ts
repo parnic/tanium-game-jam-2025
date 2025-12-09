@@ -20,7 +20,7 @@ import * as Audio from "./utilities/audio";
 export class Enemy extends GameActor {
   addedInWave = 0;
   def: EnemyData;
-  gameScene: GameLevel | undefined;
+  gameScene?: GameLevel;
   static enemyCounter = new Uint32Array([1]);
 
   constructor(inPos: Vector, def: EnemyData) {
