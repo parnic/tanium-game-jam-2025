@@ -18,7 +18,14 @@ const elemWon = document.getElementById("you-won")!;
 const elemRestart = document.getElementById("restart")!;
 const elemRestartWin = document.getElementById("restart-win")!;
 
+let restartShownTime = 0;
+const restartShowDelayMs = 500;
+
 const restartClickHandler = () => {
+  if (_engine.clock.now() <= restartShownTime + restartShowDelayMs) {
+    return;
+  }
+
   void reloadCurrentScene(_engine);
   html.hideElement(elemGameOver);
   html.hideElement(elemWon);
@@ -130,6 +137,7 @@ export async function goToScene(
       html.showElement(elemGameOver);
     }
 
+    restartShownTime = engine.clock.now();
     nextScene.player?.events.on("ButtonPressed", restartClickHandler);
   });
 }
