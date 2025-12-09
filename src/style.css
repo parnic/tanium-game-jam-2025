@@ -268,7 +268,7 @@ body {
   }
 }
 
-button {
+.btn {
   color: #fff;
   font-weight: 800;
   font-size: 2vw;
@@ -284,7 +284,7 @@ button {
     50px 50px 60px rgb(0 0 0 / 0.11);
 }
 
-button:hover {
+.btn:hover {
   text-shadow:
     -2px -2px 0.5rem #000,
     2px -2px 0.5rem #000,
@@ -292,6 +292,6 @@ button:hover {
     2px 2px 0.5rem #000;
 }
 
-button:active {
+.btn:active {
   transform: scale(0.9);
 }
