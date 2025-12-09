@@ -1,16 +1,16 @@
+import type { Tile } from "@excaliburjs/plugin-tiled";
 import {
   type Collider,
   type CollisionContact,
   CollisionType,
   Color,
   type Engine,
-  type Graphic,
   Logger,
   type Side,
   Vector,
 } from "excalibur";
 import { config } from "./config";
-import { GameActor } from "./game-actor";
+import { GameActor, TiledCollision } from "./game-actor";
 import { GameEngine } from "./game-engine";
 import type { Player } from "./player";
 import { GameLevel } from "./scenes/game-level";
@@ -20,7 +20,7 @@ export class EnemyCorpse extends GameActor {
 
   constructor(
     inPos: Vector,
-    corpseTile: Graphic,
+    corpseTile: Tile,
     width: number,
     height: number,
     enemyName: string,
@@ -33,9 +33,19 @@ export class EnemyCorpse extends GameActor {
       height,
       z: config.ZIndexEnemyCorpse,
       collisionType: CollisionType.Passive,
+      collisionDef: new TiledCollision(corpseTile),
     });
 
-    this.graphics.use(corpseTile);
+    const corpseGraphic = corpseTile.tileset.spritesheet.sprites.at(
+      corpseTile.id,
+    );
+    if (corpseGraphic) {
+      this.graphics.use(corpseGraphic);
+    } else {
+      Logger.getInstance().error(
+        `Unable to find sprite for enemy corpse id ${corpseTile.id}`,
+      );
+    }
     this.graphics.flipHorizontal = flipHorizontal;
     this._speed = config.SpeedPickup;
   }

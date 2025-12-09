@@ -1,5 +1,5 @@
 import type { Tile } from "@excaliburjs/plugin-tiled";
-import type { Frame, Graphic } from "excalibur";
+import type { Frame } from "excalibur";
 import { TiledCollision } from "./game-actor";
 
 export class EnemyData {
@@ -12,7 +12,7 @@ export class EnemyData {
   private _collisionDef: TiledCollision;
   private _textureWidth: number;
   private _textureHeight: number;
-  private _corpseTile: Graphic | undefined;
+  private _corpseTile?: Tile;
 
   public get health() {
     return this._health;
@@ -71,7 +71,7 @@ export class EnemyData {
     this._textureWidth = tile.tileset.tileWidth;
     this._textureHeight = tile.tileset.tileHeight;
     if (typeof corpseTileID === "number") {
-      this._corpseTile = tile.tileset.spritesheet.sprites[corpseTileID];
+      this._corpseTile = tile.tileset.tiles.find((t) => t.id === corpseTileID);
     }
 
     // todo: probably would be a good idea to assign this to the graphics of something.

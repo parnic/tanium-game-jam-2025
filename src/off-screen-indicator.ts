@@ -19,19 +19,25 @@ export class OffScreenIndicator extends ScreenElement {
   distanceLabel: Text;
   distanceLabelActor: Actor;
   target: GameActor;
+  tileWidth: number;
+  tileHeight: number;
 
   constructor(target: GameActor, background?: Tile, overlayScale?: Vector) {
+    const tileWidth = background?.tileset.tileWidth ?? 32;
+    const tileHeight = background?.tileset.tileHeight ?? 32;
+
     super({
-      width: background?.tileset.tileWidth ?? 32,
-      height: background?.tileset.tileHeight ?? 32,
       scale: Vector.Half,
       z: config.ZIndexScreenElements,
     });
 
+    this.tileWidth = tileWidth * this.scale.x;
+    this.tileHeight = tileHeight * this.scale.y;
+
     this.target = target;
     this.overlay = new Actor({
-      x: this.width / 2 / this.scale.x,
-      y: this.height / 2 / this.scale.y,
+      x: this.tileWidth / 2 / this.scale.x,
+      y: this.tileHeight / 2 / this.scale.y,
       scale: overlayScale,
     });
 
@@ -56,8 +62,8 @@ export class OffScreenIndicator extends ScreenElement {
       }),
     });
     this.distanceLabelActor = new Actor({
-      x: this.width / 2 / this.scale.x,
-      y: (this.height - this.height / 5) / this.scale.y,
+      x: this.tileWidth / 2 / this.scale.x,
+      y: (this.tileHeight - this.tileHeight / 5) / this.scale.y,
     });
     this.distanceLabelActor.graphics.use(this.distanceLabel);
     this.addChild(this.distanceLabelActor);
@@ -107,7 +113,7 @@ export class OffScreenIndicator extends ScreenElement {
       normTargetToPlayer.y / div,
     );
 
-    const posOffset = vec(this.width / 2, this.height / 2);
+    const posOffset = vec(this.tileWidth / 2, this.tileHeight / 2);
     const fromCenter = screenNormTargetToPlayer.scale(
       vec(playerScreenPos.x - posOffset.x, playerScreenPos.y - posOffset.y),
     );

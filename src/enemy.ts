@@ -111,8 +111,8 @@ export class Enemy extends GameActor {
     const corpse = new EnemyCorpse(
       this.pos,
       this.def.corpseTile,
-      this.width,
-      this.height,
+      this.def.textureWidth,
+      this.def.textureHeight,
       this.name,
       this.graphics.flipHorizontal,
     );

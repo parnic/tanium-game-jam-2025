@@ -1,6 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <tileset version="1.10" tiledversion="1.11.2" name="enemies" tilewidth="128" tileheight="128" tilecount="64" columns="8">
  <image source="../images/spritesheet-enemies-double.png" width="1024" height="1024"/>
+ <tile id="2">
+  <objectgroup draworder="index" id="2">
+   <object id="1" type="collision" x="8" y="56" width="112" height="72"/>
+  </objectgroup>
+ </tile>
+ <tile id="3">
+  <objectgroup draworder="index" id="2">
+   <object id="1" type="collision" x="8" y="67" width="112" height="61"/>
+  </objectgroup>
+ </tile>
  <tile id="4" type="enemy">
   <properties>
    <property name="corpse-id" type="int" value="20"/>
@@ -68,18 +78,35 @@
    <frame tileid="19" duration="120"/>
   </animation>
  </tile>
- <tile id="15" type="enemy">
+ <tile id="15">
   <objectgroup draworder="index" id="2">
-   <object id="1" type="collision" x="0" y="0" width="128" height="128"/>
+   <object id="3" type="collision" x="4" y="12" width="120" height="102"/>
+  </objectgroup>
+ </tile>
+ <tile id="20">
+  <objectgroup draworder="index" id="2">
+   <object id="1" type="collision" x="0" y="44" width="128" height="84"/>
+  </objectgroup>
+ </tile>
+ <tile id="21">
+  <objectgroup draworder="index" id="2">
+   <object id="1" type="collision" x="14" y="6" width="100" height="118"/>
   </objectgroup>
  </tile>
  <tile id="24">
-  <properties>
-   <property name="difficulty" type="float" value="0"/>
-   <property name="facing" type="int" value="-1"/>
-   <property name="name" value="worm-yellow"/>
-   <property name="speed" type="float" value="1"/>
-  </properties>
+  <objectgroup draworder="index" id="2">
+   <object id="1" type="collision" x="0" y="72" width="128" height="56"/>
+  </objectgroup>
+ </tile>
+ <tile id="25">
+  <objectgroup draworder="index" id="2">
+   <object id="1" type="collision" x="10" y="48" width="108" height="80"/>
+  </objectgroup>
+ </tile>
+ <tile id="27">
+  <objectgroup draworder="index" id="2">
+   <object id="1" type="collision" x="8" y="16" width="112" height="112"/>
+  </objectgroup>
  </tile>
  <tile id="28" type="enemy">
   <properties>
@@ -113,6 +140,11 @@
    <frame tileid="37" duration="180"/>
   </animation>
  </tile>
+ <tile id="31">
+  <objectgroup draworder="index" id="2">
+   <object id="1" type="collision" x="0" y="0" width="128" height="128"/>
+  </objectgroup>
+ </tile>
  <tile id="32" type="enemy">
   <properties>
    <property name="corpse-id" type="int" value="24"/>
@@ -128,6 +160,11 @@
    <frame tileid="32" duration="180"/>
    <frame tileid="40" duration="180"/>
   </animation>
+ </tile>
+ <tile id="34">
+  <objectgroup draworder="index" id="2">
+   <object id="1" type="collision" x="7" y="88" width="114" height="40"/>
+  </objectgroup>
  </tile>
  <tile id="41" type="enemy">
   <properties>
@@ -179,13 +216,15 @@
    <frame tileid="23" duration="180"/>
   </animation>
  </tile>
+ <tile id="44">
+  <objectgroup draworder="index" id="2">
+   <object id="1" type="collision" x="0" y="29" width="126" height="99"/>
+  </objectgroup>
+ </tile>
  <tile id="48">
-  <properties>
-   <property name="difficulty" type="float" value="0"/>
-   <property name="facing" type="int" value="-1"/>
-   <property name="name" value="worm-blue"/>
-   <property name="speed" type="float" value="1"/>
-  </properties>
+  <objectgroup draworder="index" id="2">
+   <object id="1" type="collision" x="0" y="80" width="128" height="48"/>
+  </objectgroup>
  </tile>
  <tile id="51" type="enemy">
   <properties>
