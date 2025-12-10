@@ -58,8 +58,8 @@ export class EnemyCorpse extends GameActor {
     this.actions.flash(Color.White, 150).callMethod(() => {
       this.graphics.material = createGleamMaterial(engine);
       this.graphics.material?.update((s: Shader) => {
-        // s.trySetUniformBoolean("u_desaturate", true);
-        // s.trySetUniformFloat("u_decontrast_factor", 0.7);
+        s.trySetUniformBoolean("u_desaturate", true);
+        s.trySetUniformFloat("u_decontrast_factor", 0.7);
         s.trySetUniformFloat("u_glint_speed", 2.0);
         s.trySetUniformFloat("u_glint_trigger", engine.clock.now() / 1000);
       });
