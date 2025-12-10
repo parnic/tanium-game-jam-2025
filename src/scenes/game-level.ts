@@ -377,6 +377,10 @@ export class GameLevel extends Scene {
   }
 
   override onPostUpdate(engine: Engine, elapsedMs: number): void {
+    if (this.player?.isKilled()) {
+      return;
+    }
+
     if (
       !(engine instanceof GameEngine) ||
       !(engine.playersOnly || engine.paused)
