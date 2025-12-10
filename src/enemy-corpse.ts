@@ -6,17 +6,21 @@ import {
   Color,
   type Engine,
   Logger,
+  type Shader,
   type Side,
   Vector,
 } from "excalibur";
 import { config } from "./config";
 import { GameActor, TiledCollision } from "./game-actor";
 import { GameEngine } from "./game-engine";
+import { createGleamMaterial } from "./materials/gleam";
 import type { Player } from "./player";
 import { GameLevel } from "./scenes/game-level";
 
 export class EnemyCorpse extends GameActor {
   pickedUpBy?: Player;
+  private lastGlintTime = 0;
+  private glintIntervalMs = 4000;
 
   constructor(
     inPos: Vector,
@@ -36,12 +40,8 @@ export class EnemyCorpse extends GameActor {
       collisionDef: new TiledCollision(corpseTile),
     });
 
-    const corpseGraphic = corpseTile.tileset.spritesheet.sprites.at(
-      corpseTile.id,
-    );
-    if (corpseGraphic) {
-      this.graphics.use(corpseGraphic);
-    } else {
+    this.staticImage = corpseTile.tileset.spritesheet.sprites.at(corpseTile.id);
+    if (!this.staticImage) {
       Logger.getInstance().error(
         `Unable to find sprite for enemy corpse id ${corpseTile.id}`,
       );
@@ -51,9 +51,40 @@ export class EnemyCorpse extends GameActor {
   }
 
   onInitialize(engine: Engine): void {
+    super.onInitialize(engine);
+
     // todo: squish the corpse in the opposite direction of the hit they took, knock them back
     // in the same direction, reset both and render as grayscale after they hit the "ground"
-    this.actions.flash(Color.White, 150);
+    this.actions.flash(Color.White, 150).callMethod(() => {
+      this.graphics.material = createGleamMaterial(engine);
+      this.graphics.material?.update((s: Shader) => {
+        // s.trySetUniformBoolean("u_desaturate", true);
+        // s.trySetUniformFloat("u_decontrast_factor", 0.7);
+        s.trySetUniformFloat("u_glint_speed", 2.0);
+        s.trySetUniformFloat("u_glint_trigger", engine.clock.now() / 1000);
+      });
+    });
+  }
+
+  override onPreUpdate(engine: Engine, elapsed: number): void {
+    super.onPreUpdate(engine, elapsed);
+
+    if (this.scene instanceof GameLevel && this.scene.player?.isKilled()) {
+      return;
+    }
+    if (this.isOffScreen) {
+      return;
+    }
+
+    const currentTime = engine.clock.now();
+
+    if (currentTime - this.lastGlintTime > this.glintIntervalMs) {
+      this.lastGlintTime = currentTime;
+
+      this.graphics.material?.update((s: Shader) => {
+        s.trySetUniformFloat("u_glint_trigger", currentTime / 1000.0);
+      });
+    }
   }
 
   override onPostUpdate(engine: Engine, elapsedMs: number): void {
