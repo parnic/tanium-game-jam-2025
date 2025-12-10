@@ -17,6 +17,8 @@ uniform float u_opacity;
 uniform float u_time_ms;
 uniform float u_glint_speed;      // Speed of travel (e.g., 1.0 = normal)
 uniform float u_glint_trigger;    // Set this to current time to trigger a glint
+uniform bool u_desaturate;
+uniform float u_decontrast_factor;
 
 out vec4 color;
 
@@ -32,6 +34,19 @@ void main() {
   
   float alpha = tex.a * u_opacity;
   vec3 baseColor = tex.rgb;
+
+  if (u_desaturate) {
+    float average_color = ((baseColor.r + baseColor.g + baseColor.b)/float(3));
+    //float average_color = max(baseColor.r,max(baseColor.g,baseColor.b));
+    //float average_color = (max(baseColor.r, max(baseColor.g, baseColor.b)) 
+  	//	  + min(baseColor.r, min(baseColor.g, baseColor.b)) ) / 2.0;
+    baseColor = vec3(average_color, average_color, average_color);
+  }
+
+  if (u_decontrast_factor > 0.0) {
+    vec3 adjustedColor = mix(vec3(0.5), baseColor, u_decontrast_factor);
+    baseColor = adjustedColor;
+  }
   
   // ---- TRAVELING GLINT ----
   float time_sec = u_time_ms / 1000.0;
