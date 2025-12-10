@@ -122,6 +122,6 @@ export class OffScreenIndicator extends ScreenElement {
     this.pos = indicatorPos.sub(posOffset);
 
     const worldDist = targetLoc.distance(this.scene.player.pos);
-    this.distanceLabel.text = `${Math.round(worldDist / 1000).toString()}m`;
+    this.distanceLabel.text = `${Math.round(worldDist / 250).toString()}m`;
   }
 }
