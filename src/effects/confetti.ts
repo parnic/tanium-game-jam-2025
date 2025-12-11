@@ -1,7 +1,7 @@
+import { rand } from "../utilities/math";
+
 const TWO_PI = Math.PI * 2;
 const HALF_PI = Math.PI * 0.5;
-const timeStep = 1 / 60;
-const numParticles = 256;
 
 let ctx: CanvasRenderingContext2D | null;
 export let viewHeight: number;
@@ -22,12 +22,14 @@ class Particle {
   p1: Point;
   p2: Point;
   p3: Point;
-  time: number;
-  duration: number;
-  color: string;
-  w: number;
-  h: number;
-  complete: boolean;
+
+  timeMs = 0;
+  durationMs = (3 + rand.next() * 2) * 1000;
+  lastTimeMs = Date.now();
+  color = `#${Math.floor(rand.next() * 0xffffff).toString(16)}`;
+  w = 8;
+  h = 6;
+  complete = false;
   r = 0;
   x = 0;
   y = 0;
@@ -38,32 +40,26 @@ class Particle {
     this.p1 = p1;
     this.p2 = p2;
     this.p3 = p3;
-
-    this.time = 0;
-    this.duration = 3 + Math.random() * 2;
-    this.color = `#${Math.floor(Math.random() * 0xffffff).toString(16)}`;
-
-    this.w = 8;
-    this.h = 6;
-
-    this.complete = false;
   }
 
   update() {
-    this.time = Math.min(this.duration, this.time + timeStep);
+    const now = Date.now();
+    const deltaMs = now - this.lastTimeMs;
+    this.timeMs += deltaMs;
+    this.lastTimeMs = now;
 
-    var f = Ease.outCubic(this.time, 0, 1, this.duration);
-    var p = cubeBezier(this.p0, this.p1, this.p2, this.p3, f);
+    const f = Ease.outCubic(this.timeMs, 0, 1, this.durationMs);
+    const p = cubeBezier(this.p0, this.p1, this.p2, this.p3, f);
 
-    var dx = p.x - this.x;
-    var dy = p.y - this.y;
+    const dx = p.x - this.x;
+    const dy = p.y - this.y;
 
     this.r = Math.atan2(dy, dx) + HALF_PI;
     this.sy = Math.sin(Math.PI * f * 10);
     this.x = p.x;
     this.y = p.y;
 
-    this.complete = this.time === this.duration;
+    this.complete = this.timeMs >= this.durationMs;
   }
 
   draw() {
@@ -86,36 +82,33 @@ class Particle {
 class Exploder {
   x: number;
   y: number;
-  startRadius: number;
-  time: number;
-  duration: number;
-  progress: number;
-  complete: boolean;
+  startRadius = 24;
+  timeMs = 0;
+  durationMs = 400;
+  lastTimeMs = Date.now();
+  progress = 0;
+  complete = false;
 
   constructor(x: number, y: number) {
     this.x = x;
     this.y = y;
-
-    this.startRadius = 24;
-
-    this.time = 0;
-    this.duration = 0.4;
-    this.progress = 0;
-
-    this.complete = false;
   }
 
   reset() {
-    this.time = 0;
+    this.timeMs = 0;
     this.progress = 0;
     this.complete = false;
   }
 
   update() {
-    this.time = Math.min(this.duration, this.time + timeStep);
-    this.progress = Ease.inBack(this.time, 0, 1, this.duration, 0);
+    const now = Date.now();
+    const deltaMs = now - this.lastTimeMs;
+    this.timeMs += deltaMs;
+    this.lastTimeMs = now;
 
-    this.complete = this.time === this.duration;
+    this.progress = Ease.inBack(this.timeMs, 0, 1, this.durationMs, 0);
+
+    this.complete = this.timeMs >= this.durationMs;
   }
 
   draw() {
@@ -168,11 +161,11 @@ function createExploder() {
 }
 
 function createParticles() {
-  for (let i = 0; i < numParticles; i++) {
+  for (let i = 0; i < viewWidth / 5; i++) {
     const p0 = new Point(viewWidth * 0.5, 0);
-    const p1 = new Point(Math.random() * viewWidth, Math.random() * viewHeight);
-    const p2 = new Point(Math.random() * viewWidth, Math.random() * viewHeight);
-    const p3 = new Point(Math.random() * viewWidth, viewHeight + 64);
+    const p1 = new Point(rand.next() * viewWidth, rand.next() * viewHeight);
+    const p2 = new Point(rand.next() * viewWidth, rand.next() * viewHeight);
+    const p3 = new Point(rand.next() * viewWidth, viewHeight + 64);
 
     particles.push(new Particle(p0, p1, p2, p3));
   }
@@ -237,10 +230,7 @@ function resetParticles() {
 }
 
 function checkParticlesComplete() {
-  for (let i = 0; i < particles.length; i++) {
-    if (particles[i].complete === false) return false;
-  }
-  return true;
+  return !particles.some((p) => !p.complete);
 }
 
 /**
@@ -274,8 +264,8 @@ const Ease = {
 };
 
 function cubeBezier(p0: Point, c0: Point, c1: Point, p1: Point, t: number) {
-  var p = new Point();
-  var nt = 1 - t;
+  const p = new Point();
+  const nt = 1 - t;
 
   p.x =
     nt * nt * nt * p0.x +

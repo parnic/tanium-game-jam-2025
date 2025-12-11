@@ -29,8 +29,8 @@ import {
   type LeveledUpEvent,
   XpComponent,
 } from "./components/xp-component";
-import * as Confetti from "./confetti";
 import { config } from "./config";
+import * as Confetti from "./effects/confetti";
 import type { Enemy } from "./enemy";
 import { LevelExit } from "./exit";
 import { GameActor, TiledCollision } from "./game-actor";

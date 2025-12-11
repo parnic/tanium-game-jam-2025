@@ -1,5 +1,5 @@
 import { DisplayMode, ImageFiltering, SolverStrategy } from "excalibur";
-import * as Confetti from "./confetti";
+import * as Confetti from "./effects/confetti";
 import { GameEngine } from "./game-engine";
 import { LevelResources, loader } from "./resources";
 import { GameLevel } from "./scenes/game-level";
