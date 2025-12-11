@@ -21,6 +21,7 @@ import { LevelExit } from "../exit";
 import { GameEngine } from "../game-engine";
 import { Gift } from "../gift";
 import { Player } from "../player";
+import { PerlinNoiseCameraStrategy } from "../strategy-noise";
 import {
   hideElement,
   showOrHideElement,
@@ -288,6 +289,10 @@ export class GameLevel extends Scene {
       ),
     ]);
     this.camera.strategy.limitCameraBounds(bounds);
+
+    const noiseStrat = new PerlinNoiseCameraStrategy(this.player!);
+    this.player!.cameraShake = noiseStrat;
+    this.camera.addStrategy(noiseStrat);
   }
 
   private setScaledZoom() {

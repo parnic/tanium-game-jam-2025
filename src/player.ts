@@ -38,6 +38,7 @@ import { GameEngine } from "./game-engine";
 import { Gift } from "./gift";
 import { Resources } from "./resources";
 import { GameLevel } from "./scenes/game-level";
+import type { PerlinNoiseCameraStrategy } from "./strategy-noise";
 import * as Audio from "./utilities/audio";
 import { hideElement, showElement } from "./utilities/html";
 import { Weapon, type WeaponData } from "./weapon";
@@ -104,6 +105,8 @@ export class Player extends GameActor {
   healthbarContainerElem: HTMLElement;
   healthbarElem: HTMLElement;
   equipmentBarElem: HTMLElement;
+
+  cameraShake?: PerlinNoiseCameraStrategy;
 
   constructor(inPos: Vector, tile: Tile, characterName: string) {
     super({
@@ -341,6 +344,12 @@ export class Player extends GameActor {
         case Keys.C:
           if (engine.input.keyboard.isHeld(Keys.ShiftLeft)) {
             Confetti.triggerConfetti();
+          }
+          break;
+
+        case Keys.N:
+          if (engine.input.keyboard.isHeld(Keys.ShiftLeft)) {
+            this.cameraShake?.induceStress(3);
           }
           break;
       }
@@ -595,18 +604,7 @@ export class Player extends GameActor {
 
   private onPickedUpGift(gift: Gift) {
     Confetti.triggerConfetti();
-    this.actions
-      .callMethod(() => {
-        this.scene?.camera.shake(100, 100, 75);
-      })
-      .delay(75)
-      .callMethod(() => {
-        this.scene?.camera.shake(75, 75, 75);
-      })
-      .delay(75)
-      .callMethod(() => {
-        this.scene?.camera.shake(40, 40, 50);
-      });
+    this.cameraShake?.induceStress(10);
 
     gift.kill();
     this.events.emit("GiftCollected", new GiftCollectedEvent(gift));
@@ -637,6 +635,7 @@ export class Player extends GameActor {
     Audio.playPlayerTakeDamageSfx();
 
     this.takeDamage(1);
+    this.cameraShake?.induceStress(4);
   }
 
   protected override onHealthReachedZero(): void {
