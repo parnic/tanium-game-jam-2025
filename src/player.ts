@@ -29,6 +29,7 @@ import {
   type LeveledUpEvent,
   XpComponent,
 } from "./components/xp-component";
+import * as Confetti from "./confetti";
 import { config } from "./config";
 import type { Enemy } from "./enemy";
 import { LevelExit } from "./exit";
@@ -336,6 +337,12 @@ export class Player extends GameActor {
             this.onPickedUpGift((this.scene as GameLevel).gifts[0]);
           }
           break;
+
+        case Keys.C:
+          if (engine.input.keyboard.isHeld(Keys.ShiftLeft)) {
+            Confetti.triggerConfetti();
+          }
+          break;
       }
     });
 
@@ -587,7 +594,20 @@ export class Player extends GameActor {
   }
 
   private onPickedUpGift(gift: Gift) {
-    // todo: spawn some cool effect, shake screen maybe, celebrate
+    Confetti.triggerConfetti();
+    this.actions
+      .callMethod(() => {
+        this.scene?.camera.shake(100, 100, 75);
+      })
+      .delay(75)
+      .callMethod(() => {
+        this.scene?.camera.shake(75, 75, 75);
+      })
+      .delay(75)
+      .callMethod(() => {
+        this.scene?.camera.shake(40, 40, 50);
+      });
+
     gift.kill();
     this.events.emit("GiftCollected", new GiftCollectedEvent(gift));
     this.giftsCollected++;

@@ -1,16 +1,10 @@
 import { DisplayMode, ImageFiltering, SolverStrategy } from "excalibur";
+import * as Confetti from "./confetti";
 import { GameEngine } from "./game-engine";
 import { LevelResources, loader } from "./resources";
 import { GameLevel } from "./scenes/game-level";
 import * as Audio from "./utilities/audio";
 import * as SceneManager from "./utilities/scene-manager";
-
-// const calculateExPixelConversion = (screen: ex.Screen) => {
-//   document.documentElement.style.setProperty(
-//     "--pixel-conversion",
-//     screen.worldToPagePixelRatio.toString(),
-//   );
-// };
 
 const game = new GameEngine({
   canvasElementId: "game",
@@ -27,17 +21,15 @@ const game = new GameEngine({
   },
 });
 
-// game.screen.events.on("resize", () => {
-//   calculateExPixelConversion(game.screen);
-// });
+game.screen.events.on("resize", () => {
+  Confetti.updateEffectsCanvasSize();
+});
 
 await game.start(loader).then(async () => {
   Audio.init();
 
   const firstScene = SceneManager.getFirstSceneData();
   await SceneManager.goToScene(firstScene, game);
-
-  // calculateExPixelConversion(game.screen);
 
   Audio.playMusic();
 });
