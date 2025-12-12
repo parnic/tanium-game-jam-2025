@@ -10,6 +10,7 @@ import { Weapon, type WeaponData } from "../weapon";
 export interface UpgradeUIData {
   name: string;
   label?: string;
+  labelClass?: string;
   img: Promise<HTMLImageElement>;
   weapon?: WeaponData;
   data?: RolledUpgradeData;
@@ -43,6 +44,14 @@ const RarityWeights = {
   [UpgradeRarity.Rare]: 0.15,
   [UpgradeRarity.Uncommon]: 0.3,
   [UpgradeRarity.Common]: 0.5,
+};
+
+const RarityCSSClassMap = {
+  [UpgradeRarity.Legendary]: "rarity-legendary",
+  [UpgradeRarity.Epic]: "rarity-epic",
+  [UpgradeRarity.Rare]: "rarity-rare",
+  [UpgradeRarity.Uncommon]: "rarity-uncommon",
+  [UpgradeRarity.Common]: "rarity-common",
 };
 
 type UpgradeAttributeRarityValueRange = {
@@ -377,6 +386,7 @@ export class UpgradeComponent extends Component {
 
         // todo: colorize label text by chosen rarity. set a css class or whatever.
         const rarity = this.getRandomRarity();
+        const rarityClass = RarityCSSClassMap[rarity];
         const upgradeData = this.getUpgradeAmount(rarity, attribute);
         // todo: can/should we support special upgrade types like allowing a weapon to bounce to another enemy
         // or go through X number of enemies? won't apply to everything...
@@ -397,6 +407,7 @@ export class UpgradeComponent extends Component {
           label: `${labelAmount}${upgradeData.meta?.units ?? ""} ${
             UpgradeAttribute[upgradeData.meta?.attribute ?? 0]
           }`,
+          labelClass: rarityClass,
           weapon: choice.definition,
           data: upgradeData,
         });
@@ -423,8 +434,16 @@ export class UpgradeComponent extends Component {
       }
 
       showElement(elem);
+
       elem.querySelector(".name")!.innerHTML = upgrades[i].name;
-      elem.querySelector(".label")!.innerHTML = upgrades[i].label ?? "";
+
+      const elemLabel = elem.querySelector(".label")!;
+      elemLabel.innerHTML = upgrades[i].label ?? "";
+      elemLabel.classList.remove(...Object.values(RarityCSSClassMap));
+      if (upgrades[i].labelClass) {
+        elemLabel.classList.add(upgrades[i].labelClass!);
+      }
+
       const imgElem = elem.querySelector(".img") as HTMLElement;
       imgElem.replaceChildren(); // todo: should be a loading image, maybe? but the callback hits almost immediately so maybe not.
       upgrades[i].img.then((v) => {

@@ -306,3 +306,19 @@ body {
 .btn:active {
   transform: scale(0.9);
 }
+
+.rarity-common {
+  color: #ffffff;
+}
+.rarity-uncommon {
+  color: #1eff00;
+}
+.rarity-rare {
+  color: #0070dd;
+}
+.rarity-epic {
+  color: #a335ee;
+}
+.rarity-legendary {
+  color: #ff8000;
+}
