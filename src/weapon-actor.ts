@@ -18,7 +18,7 @@ import { GameEngine } from "./game-engine";
 import { Player } from "./player";
 import type { GameLevel } from "./scenes/game-level";
 import { rand } from "./utilities/math";
-import type { Weapon, WeaponData } from "./weapon";
+import { Weapon, type WeaponData } from "./weapon";
 
 export const OrbitDurationMs = 2000;
 
@@ -34,9 +34,9 @@ export class WeaponActor extends GameActor {
   definition: WeaponData;
   spawnBehavior?: string;
   size: Vector;
+  childWeapon?: Weapon;
   orbitDistanceScale = 1.1;
   spawnRotationVarianceDegrees = 0;
-  lastChildSpawn = 0;
   fadeInOutDurationMs = 300;
 
   private get direction() {
@@ -58,13 +58,11 @@ export class WeaponActor extends GameActor {
     startPos?: Vector,
   ) {
     const myNum = Atomics.add(WeaponActor.weaponCounter, 0, 1);
-    const tile =
-      definition === weapon.definition ? weapon.tile! : weapon.childTile!;
     const def = definition ?? weapon.definition;
     super({
       name: `${weapon.name}-${myNum.toString()}`,
-      width: tile.tileset.tileWidth,
-      height: tile.tileset.tileHeight,
+      width: weapon.tile?.tileset.tileWidth,
+      height: weapon.tile?.tileset.tileHeight,
       pos: startPos ?? weapon.owner.pos,
       z: config.ZIndexWeapon,
       collisionType:
@@ -72,14 +70,17 @@ export class WeaponActor extends GameActor {
           ? CollisionType.PreventCollision
           : CollisionType.Passive,
       collisionDef:
-        def.collides === false ? undefined : new TiledCollision(tile),
+        def.collides === false ? undefined : new TiledCollision(weapon.tile!),
     });
 
     this.definition = def;
-    this.spawnBehavior = spawnBehavior ?? this.definition.spawnBehavior;
+    this.spawnBehavior = spawnBehavior;
     this.weapon = weapon;
     this.target = target;
     this.instigator = weapon.owner;
+    if (weapon.owner instanceof WeaponActor) {
+      this.instigator = weapon.owner.weapon.owner;
+    }
     this._speed = weapon.getSpeed(this.definition);
     this.damage = weapon.damage;
     this.lifetime = weapon.lifetimeMs;
@@ -97,18 +98,20 @@ export class WeaponActor extends GameActor {
         : Vector.Right;
     }
 
-    if (tile.animation.length) {
+    if (weapon.tile?.animation.length) {
       this.walk = new Animation({
-        frames: tile.animation.map((anim) => {
+        frames: weapon.tile?.animation.map((anim) => {
           return {
-            graphic: tile.tileset.spritesheet.sprites[anim.tileid],
+            graphic: weapon.tile?.tileset.spritesheet.sprites[anim.tileid],
             duration: anim.duration,
           };
         }),
       });
       this.alwaysAnimate = true;
     } else {
-      this.staticImage = tile.tileset.spritesheet.sprites.at(tile.tiledTile.id);
+      this.staticImage = weapon.tile?.tileset.spritesheet.sprites.at(
+        weapon.tile?.tiledTile.id,
+      );
     }
   }
 
@@ -116,6 +119,7 @@ export class WeaponActor extends GameActor {
     super.onInitialize(engine);
 
     this.conditionalUpdateTarget();
+    this.conditionalSpawnChildWeapon(engine);
 
     if (this.spawnBehavior === "ownerFacing") {
       this.direction = !this.instigator.moveDir.equals(Vector.Zero)
@@ -150,6 +154,20 @@ export class WeaponActor extends GameActor {
     }
 
     this.direction = this.target.pos.sub(this.pos).normalize();
+  }
+
+  conditionalSpawnChildWeapon(engine: Engine) {
+    if (!this.weapon.childDefinition) {
+      return;
+    }
+
+    this.childWeapon = new Weapon(
+      this.weapon.childDefinition,
+      this.weapon.level,
+      this,
+    );
+    this.childWeapon.spawnBehaviorOverride = this.definition.childSpawnBehavior;
+    this.scene?.add(this.childWeapon);
   }
 
   override onPostUpdate(engine: Engine, elapsedMs: number): void {
@@ -208,16 +226,6 @@ export class WeaponActor extends GameActor {
       // i'm not good enough at math to use the vel to get the same result as directly setting pos.
       // todo: should probably make this work eventually.
       this.vel = Vector.Zero;
-    }
-
-    if (
-      this.weapon.childDefinition &&
-      this.weapon.childDefinition !== this.definition &&
-      this.lastChildSpawn + this.weapon.childDefinition.baseSpawnIntervalMs <=
-        this.aliveTime
-    ) {
-      this.weapon.spawnWeapon(engine, this.weapon.childDefinition, this);
-      this.lastChildSpawn = this.aliveTime;
     }
   }
 

@@ -49,6 +49,7 @@ export class Weapon extends Entity {
   aliveTime = 0;
   owner: GameActor;
   definition: WeaponData;
+  spawnBehaviorOverride?: string;
   childDefinition?: WeaponData;
   childTile?: Tile;
   speed: number;
@@ -171,7 +172,7 @@ export class Weapon extends Entity {
       return;
     }
 
-    this.spawnWeapon(engine, this.definition, this.owner);
+    this.spawnWeapon(engine, this.owner);
   }
 
   getNearestLivingEnemyToPosition(
@@ -199,16 +200,13 @@ export class Weapon extends Entity {
     return this.getNearestLivingEnemyToPosition(level, this.owner.pos);
   }
 
-  spawnWeapon(engine: Engine, definition: WeaponData, startPosTarget: Actor) {
+  spawnWeapon(engine: Engine, startPosTarget: Actor) {
     if (!this.tile || !(this.scene instanceof GameLevel)) {
       return;
     }
 
-    const isChildWeapon = definition === this.childDefinition;
     const spawnBehavior =
-      isChildWeapon && this.definition.childSpawnBehavior
-        ? this.definition.childSpawnBehavior
-        : definition.spawnBehavior;
+      this.spawnBehaviorOverride ?? this.definition.spawnBehavior;
 
     let target: Actor | undefined;
     if (spawnBehavior === "targetNearestEnemy") {
@@ -225,7 +223,7 @@ export class Weapon extends Entity {
       if (spawnBehavior === "ownerFacing") {
         const weapon = new WeaponActor(
           this,
-          definition,
+          this.definition,
           target,
           spawnBehavior,
           startPosTarget.pos,
@@ -238,7 +236,7 @@ export class Weapon extends Entity {
         this.actions.delay(i * delay).callMethod(() => {
           const weapon = new WeaponActor(
             this,
-            definition,
+            this.definition,
             target,
             spawnBehavior,
             startPosTarget.pos,
@@ -248,9 +246,7 @@ export class Weapon extends Entity {
       }
     }
 
-    if (!isChildWeapon) {
-      this.lastSpawnedTimeMs = this.aliveTime;
-    }
+    this.lastSpawnedTimeMs = this.aliveTime;
   }
 
   applyUpgrade(upgrade: UpgradeUIData) {
