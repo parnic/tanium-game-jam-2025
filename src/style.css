@@ -201,6 +201,10 @@ body {
   margin-top: 5vw;
 }
 
+.mt-5px {
+  margin-top: 5px;
+}
+
 #xp-bar {
   top: 3.5vw;
   height: 15px;
