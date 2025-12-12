@@ -52,15 +52,17 @@ export class WeaponActor extends GameActor {
     definition?: WeaponData,
     target?: Actor,
     spawnBehavior?: string,
+    startPos?: Vector,
   ) {
     const myNum = Atomics.add(WeaponActor.weaponCounter, 0, 1);
-    const tile = weapon.tile!;
+    const tile =
+      definition === weapon.definition ? weapon.tile! : weapon.childTile!;
     const def = definition ?? weapon.definition;
     super({
       name: `${weapon.name}-${myNum.toString()}`,
       width: tile.tileset.tileWidth,
       height: tile.tileset.tileHeight,
-      pos: weapon.owner.pos,
+      pos: startPos ?? weapon.owner.pos,
       z: config.ZIndexWeapon,
       collisionType:
         def.collides === false
@@ -75,7 +77,7 @@ export class WeaponActor extends GameActor {
     this.weapon = weapon;
     this.target = target;
     this.instigator = weapon.owner;
-    this._speed = weapon.speed;
+    this._speed = weapon.getSpeed(this.definition);
     this.damage = weapon.damage;
     this.lifetime = weapon.lifetimeMs;
     this.shouldFaceDirection = this.spawnBehavior !== "orbit";
@@ -193,7 +195,7 @@ export class WeaponActor extends GameActor {
       this.lastChildSpawn + this.weapon.childDefinition.baseSpawnIntervalMs <=
         this.aliveTime
     ) {
-      this.weapon.spawnWeapon(engine, this.weapon.childDefinition);
+      this.weapon.spawnWeapon(engine, this.weapon.childDefinition, this.pos);
       this.lastChildSpawn = this.aliveTime;
     }
   }

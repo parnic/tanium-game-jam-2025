@@ -50,6 +50,7 @@ export class Weapon extends Entity {
   owner: GameActor;
   definition: WeaponData;
   childDefinition?: WeaponData;
+  childTile?: Tile;
   speed: number;
   damage: number;
   size: number;
@@ -58,6 +59,12 @@ export class Weapon extends Entity {
   lifetimeMs?: number;
   actions: ActionsComponent;
   pendingDelayedSpawnAmount = 0;
+
+  getSpeed(definition: WeaponData): number {
+    return this.childDefinition && definition === this.childDefinition
+      ? this.childDefinition.baseSpeed
+      : this.speed;
+  }
 
   constructor(data: WeaponData, level: TiledResource, owner: GameActor) {
     super({
@@ -139,6 +146,10 @@ export class Weapon extends Entity {
     }
 
     this.tile = weaponTile;
+
+    this.childTile = weapons.find(
+      (w) => w.properties.get("name") === this.childDefinition?.name,
+    );
   }
 
   override onPostUpdate(engine: Engine, elapsedMs: number): void {
@@ -160,7 +171,7 @@ export class Weapon extends Entity {
       return;
     }
 
-    this.spawnWeapon(engine, this.definition);
+    this.spawnWeapon(engine, this.definition, this.owner.pos);
   }
 
   getNearestLivingEnemyToPosition(
@@ -188,7 +199,7 @@ export class Weapon extends Entity {
     return this.getNearestLivingEnemyToPosition(level, this.owner.pos);
   }
 
-  spawnWeapon(engine: Engine, definition: WeaponData) {
+  spawnWeapon(engine: Engine, definition: WeaponData, startPos: Vector) {
     if (!this.tile || !(this.scene instanceof GameLevel)) {
       return;
     }
@@ -211,7 +222,13 @@ export class Weapon extends Entity {
       spawnBehavior === "orbit" ? OrbitDurationMs / amount : multiSpawnDelayMs;
     for (let i = 0; i < amount; i++) {
       if (spawnBehavior === "ownerFacing") {
-        const weapon = new WeaponActor(this, definition, target, spawnBehavior);
+        const weapon = new WeaponActor(
+          this,
+          definition,
+          target,
+          spawnBehavior,
+          startPos,
+        );
         this.scene.add(weapon);
         if (amount > 1) {
           weapon.spawnRotationVarianceDegrees = rand.floating(0, 5);
@@ -223,6 +240,7 @@ export class Weapon extends Entity {
             definition,
             target,
             spawnBehavior,
+            startPos,
           );
           this.scene?.add(weapon);
         });
