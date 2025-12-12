@@ -184,6 +184,10 @@ export class WeaponActor extends GameActor {
       const destination = vec(dist, dist).rotate(t).add(this.instigator.pos);
       this.pos = destination;
       setCurrMove = false;
+
+      this.rotation = Vector.One.rotate(
+        toRadians(degreeScaledSeconds + 90),
+      ).toAngle();
     }
 
     if (setCurrMove) {
