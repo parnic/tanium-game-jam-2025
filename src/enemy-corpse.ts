@@ -11,7 +11,7 @@ import {
   Vector,
 } from "excalibur";
 import { config } from "./config";
-import { GameActor, TiledCollision } from "./game-actor";
+import { GameActor } from "./game-actor";
 import { GameEngine } from "./game-engine";
 import { createGleamMaterial } from "./materials/gleam";
 import type { Player } from "./player";
@@ -36,8 +36,7 @@ export class EnemyCorpse extends GameActor {
       width,
       height,
       z: config.ZIndexEnemyCorpse,
-      collisionType: CollisionType.Passive,
-      collisionDef: new TiledCollision(corpseTile),
+      collisionType: CollisionType.PreventCollision,
     });
 
     this.staticImage = corpseTile.tileset.spritesheet.sprites.at(corpseTile.id);
