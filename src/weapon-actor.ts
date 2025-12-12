@@ -165,10 +165,10 @@ export class WeaponActor extends GameActor {
     if (this.definition.targetBehavior === "tracking") {
       this.conditionalUpdateTarget();
     } else if (this.spawnBehavior === "orbit") {
-      const aliveSeconds =
-        (this.aliveTime % OrbitDurationMs) / OrbitDurationMs || 1;
+      const duration = OrbitDurationMs / this.speed;
+      const aliveSeconds = (this.aliveTime % duration) / duration || 1;
       // determine where in orbit we should be given the current time
-      const degreeScaledSeconds = 360 * aliveSeconds * this.speed;
+      const degreeScaledSeconds = 360 * aliveSeconds;
       const t = toRadians(degreeScaledSeconds);
       // position us an appropriate distance from the source
       const dist = this.instigator.width * this.orbitDistanceScale;

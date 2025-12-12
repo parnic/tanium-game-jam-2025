@@ -27,7 +27,7 @@
   {
     "name": "orbiter",
     "displayName": "Shield bash",
-    "baseSpeed": 1,
+    "baseSpeed": 0.6,
     "baseDamage": 1,
     "baseSpawnIntervalMs": 3111,
     "baseLifetime": 2500,
@@ -55,10 +55,10 @@
   {
     "name": "plane",
     "displayName": "Personal drone",
-    "baseSpeed": 0.2,
-    "baseDamage": 2,
+    "baseSpeed": 0.3,
+    "baseDamage": 0.4,
     "baseSpawnIntervalMs": 10000,
-    "baseLifetime": 5000,
+    "baseLifetime": 6500,
     "spawnBehavior": "orbit",
     "spawns": "bullet-circle",
     "childSpawnBehavior": "targetNearestEnemy",
