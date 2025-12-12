@@ -171,7 +171,7 @@ export class Weapon extends Entity {
       return;
     }
 
-    this.spawnWeapon(engine, this.definition, this.owner.pos);
+    this.spawnWeapon(engine, this.definition, this.owner);
   }
 
   getNearestLivingEnemyToPosition(
@@ -199,7 +199,7 @@ export class Weapon extends Entity {
     return this.getNearestLivingEnemyToPosition(level, this.owner.pos);
   }
 
-  spawnWeapon(engine: Engine, definition: WeaponData, startPos: Vector) {
+  spawnWeapon(engine: Engine, definition: WeaponData, startPosTarget: Actor) {
     if (!this.tile || !(this.scene instanceof GameLevel)) {
       return;
     }
@@ -220,7 +220,7 @@ export class Weapon extends Entity {
 
     const amount = Math.floor(this.amount);
     const delay =
-      spawnBehavior === "orbit" ? OrbitDurationMs / amount : multiSpawnDelayMs;
+      spawnBehavior === "orbit" ? OrbitDurationMs / amount : multiSpawnDelayMs; // todo: this does not scale well with high amounts. 100ms x amount 13 = 1.3 seconds to spawn all of something, which means we get backed up and keep spawning things forever
     for (let i = 0; i < amount; i++) {
       if (spawnBehavior === "ownerFacing") {
         const weapon = new WeaponActor(
@@ -228,7 +228,7 @@ export class Weapon extends Entity {
           definition,
           target,
           spawnBehavior,
-          startPos,
+          startPosTarget.pos,
         );
         this.scene.add(weapon);
         if (amount > 1) {
@@ -241,7 +241,7 @@ export class Weapon extends Entity {
             definition,
             target,
             spawnBehavior,
-            startPos,
+            startPosTarget.pos,
           );
           this.scene?.add(weapon);
         });
@@ -264,6 +264,8 @@ export class Weapon extends Entity {
         break;
 
       case UpgradeAttribute.Interval:
+        // todo: it's possible for this to go negative currently. that just means it will try and spawn every frame, which is ultimately "fine", but coupled with "amount" delays,
+        // we end up with really strange behavior that needs to be thought through.
         this.intervalMs += upgrade.data.amount * 1000; // these should always be negative values
         break;
 

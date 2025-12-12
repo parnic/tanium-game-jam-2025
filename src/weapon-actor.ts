@@ -207,7 +207,7 @@ export class WeaponActor extends GameActor {
       this.lastChildSpawn + this.weapon.childDefinition.baseSpawnIntervalMs <=
         this.aliveTime
     ) {
-      this.weapon.spawnWeapon(engine, this.weapon.childDefinition, this.pos);
+      this.weapon.spawnWeapon(engine, this.weapon.childDefinition, this);
       this.lastChildSpawn = this.aliveTime;
     }
   }
