@@ -175,6 +175,7 @@ export class Player extends GameActor {
     }
 
     this.scene.updateXpBar(this.xpComponent);
+    Audio.playPickupXpSfx();
   }
 
   onLeveledUp(evt: LeveledUpEvent) {

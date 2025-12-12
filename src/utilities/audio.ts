@@ -14,6 +14,7 @@ const levelCompleteSfxVolume = 0.8;
 const levelUpSfxVolume = 0.8;
 const musicVolume = 0.3;
 const pickupGiftSfxVolume = 1.0;
+const pickupXpSfxVolume = 1.0;
 const playerTakeDamageSfxVolume = 0.8;
 const selectUpgradeSfxVolume = 0.8;
 
@@ -63,6 +64,10 @@ export function playMusic() {
 
 export function playPickupGiftSfx() {
   playSound(rand.pickOne(SfxResources.pickupGift), pickupGiftSfxVolume);
+}
+
+export function playPickupXpSfx() {
+  playSound(rand.pickOne(SfxResources.pickupXp), pickupXpSfxVolume);
 }
 
 export function playPlayerTakeDamageSfx() {

@@ -57,6 +57,11 @@ export const SfxResources = {
       "./sfx/zapsplat_multimedia_game_sound_win_gold_coins_or_treasure_hit_twinkle_74544.mp3",
     ),
   ],
+  pickupXp: [
+    new Sound("./sfx/select_003.ogg"),
+    new Sound("./sfx/select_004.ogg"),
+    new Sound("./sfx/select_005.ogg"),
+  ],
   playerTakeDamage: [new Sound("./sfx/sfx_hurt.ogg")],
   selectUpgrade: [
     new Sound(
