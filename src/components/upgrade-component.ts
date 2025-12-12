@@ -353,6 +353,7 @@ export class UpgradeComponent extends Component {
           name: choice.displayName,
           img: Weapon.getSprite(choice, forPlayer.scene as GameLevel)!,
           weapon: choice,
+          // todo: add label with a short weapon description?
         });
       } else {
         const choice = rand.pickOne(forPlayer.weapons);
@@ -374,6 +375,7 @@ export class UpgradeComponent extends Component {
           attributes.push(UpgradeAttribute.Speed);
         }
 
+        // todo: colorize label text by chosen rarity. set a css class or whatever.
         const rarity = this.getRandomRarity();
         const upgradeData = this.getUpgradeAmount(rarity, attribute);
         // todo: can/should we support special upgrade types like allowing a weapon to bounce to another enemy
