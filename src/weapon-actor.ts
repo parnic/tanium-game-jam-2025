@@ -5,6 +5,7 @@ import {
   type CollisionContact,
   CollisionType,
   type Engine,
+  lerp,
   type Side,
   toRadians,
   Vector,
@@ -35,6 +36,7 @@ export class WeaponActor extends GameActor {
   orbitDistanceScale = 1.1;
   spawnRotationVarianceDegrees = 0;
   lastChildSpawn = 0;
+  fadeInOutDurationMs = 300;
 
   private get direction() {
     return this._direction;
@@ -127,6 +129,8 @@ export class WeaponActor extends GameActor {
           ),
         );
       }
+    } else if (this.spawnBehavior === "orbit") {
+      this.scale = Vector.Zero;
     }
   }
 
@@ -165,13 +169,17 @@ export class WeaponActor extends GameActor {
     if (this.definition.targetBehavior === "tracking") {
       this.conditionalUpdateTarget();
     } else if (this.spawnBehavior === "orbit") {
+      const fadeInOutScale = this.getFadeInOutScale();
+      this.scale = vec(fadeInOutScale, fadeInOutScale);
+
       const duration = OrbitDurationMs / this.speed;
       const aliveSeconds = (this.aliveTime % duration) / duration || 1;
       // determine where in orbit we should be given the current time
       const degreeScaledSeconds = 360 * aliveSeconds;
       const t = toRadians(degreeScaledSeconds);
       // position us an appropriate distance from the source
-      const dist = this.instigator.width * this.orbitDistanceScale;
+      const dist =
+        this.instigator.width * this.orbitDistanceScale * fadeInOutScale;
       // offset from our owner
       const destination = vec(dist, dist).rotate(t).add(this.instigator.pos);
       this.pos = destination;
@@ -198,6 +206,23 @@ export class WeaponActor extends GameActor {
       this.weapon.spawnWeapon(engine, this.weapon.childDefinition, this.pos);
       this.lastChildSpawn = this.aliveTime;
     }
+  }
+
+  private getFadeInOutScale(): number {
+    if (this.aliveTime < this.fadeInOutDurationMs) {
+      return lerp(0, 1, this.aliveTime / this.fadeInOutDurationMs);
+    } else if (
+      this.lifetime &&
+      this.lifetime - this.aliveTime < this.fadeInOutDurationMs
+    ) {
+      return lerp(
+        0,
+        1,
+        (this.lifetime - this.aliveTime) / this.fadeInOutDurationMs,
+      );
+    }
+
+    return 1;
   }
 
   shouldKillOnCollision() {
