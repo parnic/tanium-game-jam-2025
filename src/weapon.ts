@@ -204,8 +204,9 @@ export class Weapon extends Entity {
       return;
     }
 
+    const isChildWeapon = definition === this.childDefinition;
     const spawnBehavior =
-      definition === this.childDefinition && this.definition.childSpawnBehavior
+      isChildWeapon && this.definition.childSpawnBehavior
         ? this.definition.childSpawnBehavior
         : definition.spawnBehavior;
 
@@ -246,7 +247,10 @@ export class Weapon extends Entity {
         });
       }
     }
-    this.lastSpawnedTimeMs = this.aliveTime;
+
+    if (!isChildWeapon) {
+      this.lastSpawnedTimeMs = this.aliveTime;
+    }
   }
 
   applyUpgrade(upgrade: UpgradeUIData) {
