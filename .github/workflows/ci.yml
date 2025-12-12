@@ -78,7 +78,7 @@ jobs:
       - if: ${{ failure() && steps.diff.outcome == 'failure' }}
         name: Upload Artifact
         id: uploadResult
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: outdir-diff
           path: |
@@ -135,7 +135,7 @@ jobs:
     steps:
       - name: Download artifact
         id: download
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           path: ./dist
 
