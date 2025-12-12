@@ -5,7 +5,7 @@ import {
   type CollisionContact,
   CollisionType,
   type Engine,
-  lerp,
+  lerpVector,
   type Side,
   toRadians,
   Vector,
@@ -33,6 +33,7 @@ export class WeaponActor extends GameActor {
   target?: Actor;
   definition: WeaponData;
   spawnBehavior?: string;
+  size: Vector;
   orbitDistanceScale = 1.1;
   spawnRotationVarianceDegrees = 0;
   lastChildSpawn = 0;
@@ -83,7 +84,9 @@ export class WeaponActor extends GameActor {
     this.damage = weapon.damage;
     this.lifetime = weapon.lifetimeMs;
     this.shouldFaceDirection = this.spawnBehavior !== "orbit";
-    this.scale = vec(weapon.size, weapon.size);
+    this.size = vec(weapon.size, weapon.size);
+
+    this.scale = this.size;
 
     // set a default direction so that if we spawned from a delayed action
     // and we're supposed to track a target but there's no target to track,
@@ -170,7 +173,11 @@ export class WeaponActor extends GameActor {
       this.conditionalUpdateTarget();
     } else if (this.spawnBehavior === "orbit") {
       const fadeInOutScale = this.getFadeInOutScale();
-      this.scale = vec(fadeInOutScale, fadeInOutScale);
+      const parameterizedFadeScale = vec(
+        fadeInOutScale.x / this.size.x,
+        fadeInOutScale.y / this.size.y,
+      );
+      this.scale = fadeInOutScale;
 
       const duration = OrbitDurationMs / this.speed;
       const aliveSeconds = (this.aliveTime % duration) / duration || 1;
@@ -179,7 +186,9 @@ export class WeaponActor extends GameActor {
       const t = toRadians(degreeScaledSeconds);
       // position us an appropriate distance from the source
       const dist =
-        this.instigator.width * this.orbitDistanceScale * fadeInOutScale;
+        this.instigator.width *
+        this.orbitDistanceScale *
+        parameterizedFadeScale.x;
       // offset from our owner
       const destination = vec(dist, dist).rotate(t).add(this.instigator.pos);
       this.pos = destination;
@@ -212,21 +221,25 @@ export class WeaponActor extends GameActor {
     }
   }
 
-  private getFadeInOutScale(): number {
+  private getFadeInOutScale(): Vector {
     if (this.aliveTime < this.fadeInOutDurationMs) {
-      return lerp(0, 1, this.aliveTime / this.fadeInOutDurationMs);
+      return lerpVector(
+        Vector.Zero,
+        this.size,
+        this.aliveTime / this.fadeInOutDurationMs,
+      );
     } else if (
       this.lifetime &&
       this.lifetime - this.aliveTime < this.fadeInOutDurationMs
     ) {
-      return lerp(
-        0,
-        1,
+      return lerpVector(
+        Vector.Zero,
+        this.size,
         (this.lifetime - this.aliveTime) / this.fadeInOutDurationMs,
       );
     }
 
-    return 1;
+    return this.size;
   }
 
   shouldKillOnCollision() {
