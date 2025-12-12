@@ -29,8 +29,8 @@
     "displayName": "Shield bash",
     "baseSpeed": 0.6,
     "baseDamage": 1,
-    "baseSpawnIntervalMs": 3111,
-    "baseLifetime": 2500,
+    "baseSpawnIntervalMs": 4250,
+    "baseLifetime": 3333,
     "spawnBehavior": "orbit"
   },
   {
