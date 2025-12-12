@@ -14,6 +14,7 @@ import {
 import type { Enemy } from "./enemy";
 import type { GameActor } from "./game-actor";
 import { GameEngine } from "./game-engine";
+import { Resources } from "./resources";
 import { GameLevel } from "./scenes/game-level";
 import { rand } from "./utilities/math";
 import { OrbitDurationMs, WeaponActor } from "./weapon-actor";
@@ -34,6 +35,7 @@ export interface WeaponData {
     | "ownerLocation"
     | undefined;
   spawns?: string;
+  childSpawnBehavior?: string;
   targetBehavior: "tracking" | undefined;
   collides?: boolean;
 }
@@ -47,6 +49,7 @@ export class Weapon extends Entity {
   aliveTime = 0;
   owner: GameActor;
   definition: WeaponData;
+  childDefinition?: WeaponData;
   speed: number;
   damage: number;
   size: number;
@@ -74,6 +77,19 @@ export class Weapon extends Entity {
     this.intervalMs = data.baseSpawnIntervalMs;
     this.amount = data.baseAmount ?? 1;
     this.lifetimeMs = data.baseLifetime;
+
+    if (this.definition.spawns) {
+      const childWeapon = Resources.WeaponData.data.find(
+        (w) => w.name === this.definition.spawns,
+      );
+      if (!childWeapon) {
+        Logger.getInstance().error(
+          `${this.name} unable to find child weapon definition by name ${this.definition.spawns}`,
+        );
+      } else {
+        this.childDefinition = childWeapon;
+      }
+    }
   }
 
   static getSprite(
@@ -144,7 +160,7 @@ export class Weapon extends Entity {
       return;
     }
 
-    this.spawnWeapon(engine);
+    this.spawnWeapon(engine, this.definition);
   }
 
   getNearestLivingEnemyToPosition(
@@ -172,13 +188,18 @@ export class Weapon extends Entity {
     return this.getNearestLivingEnemyToPosition(level, this.owner.pos);
   }
 
-  spawnWeapon(engine: Engine) {
+  spawnWeapon(engine: Engine, definition: WeaponData) {
     if (!this.tile || !(this.scene instanceof GameLevel)) {
       return;
     }
 
+    const spawnBehavior =
+      definition === this.childDefinition && this.definition.childSpawnBehavior
+        ? this.definition.childSpawnBehavior
+        : definition.spawnBehavior;
+
     let target: Actor | undefined;
-    if (this.definition.spawnBehavior === "targetNearestEnemy") {
+    if (spawnBehavior === "targetNearestEnemy") {
       target = this.getNearestLivingEnemy(this.scene);
       if (!target) {
         return;
@@ -187,19 +208,22 @@ export class Weapon extends Entity {
 
     const amount = Math.floor(this.amount);
     const delay =
-      this.definition.spawnBehavior === "orbit"
-        ? OrbitDurationMs / amount
-        : multiSpawnDelayMs;
+      spawnBehavior === "orbit" ? OrbitDurationMs / amount : multiSpawnDelayMs;
     for (let i = 0; i < amount; i++) {
-      if (this.definition.spawnBehavior === "ownerFacing") {
-        const weapon = new WeaponActor(this, target);
+      if (spawnBehavior === "ownerFacing") {
+        const weapon = new WeaponActor(this, definition, target, spawnBehavior);
         this.scene.add(weapon);
         if (amount > 1) {
           weapon.spawnRotationVarianceDegrees = rand.floating(0, 5);
         }
       } else {
         this.actions.delay(i * delay).callMethod(() => {
-          const weapon = new WeaponActor(this, target);
+          const weapon = new WeaponActor(
+            this,
+            definition,
+            target,
+            spawnBehavior,
+          );
           this.scene?.add(weapon);
         });
       }

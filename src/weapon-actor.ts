@@ -17,7 +17,7 @@ import { GameEngine } from "./game-engine";
 import { Player } from "./player";
 import type { GameLevel } from "./scenes/game-level";
 import { rand } from "./utilities/math";
-import type { Weapon } from "./weapon";
+import type { Weapon, WeaponData } from "./weapon";
 
 export const OrbitDurationMs = 2000;
 
@@ -30,8 +30,11 @@ export class WeaponActor extends GameActor {
   weapon: Weapon;
   shouldFaceDirection: boolean;
   target?: Actor;
+  definition: WeaponData;
+  spawnBehavior?: string;
   orbitDistanceScale = 1.1;
   spawnRotationVarianceDegrees = 0;
+  lastChildSpawn = 0;
 
   private get direction() {
     return this._direction;
@@ -44,9 +47,15 @@ export class WeaponActor extends GameActor {
     }
   }
 
-  constructor(weapon: Weapon, target?: Actor) {
+  constructor(
+    weapon: Weapon,
+    definition?: WeaponData,
+    target?: Actor,
+    spawnBehavior?: string,
+  ) {
     const myNum = Atomics.add(WeaponActor.weaponCounter, 0, 1);
     const tile = weapon.tile!;
+    const def = definition ?? weapon.definition;
     super({
       name: `${weapon.name}-${myNum.toString()}`,
       width: tile.tileset.tileWidth,
@@ -54,28 +63,28 @@ export class WeaponActor extends GameActor {
       pos: weapon.owner.pos,
       z: config.ZIndexWeapon,
       collisionType:
-        weapon.definition.collides === false
+        def.collides === false
           ? CollisionType.PreventCollision
           : CollisionType.Passive,
       collisionDef:
-        weapon.definition.collides === false
-          ? undefined
-          : new TiledCollision(tile),
+        def.collides === false ? undefined : new TiledCollision(tile),
     });
 
+    this.definition = def;
+    this.spawnBehavior = spawnBehavior ?? this.definition.spawnBehavior;
     this.weapon = weapon;
     this.target = target;
     this.instigator = weapon.owner;
     this._speed = weapon.speed;
     this.damage = weapon.damage;
     this.lifetime = weapon.lifetimeMs;
-    this.shouldFaceDirection = weapon.definition.spawnBehavior !== "orbit";
+    this.shouldFaceDirection = this.spawnBehavior !== "orbit";
     this.scale = vec(weapon.size, weapon.size);
 
     // set a default direction so that if we spawned from a delayed action
     // and we're supposed to track a target but there's no target to track,
     // we at least don't just stop dead.
-    if (weapon.definition.spawnBehavior !== "ownerLocation") {
+    if (this.spawnBehavior !== "ownerLocation") {
       this.direction = !this.instigator.moveDir.equals(Vector.Zero)
         ? this.instigator.moveDir.normalize()
         : Vector.Right;
@@ -101,7 +110,7 @@ export class WeaponActor extends GameActor {
 
     this.conditionalUpdateTarget();
 
-    if (this.weapon.definition.spawnBehavior === "ownerFacing") {
+    if (this.spawnBehavior === "ownerFacing") {
       this.direction = !this.instigator.moveDir.equals(Vector.Zero)
         ? this.instigator.moveDir.normalize()
         : Vector.Right;
@@ -150,9 +159,10 @@ export class WeaponActor extends GameActor {
       return;
     }
 
-    if (this.weapon.definition.targetBehavior === "tracking") {
+    let setCurrMove = true;
+    if (this.definition.targetBehavior === "tracking") {
       this.conditionalUpdateTarget();
-    } else if (this.weapon.definition.spawnBehavior === "orbit") {
+    } else if (this.spawnBehavior === "orbit") {
       const aliveSeconds =
         (this.aliveTime % OrbitDurationMs) / OrbitDurationMs || 1;
       // determine where in orbit we should be given the current time
@@ -163,21 +173,34 @@ export class WeaponActor extends GameActor {
       // offset from our owner
       const destination = vec(dist, dist).rotate(t).add(this.instigator.pos);
       this.pos = destination;
-      super.onPostUpdate(engine, elapsedMs);
+      setCurrMove = false;
+    }
+
+    if (setCurrMove) {
+      this.currMove = this._direction;
+    }
+    super.onPostUpdate(engine, elapsedMs);
+
+    if (this.spawnBehavior === "orbit") {
       // i'm not good enough at math to use the vel to get the same result as directly setting pos.
       // todo: should probably make this work eventually.
       this.vel = Vector.Zero;
-      return;
     }
 
-    this.currMove = this._direction;
-    super.onPostUpdate(engine, elapsedMs);
+    if (
+      this.weapon.childDefinition &&
+      this.weapon.childDefinition !== this.definition &&
+      this.lastChildSpawn + this.weapon.childDefinition.baseSpawnIntervalMs <=
+        this.aliveTime
+    ) {
+      this.weapon.spawnWeapon(engine, this.weapon.childDefinition);
+      this.lastChildSpawn = this.aliveTime;
+    }
   }
 
   shouldKillOnCollision() {
     return (
-      this.weapon.definition.spawnBehavior !== "orbit" &&
-      this.weapon.definition.spawnBehavior !== "ownerLocation"
+      this.spawnBehavior !== "orbit" && this.spawnBehavior !== "ownerLocation"
     );
   }
 
