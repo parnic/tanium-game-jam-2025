@@ -53,8 +53,14 @@ export class WeaponActor extends GameActor {
       height: tile.tileset.tileHeight,
       pos: weapon.owner.pos,
       z: config.ZIndexWeapon,
-      collisionType: CollisionType.Passive,
-      collisionDef: new TiledCollision(tile),
+      collisionType:
+        weapon.definition.collides === false
+          ? CollisionType.PreventCollision
+          : CollisionType.Passive,
+      collisionDef:
+        weapon.definition.collides === false
+          ? undefined
+          : new TiledCollision(tile),
     });
 
     this.weapon = weapon;

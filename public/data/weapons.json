@@ -60,6 +60,7 @@
     "baseSpawnIntervalMs": 10000,
     "baseLifetime": 5000,
     "spawnBehavior": "orbit",
-    "spawns": "bullet-circle"
+    "spawns": "bullet-circle",
+    "collides": false
   }
 ]

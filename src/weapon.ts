@@ -35,6 +35,7 @@ export interface WeaponData {
     | undefined;
   spawns?: string;
   targetBehavior: "tracking" | undefined;
+  collides?: boolean;
 }
 
 const multiSpawnDelayMs = 100;
