@@ -14,7 +14,7 @@ const levelCompleteSfxVolume = 0.8;
 const levelUpSfxVolume = 0.8;
 const musicVolume = 0.3;
 const pickupGiftSfxVolume = 1.0;
-const pickupXpSfxVolume = 1.0;
+const pickupXpSfxVolume = 0.4;
 const playerTakeDamageSfxVolume = 0.8;
 const selectUpgradeSfxVolume = 0.8;
 
