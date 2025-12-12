@@ -98,7 +98,7 @@ export class Player extends GameActor {
   upgradeComponent: UpgradeComponent;
   weapons: Weapon[] = [];
   maxWeapons = 3;
-  pickupDistanceSq = 200 * 200;
+  pickupDistanceSq = 250 * 250;
   characterData?: CharacterData;
   reachedExit = false;
 

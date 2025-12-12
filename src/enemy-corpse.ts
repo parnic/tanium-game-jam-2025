@@ -87,6 +87,8 @@ export class EnemyCorpse extends GameActor {
   }
 
   override onPostUpdate(engine: Engine, elapsedMs: number): void {
+    // todo: it would be cool to have an initial pickup behavior that causes the corpse to
+    // move away from the player and eventually curve back toward them to be picked up.
     if (!this.pickedUpBy) {
       return;
     }
@@ -102,7 +104,7 @@ export class EnemyCorpse extends GameActor {
 
     super.onPostUpdate(engine, elapsedMs);
 
-    // sometimes the collisionStart event isn't firing. not sure why. have a fallback.
+    // pickup when we're close enough to the player. no need to pay for corpse collision when this works just as well
     if (this.pickedUpBy.pos.squareDistance(this.pos) <= 25 * 25) {
       this.onPickedUp();
     }
@@ -121,6 +123,7 @@ export class EnemyCorpse extends GameActor {
 
   onPickedUp() {
     this.kill();
+    // todo: corpses should have an xp value they give that is scaled by their difficulty or increased when grouping corpses for perf
     this.pickedUpBy!.xpComponent.giveXp(1);
     Logger.getInstance().info(
       `picked up ${this.name}. new xp=${this.pickedUpBy!.xpComponent.currXp.toString()}`,
