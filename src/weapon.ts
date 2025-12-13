@@ -8,6 +8,7 @@ import {
   type Vector,
 } from "excalibur";
 import {
+  isUpgradeUIData,
   UpgradeAttribute,
   type UpgradeUIData,
 } from "./components/upgrade-component";
@@ -60,12 +61,6 @@ export class Weapon extends Entity {
   lifetimeMs?: number;
   actions: ActionsComponent;
   pendingDelayedSpawnAmount = 0;
-
-  getSpeed(definition: WeaponData): number {
-    return this.childDefinition && definition === this.childDefinition
-      ? this.childDefinition.baseSpeed
-      : this.speed;
-  }
 
   constructor(data: WeaponData, level: TiledResource, owner: GameActor) {
     super({
@@ -249,39 +244,49 @@ export class Weapon extends Entity {
     this.lastSpawnedTimeMs = this.aliveTime;
   }
 
-  applyUpgrade(upgrade: UpgradeUIData) {
-    switch (upgrade.data?.meta?.attribute) {
-      case UpgradeAttribute.Amount:
-        this.amount += upgrade.data.amount;
-        break;
+  applyUpgrade(upgrade: UpgradeUIData | Weapon) {
+    if (isUpgradeUIData(upgrade)) {
+      switch (upgrade.data?.meta?.attribute) {
+        case UpgradeAttribute.Amount:
+          this.amount += upgrade.data.amount;
+          break;
 
-      case UpgradeAttribute.Damage:
-        this.damage += this.definition.baseDamage * upgrade.data.amount;
-        break;
+        case UpgradeAttribute.Damage:
+          this.damage += this.definition.baseDamage * upgrade.data.amount;
+          break;
 
-      case UpgradeAttribute.Interval:
-        // todo: it's possible for this to go negative currently. that just means it will try and spawn every frame, which is ultimately "fine", but coupled with "amount" delays,
-        // we end up with really strange behavior that needs to be thought through.
-        this.intervalMs += upgrade.data.amount * 1000; // these should always be negative values
-        break;
+        case UpgradeAttribute.Interval:
+          // todo: it's possible for this to go negative currently. that just means it will try and spawn every frame, which is ultimately "fine", but coupled with "amount" delays,
+          // we end up with really strange behavior that needs to be thought through.
+          this.intervalMs += upgrade.data.amount * 1000; // these should always be negative values
+          break;
 
-      case UpgradeAttribute.Lifetime:
-        if (this.lifetimeMs) {
-          this.lifetimeMs = this.lifetimeMs + upgrade.data.amount * 1000;
-        } else {
-          Logger.getInstance().error(
-            `${this.name} told to apply Lifetime upgrade, but no lifetime is set.`,
-          );
-        }
-        break;
+        case UpgradeAttribute.Lifetime:
+          if (this.lifetimeMs) {
+            this.lifetimeMs = this.lifetimeMs + upgrade.data.amount * 1000;
+          } else {
+            Logger.getInstance().error(
+              `${this.name} told to apply Lifetime upgrade, but no lifetime is set.`,
+            );
+          }
+          break;
 
-      case UpgradeAttribute.Size:
-        this.size += (this.definition.baseScale ?? 1) * upgrade.data.amount;
-        break;
+        case UpgradeAttribute.Size:
+          this.size += (this.definition.baseScale ?? 1) * upgrade.data.amount;
+          break;
 
-      case UpgradeAttribute.Speed:
-        this.speed += upgrade.data.amount;
-        break;
+        case UpgradeAttribute.Speed:
+          this.speed += upgrade.data.amount;
+          break;
+      }
+    } else if (upgrade instanceof Weapon) {
+      // not all attributes should carry over to a copied weapon (which is intended to be used for child weapons only)
+      this.amount = upgrade.amount;
+      this.damage = upgrade.damage;
+      // this.intervalMs = upgrade.intervalMs;
+      // this.lifetimeMs = upgrade.lifetimeMs;
+      this.size = upgrade.size;
+      // this.speed = upgrade.speed;
     }
   }
 }

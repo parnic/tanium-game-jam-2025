@@ -16,6 +16,11 @@ export interface UpgradeUIData {
   data?: RolledUpgradeData;
 }
 
+// biome-ignore lint/suspicious/noExplicitAny: the whole point is to detect anything
+export function isUpgradeUIData(x: any): x is UpgradeUIData {
+  return typeof x.data === "object" && typeof x.labelClass === "string";
+}
+
 export type RolledUpgradeData = {
   amount: number;
   meta?: UpgradeAttributeRarityRange;

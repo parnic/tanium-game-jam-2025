@@ -81,7 +81,7 @@ export class WeaponActor extends GameActor {
     if (weapon.owner instanceof WeaponActor) {
       this.instigator = weapon.owner.weapon.owner;
     }
-    this._speed = weapon.getSpeed(this.definition);
+    this._speed = weapon.speed;
     this.damage = weapon.damage;
     this.lifetime = weapon.lifetimeMs;
     this.shouldFaceDirection = this.spawnBehavior !== "orbit";
@@ -166,6 +166,7 @@ export class WeaponActor extends GameActor {
       this.weapon.level,
       this,
     );
+    this.childWeapon.applyUpgrade(this.weapon);
     this.childWeapon.spawnBehaviorOverride = this.definition.childSpawnBehavior;
     this.scene?.add(this.childWeapon);
   }
