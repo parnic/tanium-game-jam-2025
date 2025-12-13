@@ -105,7 +105,7 @@ export class EnemyCorpse extends GameActor {
     super.onPostUpdate(engine, elapsedMs);
 
     // pickup when we're close enough to the player. no need to pay for corpse collision when this works just as well
-    if (this.pickedUpBy.pos.squareDistance(this.pos) <= 25 * 25) {
+    if (this.pickedUpBy.pos.squareDistance(this.pos) <= 45 * 45) {
       this.onPickedUp();
     }
   }
