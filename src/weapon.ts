@@ -266,7 +266,7 @@ export class Weapon extends Entity {
 
         case UpgradeAttribute.Interval:
           this.intervalMs = Math.max(
-            0,
+            30,
             this.intervalMs + upgrade.data.amount * 1000, // these should always be negative values
           );
           break;
