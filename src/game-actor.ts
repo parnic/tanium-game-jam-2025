@@ -6,7 +6,6 @@ import {
   Color,
   type Engine,
   type Graphic,
-  Logger,
   type Material,
   Shape,
   Vector,
@@ -101,7 +100,7 @@ export abstract class GameActor extends Actor {
 
   protected set isGodMode(enable: boolean) {
     this._isGodMode = enable;
-    Logger.getInstance().info(
+    this.logger.info(
       `${this.name} ${enable ? "enabled" : "disabled"} god mode`,
     );
   }
@@ -112,7 +111,7 @@ export abstract class GameActor extends Actor {
 
   protected set isDemigodMode(enable: boolean) {
     this._isDemigodMode = enable;
-    Logger.getInstance().info(
+    this.logger.info(
       `${this.name} ${enable ? "enabled" : "disabled"} demigod mode`,
     );
   }
@@ -211,14 +210,14 @@ export abstract class GameActor extends Actor {
     bypassInvulnWindow?: boolean,
   ): void {
     if (this.isGodMode) {
-      Logger.getInstance().info(
+      this.logger.info(
         `Suppressing damage done to ${this.name} because it was in god mode.`,
       );
       return;
     } else if (this.isDemigodMode && this.health <= damage) {
       const incomingDamage = damage;
       damage = Math.max(0, this.health - 1);
-      Logger.getInstance().info(
+      this.logger.info(
         `Incoming damage of ${incomingDamage.toString()} set to ${damage.toString()} because ${this.name} was in demigod mode.`,
       );
     }
@@ -228,7 +227,7 @@ export abstract class GameActor extends Actor {
       !bypassInvulnWindow &&
       this.aliveTime <= this.lastDamaged + this.invulnerabilityWindowMs
     ) {
-      Logger.getInstance().info(
+      this.logger.info(
         `Suppressing damage done to ${this.name} because it was inside the invulnerability window of ${this.invulnerabilityWindowMs.toString()} milliseconds since the last damage.`,
       );
       return;
@@ -236,7 +235,7 @@ export abstract class GameActor extends Actor {
 
     this.lastDamagedByPlayer = !!damagedByPlayer;
     this.health -= damage;
-    Logger.getInstance().info(
+    this.logger.info(
       `${this.name} took ${damage.toString()} damage, remaining health: ${this.health.toString()}`,
     );
     this.lastDamaged = this.aliveTime;

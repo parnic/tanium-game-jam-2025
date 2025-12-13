@@ -5,7 +5,6 @@ import {
   CollisionType,
   Color,
   type Engine,
-  Logger,
   type Shader,
   type Side,
   Vector,
@@ -41,7 +40,7 @@ export class EnemyCorpse extends GameActor {
 
     this.staticImage = corpseTile.tileset.spritesheet.sprites.at(corpseTile.id);
     if (!this.staticImage) {
-      Logger.getInstance().error(
+      this.logger.error(
         `Unable to find sprite for enemy corpse id ${corpseTile.id}`,
       );
     }
@@ -63,6 +62,10 @@ export class EnemyCorpse extends GameActor {
         s.trySetUniformFloat("u_glint_trigger", engine.clock.now() / 1000);
       });
     });
+
+    // todo: we need a limit on the number of active corpses. use the array in the GameLevel for
+    // how many are currently active, and combine with nearby ones if we can (or if there are no
+    // nearbys to combine with, see if we can combine off-screen ones together)
   }
 
   override onPreUpdate(engine: Engine, elapsed: number): void {
@@ -100,6 +103,8 @@ export class EnemyCorpse extends GameActor {
 
     const pickupToPlayer = this.pickedUpBy.pos.sub(this.pos);
     const normalized = pickupToPlayer.normalize();
+    // todo: speed should scale based on how far away from the player it is so that pickups
+    // that are way off screen make their way to the player in a reasonable amount of time.
     this.currMove = normalized.scale(config.SpeedPickup * elapsedMs);
 
     super.onPostUpdate(engine, elapsedMs);
@@ -125,7 +130,7 @@ export class EnemyCorpse extends GameActor {
     this.kill();
     // todo: corpses should have an xp value they give that is scaled by their difficulty or increased when grouping corpses for perf
     this.pickedUpBy!.xpComponent.giveXp(1);
-    Logger.getInstance().info(
+    this.logger.info(
       `picked up ${this.name}. new xp=${this.pickedUpBy!.xpComponent.currXp.toString()}`,
     );
     if (this.scene instanceof GameLevel) {

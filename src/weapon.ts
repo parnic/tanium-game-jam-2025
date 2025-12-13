@@ -236,6 +236,7 @@ export class Weapon extends Entity {
             Math.max(0, 1 - this.pendingDelayedSpawnAmount / 10),
           );
 
+    // todo: we probably need a global limit on the maximum active number of weapon actors at a given time. when we exceed that limit, kill off the oldest one to spawn this new one.
     const weapon = new WeaponActor(
       this,
       this.definition,

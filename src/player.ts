@@ -12,7 +12,6 @@ import {
   GameEvent,
   type Gamepad,
   Keys,
-  Logger,
   PointerButton,
   PointerType,
   type Scene,
@@ -123,7 +122,7 @@ export class Player extends GameActor {
       (d) => d.name === characterName,
     );
     if (!this.characterData) {
-      Logger.getInstance().error(
+      this.logger.error(
         `Unable to locate CharacterData for chosen character ${characterName}`,
       );
     }
@@ -219,7 +218,7 @@ export class Player extends GameActor {
     const idx = this.weapons.length - 1;
     const slots = this.equipmentBarElem.querySelectorAll(".eq-img");
     if (slots.length <= idx) {
-      Logger.getInstance().error(
+      this.logger.error(
         "tried to add more weapons than we support showing on the ui; add code to dynamically create a new container",
       );
       return;
@@ -401,7 +400,7 @@ export class Player extends GameActor {
         (w) => w.name === this.characterData!.startingWeapon,
       );
       if (!weapon) {
-        Logger.getInstance().error(
+        this.logger.error(
           `Unable to give starting weapon ${this.characterData.startingWeapon} because no matching weapon data could be found.`,
         );
       } else {
@@ -611,15 +610,13 @@ export class Player extends GameActor {
     this.events.emit("GiftCollected", new GiftCollectedEvent(gift));
     this.giftsCollected++;
     Audio.playPickupGiftSfx();
-    Logger.getInstance().info(
+    this.logger.info(
       `Player collected gift ${this.giftsCollected.toString()} out of ${this.giftsNeeded.toString()}.`,
     );
 
     if (this.giftsCollected === this.giftsNeeded) {
       // todo: hint player to return to ship
-      Logger.getInstance().info(
-        "All gifts collected! Get outta here, you rascal.",
-      );
+      this.logger.info("All gifts collected! Get outta here, you rascal.");
     }
   }
 
