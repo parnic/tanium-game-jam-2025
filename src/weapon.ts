@@ -1,10 +1,11 @@
 import type { Tile, TiledResource } from "@excaliburjs/plugin-tiled";
 import {
-  ActionsComponent,
   type Actor,
+  clamp,
   type Engine,
   Entity,
   Logger,
+  lerp,
   type Vector,
 } from "excalibur";
 import {
@@ -39,9 +40,11 @@ export interface WeaponData {
   childSpawnBehavior?: string;
   targetBehavior: "tracking" | undefined;
   collides?: boolean;
+  amountAddsSpread?: boolean; // for something like a shotgun, "amount" means how many projectiles to spawn at once whereas with a rocket we want to spawn them one after another.
 }
 
-const multiSpawnDelayMs = 100;
+const minMultiSpawnDelayMs = 15;
+const maxMultiSpawnDelayMs = 150;
 
 export class Weapon extends Entity {
   level: TiledResource;
@@ -59,16 +62,13 @@ export class Weapon extends Entity {
   intervalMs: number;
   amount: number;
   lifetimeMs?: number;
-  actions: ActionsComponent;
   pendingDelayedSpawnAmount = 0;
+  pendingDelayedSpawnInterval = maxMultiSpawnDelayMs;
 
   constructor(data: WeaponData, level: TiledResource, owner: GameActor) {
     super({
       name: `weapon-${data.name}`,
     });
-
-    this.actions = new ActionsComponent();
-    this.addComponent(this.actions);
 
     this.definition = data;
     this.level = level;
@@ -160,14 +160,21 @@ export class Weapon extends Entity {
       return;
     }
 
+    const lastSpawnedTime = this.lastSpawnedTimeMs;
     if (
-      this.lastSpawnedTimeMs &&
-      this.lastSpawnedTimeMs + this.intervalMs > this.aliveTime
+      this.pendingDelayedSpawnAmount > 0 &&
+      lastSpawnedTime &&
+      lastSpawnedTime + this.pendingDelayedSpawnInterval <= this.aliveTime
     ) {
-      return;
+      this.pendingDelayedSpawnAmount--;
+      this.spawnWeapon(1);
     }
-
-    this.spawnWeapon(engine, this.owner);
+    if (
+      !lastSpawnedTime ||
+      lastSpawnedTime + this.intervalMs <= this.aliveTime
+    ) {
+      this.spawnWeapon(Math.floor(this.amount));
+    }
   }
 
   getNearestLivingEnemyToPosition(
@@ -195,7 +202,7 @@ export class Weapon extends Entity {
     return this.getNearestLivingEnemyToPosition(level, this.owner.pos);
   }
 
-  spawnWeapon(engine: Engine, startPosTarget: Actor) {
+  spawnWeapon(amount: number) {
     if (!this.tile || !(this.scene instanceof GameLevel)) {
       return;
     }
@@ -211,34 +218,36 @@ export class Weapon extends Entity {
       }
     }
 
-    const amount = Math.floor(this.amount);
-    const delay =
-      spawnBehavior === "orbit" ? OrbitDurationMs / amount : multiSpawnDelayMs; // todo: this does not scale well with high amounts. 100ms x amount 13 = 1.3 seconds to spawn all of something, which means we get backed up and keep spawning things forever
-    for (let i = 0; i < amount; i++) {
-      if (spawnBehavior === "ownerFacing") {
-        const weapon = new WeaponActor(
-          this,
-          this.definition,
-          target,
-          spawnBehavior,
-          startPosTarget.pos,
-        );
-        this.scene.add(weapon);
-        if (amount > 1) {
-          weapon.spawnRotationVarianceDegrees = rand.floating(0, 5);
-        }
-      } else {
-        this.actions.delay(i * delay).callMethod(() => {
-          const weapon = new WeaponActor(
-            this,
-            this.definition,
-            target,
-            spawnBehavior,
-            startPosTarget.pos,
+    const numToSpawnDelayed = this.definition.amountAddsSpread ? 0 : amount - 1;
+    const maxPossibleAmount = Math.floor(
+      this.intervalMs / minMultiSpawnDelayMs,
+    );
+    this.pendingDelayedSpawnAmount = clamp(
+      this.pendingDelayedSpawnAmount + numToSpawnDelayed,
+      0,
+      maxPossibleAmount,
+    );
+    this.pendingDelayedSpawnInterval =
+      spawnBehavior === "orbit"
+        ? OrbitDurationMs / this.speed / amount
+        : lerp(
+            minMultiSpawnDelayMs,
+            maxMultiSpawnDelayMs,
+            Math.max(0, 1 - this.pendingDelayedSpawnAmount / 10),
           );
-          this.scene?.add(weapon);
-        });
-      }
+
+    const weapon = new WeaponActor(
+      this,
+      this.definition,
+      target,
+      spawnBehavior,
+      this.owner.pos,
+    );
+    this.scene?.add(weapon);
+
+    if (this.definition.amountAddsSpread && amount > 1) {
+      // todo: make this into a spread rather than random selection
+      weapon.spawnRotationVarianceDegrees = rand.floating(0, 5);
     }
 
     this.lastSpawnedTimeMs = this.aliveTime;
@@ -256,9 +265,10 @@ export class Weapon extends Entity {
           break;
 
         case UpgradeAttribute.Interval:
-          // todo: it's possible for this to go negative currently. that just means it will try and spawn every frame, which is ultimately "fine", but coupled with "amount" delays,
-          // we end up with really strange behavior that needs to be thought through.
-          this.intervalMs += upgrade.data.amount * 1000; // these should always be negative values
+          this.intervalMs = Math.max(
+            0,
+            this.intervalMs + upgrade.data.amount * 1000, // these should always be negative values
+          );
           break;
 
         case UpgradeAttribute.Lifetime:

@@ -40,7 +40,8 @@
     "baseDamage": 0.4,
     "baseSpawnIntervalMs": 1500,
     "baseAmount": 5,
-    "spawnBehavior": "ownerFacing"
+    "spawnBehavior": "ownerFacing",
+    "amountAddsSpread": true
   },
   {
     "name": "fire",
