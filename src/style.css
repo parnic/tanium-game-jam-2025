@@ -125,6 +125,10 @@ body {
   -webkit-text-stroke: 0.1vw black;
 }
 
+.outline-15rem {
+  -webkit-text-stroke: 0.15rem black;
+}
+
 .fs-3 {
   font-size: 3vw !important;
 }
