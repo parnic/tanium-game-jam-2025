@@ -113,8 +113,14 @@ export class Enemy extends GameActor {
     }
 
     let numPickups = 0;
+    let nextAvailableIdx = -1;
     for (let i = 0; i < scene.xpPickups.length; i++) {
       const pickup = scene.xpPickups.at(i);
+      if (pickup?.isKilled()) {
+        nextAvailableIdx = i;
+        continue;
+      }
+
       if (pickup?.isKilled() === false && !pickup.isOffScreen) {
         numPickups++;
       }
@@ -157,9 +163,8 @@ export class Enemy extends GameActor {
     );
     scene.add(corpse);
 
-    const idx = scene.xpPickups.findIndex((p) => p?.isKilled());
-    if (idx >= 0) {
-      scene.xpPickups[idx] = corpse;
+    if (nextAvailableIdx >= 0) {
+      scene.xpPickups[nextAvailableIdx] = corpse;
     } else {
       scene.xpPickups.push(corpse);
     }
