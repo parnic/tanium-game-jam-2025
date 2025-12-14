@@ -36,6 +36,7 @@ interface Ramp {
 }
 
 export const MaxOnScreenCorpses = 350;
+const MaxLivingWeaponActors = 75;
 
 export class GameLevel extends Scene {
   secondsBetweenWaves = 30;
@@ -489,7 +490,7 @@ export class GameLevel extends Scene {
       this.projectiles.set(weap.definition.name, existing);
     }
 
-    if (existing.length > 50) {
+    if (existing.length > MaxLivingWeaponActors) {
       const removed = existing.shift();
       removed?.kill();
     }
