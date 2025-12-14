@@ -49,6 +49,7 @@ export class EnemyCorpse extends GameActor {
     this.graphics.flipHorizontal = flipHorizontal;
     this._speed = config.SpeedPickup;
     this.xpVal = xpVal;
+    this.shouldFaceMoveDir = false;
   }
 
   onInitialize(engine: Engine): void {

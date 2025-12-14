@@ -49,6 +49,7 @@ export abstract class GameActor extends Actor {
   private _isDemigodMode = false;
   protected lastDamagedByPlayer = false;
   protected aliveTime = 0;
+  protected shouldFaceMoveDir = true;
 
   protected get currMove() {
     return this._currMove;
@@ -197,7 +198,7 @@ export abstract class GameActor extends Actor {
     }
     this.moveInDirection(this.currMove, elapsedMs);
 
-    if (this.currMove.x !== 0) {
+    if (this.currMove.x !== 0 && this.shouldFaceMoveDir) {
       this.graphics.flipHorizontal =
         Math.sign(this.currMove.x) !== Math.sign(this.facing.x);
     }
