@@ -41,6 +41,7 @@ export class WeaponActor extends GameActor {
   orbitDistanceScale = 1.1;
   spawnRotationVarianceDegrees = 0;
   fadeInOutDurationMs = 300;
+  private lastOrbitOffset?: Vector;
   private lastRotation: number;
   private targetRotation?: number;
 
@@ -255,12 +256,15 @@ export class WeaponActor extends GameActor {
         this.orbitDistanceScale *
         parameterizedFadeScale.x;
       // offset from our owner
-      const destination = vec(dist, dist).rotate(t).add(this.instigator.pos);
-      const lastPos = this.pos.clone();
+      const currOrbitOffset = vec(dist, dist).rotate(t);
+      const destination = currOrbitOffset.add(this.instigator.pos);
       this.pos = destination;
       setCurrMove = false;
 
-      this.setTargetRotation(destination.sub(lastPos).toAngle());
+      const lastOrbitOffset = this.lastOrbitOffset ?? destination;
+      this.setTargetRotation(currOrbitOffset.sub(lastOrbitOffset).toAngle());
+
+      this.lastOrbitOffset = currOrbitOffset;
     }
 
     if (setCurrMove) {
