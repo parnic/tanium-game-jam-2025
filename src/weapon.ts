@@ -44,7 +44,7 @@ export interface WeaponData {
   amountAddsSpread?: boolean; // for something like a shotgun, "amount" means how many projectiles to spawn at once whereas with a rocket we want to spawn them one after another.
 }
 
-const minMultiSpawnDelayMs = 15;
+const minMultiSpawnDelayMs = 30;
 const maxMultiSpawnDelayMs = 150;
 
 export class Weapon extends Entity {
