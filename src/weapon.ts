@@ -168,7 +168,7 @@ export class Weapon extends Entity {
       lastSpawnedTime + this.pendingDelayedSpawnInterval <= this.aliveTime
     ) {
       this.pendingDelayedSpawnAmount--;
-      this.spawnWeapon(1);
+      this.spawnWeapon(1, true);
     }
     if (
       !lastSpawnedTime ||
@@ -225,7 +225,7 @@ export class Weapon extends Entity {
     return this.getRandomCloseEnemyToPosition(level, this.owner.pos);
   }
 
-  spawnWeapon(amount: number) {
+  spawnWeapon(amount: number, fromDelayed?: boolean) {
     if (!this.tile || !(this.scene instanceof GameLevel)) {
       return;
     }
@@ -235,7 +235,12 @@ export class Weapon extends Entity {
 
     let target: Actor | undefined;
     if (spawnBehavior === "targetNearestEnemy") {
-      target = this.getRandomCloseEnemy(this.scene);
+      // if we are spawning a delayed multi-amount weapon, give us a good chance to target something else
+      // but the first shot should always go for the nearest enemy.
+      target = fromDelayed
+        ? this.getRandomCloseEnemy(this.scene)
+        : this.getNearestLivingEnemy(this.scene);
+
       if (!target) {
         return;
       }
