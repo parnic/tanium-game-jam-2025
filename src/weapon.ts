@@ -7,6 +7,7 @@ import {
   Logger,
   lerp,
   type Vector,
+  vec,
 } from "excalibur";
 import {
   isUpgradeUIData,
@@ -236,13 +237,17 @@ export class Weapon extends Entity {
             Math.max(0, 1 - this.pendingDelayedSpawnAmount / 10),
           );
 
+    const startPos = this.owner.pos.add(
+      vec(rand.integer(-25, 25), rand.integer(-25, 25)),
+    );
+
     // todo: we probably need a global limit on the maximum active number of weapon actors at a given time. when we exceed that limit, kill off the oldest one to spawn this new one.
     const weapon = new WeaponActor(
       this,
       this.definition,
       target,
       spawnBehavior,
-      this.owner.pos,
+      startPos,
     );
     this.scene?.add(weapon);
 
