@@ -183,8 +183,9 @@ export class Weapon extends Entity {
     pos: Vector,
   ): Enemy | undefined {
     let closestEnemy: Enemy | undefined;
-    for (const e of level.enemies) {
-      if (e.isKilled()) {
+    for (let i = 0; i < level.enemies.length; i++) {
+      const e = level.enemies.at(i);
+      if (!e || e.isKilled()) {
         continue;
       }
 

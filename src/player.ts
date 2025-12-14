@@ -557,7 +557,8 @@ export class Player extends GameActor {
       return;
     }
 
-    for (const pickup of this.scene.xpPickups) {
+    for (let i = 0; i < this.scene.xpPickups.length; i++) {
+      const pickup = this.scene.xpPickups.at(i);
       if (!pickup || pickup.pickedUpBy) {
         continue;
       }
