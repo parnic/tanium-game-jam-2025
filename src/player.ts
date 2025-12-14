@@ -556,6 +556,12 @@ export class Player extends GameActor {
     hideElement(this.healthbarContainerElem);
 
     super.onPostKill(scene);
+
+    for (const weapon of this.weapons) {
+      this.logger.warn(
+        `Weapon ${weapon.name} dealt ${weapon.damageDealt.toLocaleString()} damage over ${(weapon.aliveTime / 1000).toLocaleString()} seconds for a dps of ${(weapon.damageDealt / (weapon.aliveTime / 1000)).toLocaleString()} and earned ${weapon.kills.toLocaleString()} kills`,
+      );
+    }
   }
 
   tryPickup() {

@@ -65,6 +65,8 @@ export class Weapon extends Entity {
   lifetimeMs?: number;
   pendingDelayedSpawnAmount = 0;
   pendingDelayedSpawnInterval = maxMultiSpawnDelayMs;
+  damageDealt = 0;
+  kills = 0;
 
   constructor(data: WeaponData, level: TiledResource, owner: GameActor) {
     super({
