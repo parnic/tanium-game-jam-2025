@@ -276,7 +276,10 @@ export class Player extends GameActor {
 
       switch (evt.key) {
         case Keys.Escape:
-          if (engine instanceof GameEngine) {
+          if (
+            engine instanceof GameEngine &&
+            (!engine.paused || engine.wasPausedByPlayer)
+          ) {
             engine.togglePause(undefined, true);
           }
           break;
@@ -472,7 +475,10 @@ export class Player extends GameActor {
         //   break;
 
         case Buttons.Start:
-          if (this.scene?.engine instanceof GameEngine) {
+          if (
+            this.scene?.engine instanceof GameEngine &&
+            (!this.scene.engine.paused || this.scene.engine.wasPausedByPlayer)
+          ) {
             this.scene.engine.togglePause(undefined, true);
           }
           break;
