@@ -178,10 +178,11 @@ export class WeaponActor extends GameActor {
     }
 
     if (
-      !this.scene?.engine.screen
-        .getWorldBounds()
-        .overlaps(this.graphics.bounds) ||
-      (this.aliveTime && this.lifetime && this.aliveTime >= this.lifetime)
+      (this.aliveTime > 0 &&
+        !this.scene?.engine.screen
+          .getWorldBounds()
+          .overlaps(this.graphics.bounds)) ||
+      (this.lifetime && this.aliveTime >= this.lifetime)
     ) {
       this.kill();
       return;
