@@ -5,8 +5,10 @@ import {
   type CollisionContact,
   CollisionType,
   type Engine,
+  lerp,
   lerpVector,
   type Side,
+  toDegrees,
   toRadians,
   Vector,
   vec,
@@ -38,6 +40,8 @@ export class WeaponActor extends GameActor {
   orbitDistanceScale = 1.1;
   spawnRotationVarianceDegrees = 0;
   fadeInOutDurationMs = 300;
+  private lastRotation: number;
+  private targetRotation?: number;
 
   private get direction() {
     return this._direction;
@@ -46,6 +50,7 @@ export class WeaponActor extends GameActor {
   private set direction(dir: Vector) {
     this._direction = dir;
     if (this.shouldFaceDirection) {
+      this.lastRotation = this.rotation;
       this.rotation = dir.toAngle() + Math.PI / 2;
     }
   }
@@ -73,6 +78,7 @@ export class WeaponActor extends GameActor {
         def.collides === false ? undefined : new TiledCollision(weapon.tile!),
     });
 
+    this.lastRotation = this.rotation;
     this.definition = def;
     this.spawnBehavior = spawnBehavior;
     this.weapon = weapon;
@@ -113,6 +119,33 @@ export class WeaponActor extends GameActor {
         weapon.tile?.tiledTile.id,
       );
     }
+  }
+
+  private setTargetRotation(rotation: number) {
+    this.lastRotation = this.rotation;
+    this.targetRotation = rotation;
+    this.updateRotation();
+  }
+
+  private updateRotation() {
+    if (!this.targetRotation) {
+      return;
+    }
+
+    const targetDegrees = toDegrees(this.targetRotation);
+    const lastDegrees = toDegrees(this.lastRotation);
+    const adjustedTargetDegrees =
+      targetDegrees > 180 ? 360 - targetDegrees : targetDegrees;
+    const adjustedLastDegrees =
+      lastDegrees > 180 ? 360 - lastDegrees : lastDegrees;
+    const diff = Math.abs(adjustedTargetDegrees - adjustedLastDegrees);
+    if (diff <= 2) {
+      this.lastRotation = this.rotation;
+      this.rotation = this.targetRotation;
+      return;
+    }
+    const rotation = lerp(this.lastRotation, this.targetRotation, 0.15);
+    this.rotation = rotation;
   }
 
   override onInitialize(engine: Engine): void {
@@ -188,6 +221,8 @@ export class WeaponActor extends GameActor {
       return;
     }
 
+    this.updateRotation();
+
     let setCurrMove = true;
     if (this.definition.targetBehavior === "tracking") {
       this.conditionalUpdateTarget();
@@ -211,12 +246,11 @@ export class WeaponActor extends GameActor {
         parameterizedFadeScale.x;
       // offset from our owner
       const destination = vec(dist, dist).rotate(t).add(this.instigator.pos);
+      const lastPos = this.pos.clone();
       this.pos = destination;
       setCurrMove = false;
 
-      this.rotation = Vector.One.rotate(
-        toRadians(degreeScaledSeconds + 90),
-      ).toAngle();
+      this.setTargetRotation(destination.sub(lastPos).toAngle());
     }
 
     if (setCurrMove) {
