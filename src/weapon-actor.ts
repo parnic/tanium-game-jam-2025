@@ -42,7 +42,7 @@ export class WeaponActor extends GameActor {
   spawnRotationVarianceDegrees = 0;
   fadeInOutDurationMs = 300;
   private lastOrbitOffset?: Vector;
-  private lastRotation: number;
+  private lastRotation?: number;
   private targetRotation?: number;
 
   private get direction() {
@@ -88,7 +88,6 @@ export class WeaponActor extends GameActor {
         def.collides === false ? undefined : new TiledCollision(weapon.tile!),
     });
 
-    this.lastRotation = this.rotation;
     this.definition = def;
     this.spawnBehavior = spawnBehavior;
     this.weapon = weapon;
@@ -132,7 +131,6 @@ export class WeaponActor extends GameActor {
   }
 
   private setTargetRotation(rotation: number) {
-    this.lastRotation = this.rotation;
     this.targetRotation = rotation;
     this.updateRotation();
   }
@@ -143,19 +141,20 @@ export class WeaponActor extends GameActor {
     }
 
     const targetDegrees = toDegrees(this.targetRotation);
-    const lastDegrees = toDegrees(this.lastRotation);
+    const lastDegrees = toDegrees(this.lastRotation ?? this.targetRotation);
     const adjustedTargetDegrees =
       targetDegrees > 180 ? 360 - targetDegrees : targetDegrees;
     const adjustedLastDegrees =
       lastDegrees > 180 ? 360 - lastDegrees : lastDegrees;
     const diff = Math.abs(adjustedTargetDegrees - adjustedLastDegrees);
     if (diff <= 2) {
-      this.lastRotation = this.rotation;
       this.rotation = this.targetRotation;
-      return;
+    } else {
+      const rotation = lerp(this.lastRotation!, this.targetRotation, 0.18);
+      this.rotation = rotation;
     }
-    const rotation = lerp(this.lastRotation, this.targetRotation, 0.15);
-    this.rotation = rotation;
+
+    this.lastRotation = this.rotation;
   }
 
   override onInitialize(engine: Engine): void {
