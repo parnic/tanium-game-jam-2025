@@ -56,6 +56,14 @@ export class WeaponActor extends GameActor {
     }
   }
 
+  private get owningPlayerWeapon(): Weapon {
+    if (this.weapon.owner instanceof WeaponActor) {
+      return this.weapon.owner.weapon;
+    }
+
+    return this.weapon;
+  }
+
   constructor(
     weapon: Weapon,
     definition?: WeaponData,
@@ -216,7 +224,8 @@ export class WeaponActor extends GameActor {
         !this.scene?.engine.screen
           .getWorldBounds()
           .overlaps(this.graphics.bounds)) ||
-      (this.lifetime && this.aliveTime >= this.lifetime)
+      (this.lifetime && this.aliveTime >= this.lifetime) ||
+      (this.spawnBehavior === "orbit" && this.weapon.playerOwner.isKilled())
     ) {
       this.kill();
       return;
@@ -304,10 +313,7 @@ export class WeaponActor extends GameActor {
     }
 
     if (other.owner instanceof Enemy && !other.owner.isKilled()) {
-      const weapon =
-        this.weapon.owner instanceof WeaponActor
-          ? this.weapon.owner.weapon
-          : this.weapon;
+      const weapon = this.owningPlayerWeapon;
 
       // these collision events will only fire every Physics.sleepEpsilon time, so we
       // automatically get a "cooldown" period of sorts where a weapon won't hit the

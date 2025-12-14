@@ -17,6 +17,7 @@ import {
 import type { Enemy } from "./enemy";
 import type { GameActor } from "./game-actor";
 import { GameEngine } from "./game-engine";
+import type { Player } from "./player";
 import { Resources } from "./resources";
 import { GameLevel } from "./scenes/game-level";
 import { rand } from "./utilities/math";
@@ -53,6 +54,7 @@ export class Weapon extends Entity {
   lastSpawnedTimeMs?: number;
   aliveTime = 0;
   owner: GameActor;
+  playerOwner: Player;
   definition: WeaponData;
   spawnBehaviorOverride?: string;
   childDefinition?: WeaponData;
@@ -76,6 +78,10 @@ export class Weapon extends Entity {
     this.definition = data;
     this.level = level;
     this.owner = owner;
+    this.playerOwner =
+      this.owner instanceof WeaponActor
+        ? (this.owner.weapon.owner as Player)
+        : (this.owner as Player);
 
     this.speed = data.baseSpeed;
     this.damage = data.baseDamage;
@@ -158,7 +164,7 @@ export class Weapon extends Entity {
 
     this.aliveTime += elapsedMs;
 
-    if (this.owner.isKilled()) {
+    if (this.owner.isKilled() || this.playerOwner.isKilled()) {
       this.kill();
       return;
     }
