@@ -14,7 +14,7 @@ import type { EnemyData } from "./enemy-data";
 import { GameActor } from "./game-actor";
 import { GameEngine } from "./game-engine";
 import { Player } from "./player";
-import { GameLevel } from "./scenes/game-level";
+import { GameLevel, MaxOnScreenCorpses } from "./scenes/game-level";
 import * as Audio from "./utilities/audio";
 
 export class Enemy extends GameActor {
@@ -108,6 +108,38 @@ export class Enemy extends GameActor {
 
     Audio.playEnemyDeathSfx();
 
+    if (!(scene instanceof GameLevel)) {
+      return;
+    }
+
+    let numPickups = 0;
+    for (let i = 0; i < scene.xpPickups.length; i++) {
+      const pickup = scene.xpPickups.at(i);
+      if (pickup?.isKilled() === false && !pickup.isOffScreen) {
+        numPickups++;
+      }
+    }
+
+    if (numPickups > MaxOnScreenCorpses) {
+      let closest: EnemyCorpse | undefined;
+      let closestDist = 0;
+      for (let i = 0; i < scene.xpPickups.length; i++) {
+        if (scene.xpPickups.at(i)?.isKilled()) {
+          continue;
+        }
+        const dist = scene.xpPickups[i]!.pos.squareDistance(this.pos);
+        if (!closest || dist < closestDist) {
+          closestDist = dist;
+          closest = scene.xpPickups.at(i);
+        }
+      }
+
+      if (closest) {
+        closest.xpVal++;
+        return;
+      }
+    }
+
     const corpse = new EnemyCorpse(
       this.pos,
       this.def.corpseTile,
@@ -115,14 +147,11 @@ export class Enemy extends GameActor {
       this.def.textureHeight,
       this.name,
       this.graphics.flipHorizontal,
+      1, // todo: supply a higher xp val based on difficulty
     );
     scene.add(corpse);
 
-    if (!(scene instanceof GameLevel)) {
-      return;
-    }
-
-    const idx = scene.xpPickups.findIndex((p) => !p);
+    const idx = scene.xpPickups.findIndex((p) => p?.isKilled());
     if (idx >= 0) {
       scene.xpPickups[idx] = corpse;
     } else {

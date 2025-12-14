@@ -18,6 +18,7 @@ import { GameLevel } from "./scenes/game-level";
 
 export class EnemyCorpse extends GameActor {
   pickedUpBy?: Player;
+  xpVal: number;
   private lastGlintTime = 0;
   private glintIntervalMs = 4000;
 
@@ -28,6 +29,7 @@ export class EnemyCorpse extends GameActor {
     height: number,
     enemyName: string,
     flipHorizontal: boolean,
+    xpVal: number,
   ) {
     super({
       name: `${enemyName}-corpse`,
@@ -46,6 +48,7 @@ export class EnemyCorpse extends GameActor {
     }
     this.graphics.flipHorizontal = flipHorizontal;
     this._speed = config.SpeedPickup;
+    this.xpVal = xpVal;
   }
 
   onInitialize(engine: Engine): void {
@@ -127,17 +130,15 @@ export class EnemyCorpse extends GameActor {
   }
 
   onPickedUp() {
-    this.kill();
-    // todo: corpses should have an xp value they give that is scaled by their difficulty or increased when grouping corpses for perf
-    this.pickedUpBy!.xpComponent.giveXp(1);
+    this.pickedUpBy!.xpComponent.giveXp(this.xpVal);
     this.logger.info(
       `picked up ${this.name}. new xp=${this.pickedUpBy!.xpComponent.currXp.toString()}`,
     );
-    if (this.scene instanceof GameLevel) {
-      const idx = this.scene.xpPickups.indexOf(this);
-      if (idx >= 0) {
-        this.scene.xpPickups[idx] = undefined;
-      }
-    }
+    this.kill();
+  }
+
+  combineWith(other: EnemyCorpse) {
+    this.xpVal += other.xpVal;
+    other.kill();
   }
 }

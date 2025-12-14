@@ -35,6 +35,8 @@ interface Ramp {
   value: number;
 }
 
+export const MaxOnScreenCorpses = 350;
+
 export class GameLevel extends Scene {
   secondsBetweenWaves = 30;
   // a map of the wave number to the difficulty level of enemy that is introduced on that wave
