@@ -19,6 +19,7 @@ const game = new GameEngine({
   physics: {
     solver: SolverStrategy.Arcade,
   },
+  pixelArt: true,
 });
 
 game.screen.events.on("resize", () => {
