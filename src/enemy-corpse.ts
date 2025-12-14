@@ -5,6 +5,7 @@ import {
   CollisionType,
   Color,
   type Engine,
+  lerp,
   type Shader,
   type Side,
   Vector,
@@ -16,11 +17,27 @@ import { createGleamMaterial } from "./materials/gleam";
 import type { Player } from "./player";
 import { GameLevel } from "./scenes/game-level";
 
+const pickupAnimTimeMs = 250;
+
 export class EnemyCorpse extends GameActor {
-  pickedUpBy?: Player;
+  private _pickedUpBy?: Player;
+  private pickupTime = 0;
+  private pickupDir = Vector.Zero;
   xpVal: number;
   private lastGlintTime = 0;
   private glintIntervalMs = 4000;
+
+  public get pickedUpBy(): Player | undefined {
+    return this._pickedUpBy;
+  }
+
+  public set pickedUpBy(p: Player | undefined) {
+    this._pickedUpBy = p;
+    this.pickupTime = this.aliveTime;
+    if (p) {
+      this.pickupDir = this.pos.sub(p.pos).normalize();
+    }
+  }
 
   constructor(
     inPos: Vector,
@@ -90,13 +107,22 @@ export class EnemyCorpse extends GameActor {
   }
 
   override onPostUpdate(engine: Engine, elapsedMs: number): void {
-    // todo: it would be cool to have an initial pickup behavior that causes the corpse to
-    // move away from the player and eventually curve back toward them to be picked up.
     if (!this.pickedUpBy) {
+      super.onPostUpdate(engine, elapsedMs);
       return;
     }
+
     if (engine instanceof GameEngine && engine.paused) {
       this.currMove = Vector.Zero;
+      super.onPostUpdate(engine, elapsedMs);
+      return;
+    }
+
+    if (this.pickupTime + pickupAnimTimeMs >= this.aliveTime) {
+      const percentage = (this.aliveTime - this.pickupTime) / pickupAnimTimeMs;
+      const t = lerp(1, 0, percentage ** 0.5);
+      this.currMove = this.pickupDir.scale(t);
+
       super.onPostUpdate(engine, elapsedMs);
       return;
     }
