@@ -28,6 +28,7 @@ import {
   unhideElement,
 } from "../utilities/html";
 import { rand } from "../utilities/math";
+import type { WeaponActor } from "../weapon-actor";
 
 interface Ramp {
   wave: number;
@@ -57,6 +58,7 @@ export class GameLevel extends Scene {
   enemyData: EnemyData[] = [];
   enemies: Enemy[] = [];
   gifts: Gift[] = [];
+  projectiles = new Map<string, WeaponActor[]>();
   xpPickups: (EnemyCorpse | undefined)[] = [];
   lastTime = 0;
   elemUIRoot: HTMLElement;
@@ -476,5 +478,21 @@ export class GameLevel extends Scene {
       `Killing enemy ${enemy.name} (killed by player? ${fromAttack.toString()})`,
     );
     enemy.kill();
+  }
+
+  addWeaponActor(weap: WeaponActor) {
+    let existing = this.projectiles.get(weap.definition.name);
+    if (!existing) {
+      existing = [];
+      this.projectiles.set(weap.definition.name, existing);
+    }
+
+    if (existing.length > 50) {
+      const removed = existing.shift();
+      removed?.kill();
+    }
+
+    existing.push(weap);
+    this.add(weap);
   }
 }

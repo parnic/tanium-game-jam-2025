@@ -262,7 +262,6 @@ export class Weapon extends Entity {
       vec(rand.integer(-25, 25), rand.integer(-25, 25)),
     );
 
-    // todo: we probably need a global limit on the maximum active number of weapon actors at a given time. when we exceed that limit, kill off the oldest one to spawn this new one.
     const weapon = new WeaponActor(
       this,
       this.definition,
@@ -270,7 +269,7 @@ export class Weapon extends Entity {
       spawnBehavior,
       startPos,
     );
-    this.scene?.add(weapon);
+    this.scene.addWeaponActor(weapon);
 
     if (this.definition.amountAddsSpread && amount > 1) {
       // todo: make this into a spread rather than random selection
