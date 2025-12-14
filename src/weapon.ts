@@ -52,6 +52,7 @@ export class Weapon extends Entity {
   level: TiledResource;
   tile?: Tile;
   lastSpawnedTimeMs?: number;
+  lastDelayedSpawnTimeMs?: number;
   aliveTime = 0;
   owner: GameActor;
   playerOwner: Player;
@@ -169,18 +170,18 @@ export class Weapon extends Entity {
       return;
     }
 
-    const lastSpawnedTime = this.lastSpawnedTimeMs;
     if (
       this.pendingDelayedSpawnAmount > 0 &&
-      lastSpawnedTime &&
-      lastSpawnedTime + this.pendingDelayedSpawnInterval <= this.aliveTime
+      this.lastDelayedSpawnTimeMs &&
+      this.lastDelayedSpawnTimeMs + this.pendingDelayedSpawnInterval <=
+        this.aliveTime
     ) {
       this.pendingDelayedSpawnAmount--;
       this.spawnWeapon(1, true);
     }
     if (
-      !lastSpawnedTime ||
-      lastSpawnedTime + this.intervalMs <= this.aliveTime
+      !this.lastSpawnedTimeMs ||
+      this.lastSpawnedTimeMs + this.intervalMs <= this.aliveTime
     ) {
       this.spawnWeapon(Math.floor(this.amount));
     }
@@ -263,14 +264,16 @@ export class Weapon extends Entity {
       0,
       maxPossibleAmount,
     );
-    this.pendingDelayedSpawnInterval =
-      spawnBehavior === "orbit"
-        ? OrbitDurationMs / this.speed / amount
-        : lerp(
-            minMultiSpawnDelayMs,
-            maxMultiSpawnDelayMs,
-            Math.max(0, 1 - this.pendingDelayedSpawnAmount / 10),
-          );
+    if (!fromDelayed) {
+      this.pendingDelayedSpawnInterval =
+        spawnBehavior === "orbit"
+          ? OrbitDurationMs / this.speed / amount
+          : lerp(
+              minMultiSpawnDelayMs,
+              maxMultiSpawnDelayMs,
+              Math.max(0, 1 - this.pendingDelayedSpawnAmount / 10),
+            );
+    }
 
     const startPos = this.owner.pos.add(
       vec(rand.integer(-25, 25), rand.integer(-25, 25)),
@@ -290,7 +293,10 @@ export class Weapon extends Entity {
       weapon.spawnRotationVarianceDegrees = rand.floating(0, 5);
     }
 
-    this.lastSpawnedTimeMs = this.aliveTime;
+    this.lastDelayedSpawnTimeMs = this.aliveTime;
+    if (!fromDelayed) {
+      this.lastSpawnedTimeMs = this.aliveTime;
+    }
   }
 
   applyUpgrade(upgrade: UpgradeUIData | Weapon) {
