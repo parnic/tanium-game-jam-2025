@@ -498,4 +498,18 @@ export class GameLevel extends Scene {
     existing.push(weap);
     this.add(weap);
   }
+
+  removeWeaponActor(weap: WeaponActor) {
+    const existing = this.projectiles.get(weap.definition.name);
+    if (!existing) {
+      return;
+    }
+
+    const idx = existing.indexOf(weap);
+    if (idx < 0) {
+      return;
+    }
+
+    existing.splice(idx, 1);
+  }
 }

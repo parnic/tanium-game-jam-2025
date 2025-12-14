@@ -7,6 +7,7 @@ import {
   type Engine,
   lerp,
   lerpVector,
+  type Scene,
   type Side,
   toDegrees,
   toRadians,
@@ -18,7 +19,7 @@ import { Enemy } from "./enemy";
 import { GameActor, TiledCollision } from "./game-actor";
 import { GameEngine } from "./game-engine";
 import { Player } from "./player";
-import type { GameLevel } from "./scenes/game-level";
+import { GameLevel } from "./scenes/game-level";
 import { rand } from "./utilities/math";
 import { Weapon, type WeaponData } from "./weapon";
 
@@ -322,5 +323,13 @@ export class WeaponActor extends GameActor {
         this.kill();
       }
     }
+  }
+
+  override onPostKill(scene: Scene): void {
+    if (!(scene instanceof GameLevel)) {
+      return;
+    }
+
+    scene.removeWeaponActor(this);
   }
 }
