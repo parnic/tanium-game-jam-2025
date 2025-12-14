@@ -203,6 +203,27 @@ export class Weapon extends Entity {
     return this.getNearestLivingEnemyToPosition(level, this.owner.pos);
   }
 
+  getRandomCloseEnemyToPosition(
+    level: GameLevel,
+    pos: Vector,
+  ): Enemy | undefined {
+    const candidates = level.enemies.filter((e) => !e.isKilled());
+    const sorted = candidates.sort(
+      (a, b) => a.pos.squareDistance(pos) - b.pos.squareDistance(pos),
+    );
+    const reduced = sorted.slice(0, 5);
+    if (reduced.length === 0) {
+      return;
+    }
+
+    const chosen = rand.pickOne(reduced);
+    return chosen;
+  }
+
+  getRandomCloseEnemy(level: GameLevel): Enemy | undefined {
+    return this.getRandomCloseEnemyToPosition(level, this.owner.pos);
+  }
+
   spawnWeapon(amount: number) {
     if (!this.tile || !(this.scene instanceof GameLevel)) {
       return;
@@ -213,7 +234,7 @@ export class Weapon extends Entity {
 
     let target: Actor | undefined;
     if (spawnBehavior === "targetNearestEnemy") {
-      target = this.getNearestLivingEnemy(this.scene);
+      target = this.getRandomCloseEnemy(this.scene);
       if (!target) {
         return;
       }

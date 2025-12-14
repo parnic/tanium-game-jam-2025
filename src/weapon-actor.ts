@@ -143,7 +143,7 @@ export class WeaponActor extends GameActor {
 
   conditionalUpdateTarget() {
     if (this.target?.isKilled()) {
-      this.target = this.weapon.getNearestLivingEnemyToPosition(
+      this.target = this.weapon.getRandomCloseEnemyToPosition(
         this.scene as GameLevel,
         this.pos,
       );
