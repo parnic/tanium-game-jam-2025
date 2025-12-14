@@ -65,10 +65,6 @@ export class EnemyCorpse extends GameActor {
         s.trySetUniformFloat("u_glint_trigger", engine.clock.now() / 1000);
       });
     });
-
-    // todo: we need a limit on the number of active corpses. use the array in the GameLevel for
-    // how many are currently active, and combine with nearby ones if we can (or if there are no
-    // nearbys to combine with, see if we can combine off-screen ones together)
   }
 
   override onPreUpdate(engine: Engine, elapsed: number): void {
@@ -105,15 +101,25 @@ export class EnemyCorpse extends GameActor {
     }
 
     const pickupToPlayer = this.pickedUpBy.pos.sub(this.pos);
+    const sqDist = pickupToPlayer.squareDistance();
     const normalized = pickupToPlayer.normalize();
-    // todo: speed should scale based on how far away from the player it is so that pickups
-    // that are way off screen make their way to the player in a reasonable amount of time.
-    this.currMove = normalized.scale(config.SpeedPickup * elapsedMs);
+    const lengthForDefaultSpeed = Math.max(
+      engine.screen.viewport.width,
+      engine.screen.viewport.height,
+    );
+    let scaler = 1;
+    if (this.scene instanceof GameLevel) {
+      scaler = sqDist / (lengthForDefaultSpeed * lengthForDefaultSpeed);
+    }
+
+    this.currMove = normalized.scale(
+      config.SpeedPickup * elapsedMs * Math.max(1, scaler),
+    );
 
     super.onPostUpdate(engine, elapsedMs);
 
     // pickup when we're close enough to the player. no need to pay for corpse collision when this works just as well
-    if (this.pickedUpBy.pos.squareDistance(this.pos) <= 45 * 45) {
+    if (sqDist <= 45 * 45) {
       this.onPickedUp();
     }
   }
