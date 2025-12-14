@@ -20,6 +20,7 @@ const game = new GameEngine({
     solver: SolverStrategy.Arcade,
   },
   pixelArt: true,
+  uvPadding: 0.5,
 });
 
 game.screen.events.on("resize", () => {
