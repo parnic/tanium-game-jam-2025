@@ -134,6 +134,12 @@ export class Enemy extends GameActor {
         }
       }
 
+      // todo: check how far away the closest corpse is. if it's too far (more than our width, basically)
+      // then we should not combine with them since it looks bad to have an enemy die in the middle of
+      // nowhere and not leave a corpse. instead, we should find another corpse somewhere that's on top of
+      // 1+ other corpses and combine those, if possible, then leave one of our own. if we exceed the
+      // desired max corpses, it still looks better to leave a corpse than invisibly boost the value of some
+      // far-away corpse.
       if (closest) {
         closest.xpVal++;
         return;
