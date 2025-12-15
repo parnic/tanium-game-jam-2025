@@ -35,7 +35,7 @@ export type GameActorArgs = ActorArgs & {
 export abstract class GameActor extends Actor {
   protected _currMove = Vector.Zero;
   private _lastMove = Vector.Zero;
-  protected _speed = 0.4;
+  protected _speed = 1;
   protected _spriteFacing = Vector.Left;
   protected walk?: Animation;
   protected staticImage?: Graphic;

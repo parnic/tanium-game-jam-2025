@@ -21,9 +21,10 @@ export class Enemy extends GameActor {
   addedInWave = 0;
   def: EnemyData;
   gameScene?: GameLevel;
+  difficulty: number;
   static enemyCounter = new Uint32Array([1]);
 
-  constructor(inPos: Vector, def: EnemyData) {
+  constructor(inPos: Vector, def: EnemyData, difficulty: number) {
     const myNum = Atomics.add(Enemy.enemyCounter, 0, 1);
     super({
       name: `${def.name}-${myNum.toString()}`,
@@ -35,11 +36,11 @@ export class Enemy extends GameActor {
       collisionDef: def.collisionDef,
     });
 
-    this._speed = 0.35;
     this.def = def;
     this._spriteFacing = def.facing > 0 ? Vector.Right : Vector.Left;
     this.walk = new Animation({ frames: this.def.walkFrames });
     this._maxHealth = def.health;
+    this.difficulty = difficulty;
   }
 
   public override get speed(): number {
@@ -159,7 +160,7 @@ export class Enemy extends GameActor {
       this.def.textureHeight,
       this.name,
       this.graphics.flipHorizontal,
-      1, // todo: supply a higher xp val based on difficulty
+      this.difficulty,
     );
     scene.add(corpse);
 

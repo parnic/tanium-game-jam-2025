@@ -449,8 +449,6 @@ export class GameLevel extends Scene {
   }
 
   spawnEnemy() {
-    // const difficulty = this.getCurrentWaveData().difficulty;
-
     const eligibleEnemyNames = this.getCurrentSpawnTimings()?.allowedEnemies;
     const eligibleEnemies = this.enemyData.filter((e) =>
       eligibleEnemyNames?.includes(e.name),
@@ -462,10 +460,11 @@ export class GameLevel extends Scene {
       return;
     }
 
+    const difficulty = this.getCurrentWaveData().difficulty;
     const idx = rand.integer(0, eligibleEnemies.length - 1);
     const enemyDef = eligibleEnemies[idx];
     const spawnLoc = this.getNextEnemySpawnLoc(enemyDef);
-    const enemy = new Enemy(spawnLoc, enemyDef);
+    const enemy = new Enemy(spawnLoc, enemyDef, difficulty);
 
     const slot = this.enemies.findIndex((e) => e.isKilled());
     if (slot >= 0) {

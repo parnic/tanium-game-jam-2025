@@ -17,7 +17,7 @@
    <property name="difficulty" type="float" value="2"/>
    <property name="facing" type="int" value="-1"/>
    <property name="name" value="mouse-gray"/>
-   <property name="speed" type="float" value="1"/>
+   <property name="speed" type="float" value="0.35"/>
   </properties>
   <objectgroup draworder="index" id="2">
    <object id="2" type="collision" x="4" y="31" width="121" height="97"/>
@@ -32,8 +32,9 @@
    <property name="corpse-id" type="int" value="25"/>
    <property name="difficulty" type="float" value="1"/>
    <property name="facing" type="int" value="-1"/>
+   <property name="health-mult" type="float" value="2"/>
    <property name="name" value="snail"/>
-   <property name="speed" type="float" value="0.75"/>
+   <property name="speed" type="float" value="0.2625"/>
   </properties>
   <objectgroup draworder="index" id="2">
    <object id="2" type="collision" x="0" y="22" width="128" height="106"/>
@@ -48,8 +49,9 @@
    <property name="corpse-id" type="int" value="34"/>
    <property name="difficulty" type="float" value="2"/>
    <property name="facing" type="int" value="-1"/>
+   <property name="health-mult" type="float" value="2"/>
    <property name="name" value="slime"/>
-   <property name="speed" type="float" value="1"/>
+   <property name="speed" type="float" value="0.15"/>
   </properties>
   <objectgroup draworder="index" id="2">
    <object id="1" type="collision" x="0" y="46" width="128" height="82"/>
@@ -64,9 +66,9 @@
    <property name="corpse-id" type="int" value="27"/>
    <property name="difficulty" type="float" value="3"/>
    <property name="facing" type="int" value="1"/>
-   <property name="health-mult" type="float" value="1.3"/>
+   <property name="health-mult" type="float" value="3"/>
    <property name="name" value="block-green"/>
-   <property name="speed" type="float" value="0.5"/>
+   <property name="speed" type="float" value="0.175"/>
   </properties>
   <objectgroup draworder="index" id="2">
    <object id="1" type="collision" x="0" y="0" width="128" height="128"/>
@@ -114,7 +116,7 @@
    <property name="difficulty" type="float" value="1"/>
    <property name="facing" type="int" value="-1"/>
    <property name="name" value="slug"/>
-   <property name="speed" type="float" value="0.78"/>
+   <property name="speed" type="float" value="0.273"/>
   </properties>
   <objectgroup draworder="index" id="2">
    <object id="1" type="collision" x="4" y="25" width="122" height="103"/>
@@ -130,7 +132,7 @@
    <property name="difficulty" type="float" value="0"/>
    <property name="facing" type="int" value="-1"/>
    <property name="name" value="fly"/>
-   <property name="speed" type="float" value="1"/>
+   <property name="speed" type="float" value="0.25"/>
   </properties>
   <objectgroup draworder="index" id="2">
    <object id="2" type="collision" x="3" y="22" width="120" height="94"/>
@@ -151,7 +153,7 @@
    <property name="difficulty" type="float" value="0"/>
    <property name="facing" type="int" value="-1"/>
    <property name="name" value="worm-yellow"/>
-   <property name="speed" type="float" value="1"/>
+   <property name="speed" type="float" value="0.25"/>
   </properties>
   <objectgroup draworder="index" id="2">
    <object id="1" type="collision" x="0.0384231" y="71.8999" width="128" height="56"/>
@@ -172,7 +174,7 @@
    <property name="difficulty" type="float" value="2"/>
    <property name="facing" type="int" value="-1"/>
    <property name="name" value="spike-green"/>
-   <property name="speed" type="float" value="1"/>
+   <property name="speed" type="float" value="0.35"/>
   </properties>
   <objectgroup draworder="index" id="2">
    <object id="3" type="collision" x="0" y="22" width="128" height="106"/>
@@ -189,7 +191,7 @@
    <property name="difficulty" type="float" value="1"/>
    <property name="facing" type="int" value="-1"/>
    <property name="name" value="mouse-flame"/>
-   <property name="speed" type="float" value="1"/>
+   <property name="speed" type="float" value="0.35"/>
   </properties>
   <objectgroup draworder="index" id="2">
    <object id="2" type="collision" x="0" y="32" width="128" height="96"/>
@@ -206,7 +208,7 @@
    <property name="difficulty" type="float" value="2"/>
    <property name="facing" type="int" value="-1"/>
    <property name="name" value="bee"/>
-   <property name="speed" type="float" value="1"/>
+   <property name="speed" type="float" value="0.35"/>
   </properties>
   <objectgroup draworder="index" id="2">
    <object id="1" type="collision" x="4" y="12" width="120" height="102"/>
@@ -232,7 +234,7 @@
    <property name="difficulty" type="float" value="10"/>
    <property name="facing" type="int" value="-1"/>
    <property name="name" value="spike"/>
-   <property name="speed" type="float" value="0.8"/>
+   <property name="speed" type="float" value="0.28"/>
   </properties>
   <objectgroup draworder="index" id="2">
    <object id="1" type="collision" x="3" y="3" width="122" height="122"/>
@@ -248,7 +250,7 @@
    <property name="difficulty" type="float" value="0"/>
    <property name="facing" type="int" value="-1"/>
    <property name="name" value="worm-blue"/>
-   <property name="speed" type="float" value="1"/>
+   <property name="speed" type="float" value="0.25"/>
   </properties>
   <objectgroup draworder="index" id="2">
    <object id="1" type="collision" x="0.0384231" y="79.9984" width="128" height="48"/>
