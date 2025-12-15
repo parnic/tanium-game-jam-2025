@@ -369,7 +369,6 @@ export class UpgradeComponent extends Component {
           img: Weapon.getSprite(choice, forPlayer.scene as GameLevel)!,
           label: choice.description,
           weapon: choice,
-          // todo: add label with a short weapon description?
         });
       } else {
         const choice = rand.pickOne(forPlayer.weapons);
@@ -391,7 +390,6 @@ export class UpgradeComponent extends Component {
           attributes.push(UpgradeAttribute.Speed);
         }
 
-        // todo: colorize label text by chosen rarity. set a css class or whatever.
         const rarity = this.getRandomRarity();
         const rarityClass = RarityCSSClassMap[rarity];
         const upgradeData = this.getUpgradeAmount(rarity, attribute);

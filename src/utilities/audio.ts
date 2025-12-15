@@ -80,3 +80,5 @@ export function playPlayerTakeDamageSfx() {
 export function playSelectUpgradeSfx() {
   playSound(rand.pickOne(SfxResources.selectUpgrade), selectUpgradeSfxVolume);
 }
+
+// todo: find a "you won" sound
