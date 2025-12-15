@@ -142,6 +142,7 @@ export class EnemyCorpse extends GameActor {
     this.currMove = normalized.scale(
       config.SpeedPickup * elapsedMs * Math.max(1, scaler),
     );
+    this._speed = config.SpeedPickup * Math.max(1, scaler);
 
     super.onPostUpdate(engine, elapsedMs);
 
