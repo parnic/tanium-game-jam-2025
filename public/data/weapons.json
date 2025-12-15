@@ -41,7 +41,7 @@
     "name": "bullet-elongated",
     "displayName": "Shotgun",
     "baseSpeed": 3,
-    "baseDamage": 0.4,
+    "baseDamage": 1,
     "baseSpawnIntervalMs": 1500,
     "baseAmount": 5,
     "spawnBehavior": "ownerFacing",
