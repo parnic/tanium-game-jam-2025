@@ -220,6 +220,7 @@ export class WeaponActor extends GameActor {
 
     if (
       (this.aliveTime > 0 &&
+        !this.lifetime &&
         !this.scene?.engine.screen
           .getWorldBounds()
           .overlaps(this.graphics.bounds)) ||
