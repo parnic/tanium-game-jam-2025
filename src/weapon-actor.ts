@@ -70,6 +70,7 @@ export class WeaponActor extends GameActor {
     target?: Actor,
     spawnBehavior?: string,
     startPos?: Vector,
+    startSpeed?: number,
   ) {
     const myNum = Atomics.add(WeaponActor.weaponCounter, 0, 1);
     const def = definition ?? weapon.definition;
@@ -95,7 +96,7 @@ export class WeaponActor extends GameActor {
     if (weapon.owner instanceof WeaponActor) {
       this.instigator = weapon.owner.weapon.owner;
     }
-    this._speed = weapon.speed;
+    this._speed = startSpeed ?? weapon.speed;
     this.damage = weapon.damage;
     this.lifetime = weapon.lifetimeMs;
     this.shouldFaceDirection = this.spawnBehavior !== "orbit";

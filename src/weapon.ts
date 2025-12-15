@@ -7,7 +7,7 @@ import {
   Logger,
   lerp,
   toDegrees,
-  type Vector,
+  Vector,
   vec,
 } from "excalibur";
 import {
@@ -316,6 +316,9 @@ export class Weapon extends Entity {
     const numToSpawn = amount - numToSpawnDelayed;
     for (let i = 0; i < numToSpawn; i++) {
       let startPosOverride: Vector | undefined;
+      let startDirection: Vector | undefined;
+      let startSpeed: number | undefined;
+
       if (this.definition.amountAddsSpread && amount > 1) {
         if (this.definition.spreadPattern === "distributePosition") {
           const maxRadius = this.definition.spreadVariance! * this.size;
@@ -328,6 +331,8 @@ export class Weapon extends Entity {
             x + rand.floating(-feather, feather),
             y + rand.floating(-feather, feather),
           );
+          startDirection = Vector.One.rotate(angle);
+          startSpeed = 0.01;
         }
       }
 
@@ -337,9 +342,13 @@ export class Weapon extends Entity {
         target,
         spawnBehavior,
         startPosOverride ?? startPos,
+        startSpeed,
       );
       if (this.outlivesOwner) {
         this.spawnedWeaponActors.push(weapon);
+      }
+      if (startDirection) {
+        weapon._direction = startDirection;
       }
       this.scene.addWeaponActor(weapon);
 
