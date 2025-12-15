@@ -318,7 +318,7 @@ export class Weapon extends Entity {
       let startPosOverride: Vector | undefined;
       if (this.definition.amountAddsSpread && amount > 1) {
         if (this.definition.spreadPattern === "distributePosition") {
-          const maxRadius = this.definition.spreadVariance!;
+          const maxRadius = this.definition.spreadVariance! * this.size;
           const angle = (i + 1) * goldenSpiralAngleStep;
           const dist = maxRadius * Math.sqrt(i / numToSpawn);
           const feather = maxRadius * 0.2;
