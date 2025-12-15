@@ -269,6 +269,12 @@ export class WeaponActor extends GameActor {
     if (setCurrMove) {
       this.currMove = this._direction;
     }
+
+    if (this.definition.acceleration) {
+      this._speed +=
+        this.speed * this.definition.acceleration * (elapsedMs / 1000);
+    }
+
     super.onPostUpdate(engine, elapsedMs);
 
     if (this.spawnBehavior === "orbit") {

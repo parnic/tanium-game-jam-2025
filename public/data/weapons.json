@@ -11,14 +11,15 @@
   {
     "name": "rocket-big",
     "displayName": "Big boomer",
-    "baseSpeed": 0.5,
+    "baseSpeed": 0.2,
     "baseDamage": 5,
     "baseScale": 2,
-    "baseLifetime": 3000,
+    "baseLifetime": 948,
     "baseSpawnIntervalMs": 3000,
     "spawnBehavior": "ownerFacing",
     "spawns": "nuke",
-    "spawnsTrigger": "onDeath"
+    "spawnsTrigger": "onDeath",
+    "acceleration": 4
   },
   {
     "name": "bullet-circle",
