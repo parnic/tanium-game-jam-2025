@@ -2,7 +2,7 @@ import type { TiledResource } from "@excaliburjs/plugin-tiled";
 import type { SceneActivationContext } from "excalibur";
 import { GameEngine } from "../game-engine";
 import * as html from "../utilities/html";
-import { GameLevel } from "./game-level";
+import { GameLevel, type LevelData } from "./game-level";
 
 export type TutorialSceneConfigArgs = {
   showTutorial?: boolean;
@@ -27,8 +27,12 @@ export class TutorialScene extends GameLevel {
 
   private _onClickHandler = () => this.goNextTutorialPhase();
 
-  constructor(map: TiledResource, config?: TutorialSceneConfigArgs) {
-    super(map);
+  constructor(
+    map: TiledResource,
+    data: LevelData,
+    config?: TutorialSceneConfigArgs,
+  ) {
+    super(map, data);
 
     this._tutorialElement = document.getElementById("tutorial")!;
 

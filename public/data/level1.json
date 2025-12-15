@@ -1,0 +1,32 @@
+{
+  "waveData": [
+    {
+      "timeSeconds": 30,
+      "difficulty": 1
+    },
+    {
+      "timeSeconds": 60,
+      "difficulty": 2
+    },
+    {
+      "timeSeconds": 90,
+      "difficulty": 3
+    },
+    {
+      "timeSeconds": 120,
+      "difficulty": 3
+    },
+    {
+      "timeSeconds": 150,
+      "difficulty": 4
+    }
+  ],
+  "spawnTimings": [
+    {
+      "wave": 1,
+      "allowedEnemies": ["fly", "worm-yellow"],
+      "minEnemies": 20,
+      "maxEnemies": 45
+    }
+  ]
+}

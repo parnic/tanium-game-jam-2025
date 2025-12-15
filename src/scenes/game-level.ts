@@ -30,34 +30,35 @@ import {
 import { rand } from "../utilities/math";
 import type { WeaponActor } from "../weapon-actor";
 
-interface Ramp {
+export interface WaveData {
+  timeSeconds: number;
+  difficulty: number;
+}
+
+export interface WaveTimingsData {
   wave: number;
-  value: number;
+  allowedEnemies: string[];
+  minEnemies: number;
+  maxEnemies: number;
+}
+
+export interface LevelData {
+  waveData: WaveData[];
+  spawnTimings: WaveTimingsData[];
 }
 
 export const MaxOnScreenCorpses = 350;
 const MaxLivingWeaponActors = 75;
 
 export class GameLevel extends Scene {
-  secondsBetweenWaves = 30;
-  // a map of the wave number to the difficulty level of enemy that is introduced on that wave
-  enemyIntroRamp: Ramp[] = [
-    { wave: 3, value: 1 },
-    { wave: 6, value: 2 },
-    { wave: 8, value: 3 },
-  ];
-  // a map of the wave number to the amount of health assigned to enemies spawned starting on that wave
-  enemyHealthRamp: Ramp[] = [
-    { wave: 3, value: 2 },
-    { wave: 6, value: 3 },
-    { wave: 8, value: 4 },
-    { wave: 12, value: 5 },
-  ];
+  checkEnemySpawnIntervalMs = 1000;
+  lastEnemySpawnTime?: number;
   currentWave = 0;
 
   tiledLevel: TiledResource;
   player?: Player;
   exit?: LevelExit;
+  levelData: LevelData;
   enemyData: EnemyData[] = [];
   enemies: Enemy[] = [];
   gifts: Gift[] = [];
@@ -73,10 +74,11 @@ export class GameLevel extends Scene {
   elemPause: HTMLElement;
   totalElapsed = 0;
 
-  constructor(level: TiledResource) {
+  constructor(level: TiledResource, data: LevelData) {
     super();
 
     this.tiledLevel = level;
+    this.levelData = data;
     this.elemUIRoot = document.getElementById("ui-root")!;
     this.elemTimer = document.getElementById("round-timer")!;
     this.elemGiftCounter = document.getElementById("gift-counter")!;
@@ -350,6 +352,18 @@ export class GameLevel extends Scene {
     }
   }
 
+  private getCurrentWaveData() {
+    return this.levelData.waveData[
+      Math.min(this.levelData.waveData.length - 1, this.currentWave)
+    ];
+  }
+
+  private getCurrentSpawnTimings() {
+    return this.levelData.spawnTimings.findLast(
+      (t) => t.wave <= this.currentWave + 1,
+    );
+  }
+
   override onPreUpdate(engine: Engine, elapsedMs: number): void {
     // don't spawn any enemies or adjust the clock/waves after the player dies
     if (this.player?.isKilled() === true) {
@@ -362,8 +376,7 @@ export class GameLevel extends Scene {
     // Called before anything updates in the scene
     const nowSeconds = this.totalElapsed / 1000;
     const lastSeconds = this.lastTime / 1000;
-    const nextWaveStartSeconds =
-      (this.currentWave + 1) * this.secondsBetweenWaves;
+    const nextWaveStartSeconds = this.getCurrentWaveData().timeSeconds;
     if (
       nowSeconds >= nextWaveStartSeconds &&
       lastSeconds < nextWaveStartSeconds
@@ -374,16 +387,43 @@ export class GameLevel extends Scene {
       );
     }
 
-    if (Math.floor(nowSeconds) % 5 === 0 && Math.floor(lastSeconds) % 5 !== 0) {
-      Logger.getInstance().info(
-        `spawning enemies, wave ${this.currentWave.toString()}`,
+    this.trySpawnEnemies();
+
+    this.lastTime = this.totalElapsed;
+  }
+
+  private trySpawnEnemies() {
+    if (
+      this.lastEnemySpawnTime &&
+      this.totalElapsed <
+        this.lastEnemySpawnTime + this.checkEnemySpawnIntervalMs
+    ) {
+      return;
+    }
+
+    const timings = this.getCurrentSpawnTimings();
+    if (!timings) {
+      Logger.getInstance().error(
+        `Unable to find applicable spawn timings for wave ${this.currentWave} - not spawning anything.`,
       );
-      for (let i = 0; i < 10; i++) {
-        this.spawnEnemy();
+      return;
+    }
+
+    let livingEnemies = 0;
+    for (let i = 0; i < this.enemies.length; i++) {
+      if (!this.enemies[i].isKilled()) {
+        livingEnemies++;
       }
     }
 
-    this.lastTime = this.totalElapsed;
+    Logger.getInstance().info(
+      `spawning ${timings.minEnemies - livingEnemies} enemies, wave ${this.currentWave.toString()}`,
+    );
+    for (let i = livingEnemies; i < timings.minEnemies; i++) {
+      this.spawnEnemy();
+    }
+
+    this.lastEnemySpawnTime = this.totalElapsed;
   }
 
   override onPostUpdate(engine: Engine, elapsedMs: number): void {
@@ -409,19 +449,15 @@ export class GameLevel extends Scene {
   }
 
   spawnEnemy() {
-    let maxDifficulty = 0;
-    for (const ramp of this.enemyIntroRamp) {
-      if (this.currentWave >= ramp.wave && ramp.value > maxDifficulty) {
-        maxDifficulty = ramp.value;
-      }
-    }
+    // const difficulty = this.getCurrentWaveData().difficulty;
 
-    const eligibleEnemies = this.enemyData.filter(
-      (e) => e.difficulty <= maxDifficulty,
+    const eligibleEnemyNames = this.getCurrentSpawnTimings()?.allowedEnemies;
+    const eligibleEnemies = this.enemyData.filter((e) =>
+      eligibleEnemyNames?.includes(e.name),
     );
-    if (eligibleEnemies.length === 0) {
+    if (!eligibleEnemies || eligibleEnemies.length === 0) {
       Logger.getInstance().error(
-        `Requested to spawn an enemy, but no eligible enemies available. Max difficulty: ${maxDifficulty.toString()}, wave: ${this.currentWave.toString()}`,
+        `Requested to spawn an enemy, but no eligible enemies available. Wave: ${this.currentWave.toString()}`,
       );
       return;
     }

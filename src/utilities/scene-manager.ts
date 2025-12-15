@@ -1,7 +1,7 @@
 import type { TiledResource } from "@excaliburjs/plugin-tiled";
 import type { Engine } from "excalibur";
-import { LevelResources } from "../resources";
-import { GameLevel } from "../scenes/game-level";
+import { LevelDataResources, LevelResources } from "../resources";
+import { GameLevel, type LevelData } from "../scenes/game-level";
 import { TransitionScene } from "../scenes/transition-scene";
 import { TutorialScene } from "../scenes/tutorial-scene";
 import * as html from "./html";
@@ -39,28 +39,34 @@ export class SceneData {
   map: TiledResource;
   nextScene = "";
   type: SceneType = SceneType.Game;
+  levelData: LevelData;
 
   constructor(
     name: string,
     map: TiledResource,
     nextScene: string,
     type: SceneType,
+    levelData: LevelData,
   ) {
     this.name = name;
     this.map = map;
     this.nextScene = nextScene;
     this.type = type;
+    this.levelData = levelData;
   }
 }
 
-const sceneList: SceneData[] = [
-  {
+const sceneList: SceneData[] = [];
+
+export function init() {
+  sceneList.push({
     name: "level1",
-    map: LevelResources[0],
+    map: LevelResources.level1,
     nextScene: "",
     type: SceneType.Tutorial,
-  },
-];
+    levelData: LevelDataResources.level1.data,
+  });
+}
 
 export function getCurrentSceneData(engine: Engine): SceneData | undefined {
   const currentSceneDataIdx = sceneList.findIndex(
@@ -118,11 +124,11 @@ export async function goToScene(
   let nextScene: GameLevel;
 
   if (nextSceneData.type === SceneType.Tutorial) {
-    nextScene = new TutorialScene(nextSceneData.map, {
+    nextScene = new TutorialScene(nextSceneData.map, nextSceneData.levelData, {
       showTutorial: !currentSceneData,
     });
   } else {
-    nextScene = new GameLevel(nextSceneData.map);
+    nextScene = new GameLevel(nextSceneData.map, nextSceneData.levelData);
   }
 
   engine.addScene(nextSceneData.name, nextScene);
