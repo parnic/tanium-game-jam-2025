@@ -30,6 +30,7 @@ export const SfxResources = {
     new Sound("./music/dyadic-adam-tell-main-version-42333-03-13.mp3"),
     new Sound("./music/labyrinth-sky-toes-main-version-24037-04-18.mp3"),
   ],
+  easterEgg: [new Sound("./sfx/easter-egg.mp3")],
   enemyDeath: [
     new Sound("./sfx/hurt-a.ogg"),
     new Sound("./sfx/hurt-c.ogg"),

@@ -88,7 +88,7 @@ export class Player extends GameActor {
   pointerMoveSource?: Vector;
   lastUsedGamepad?: Gamepad;
   lastGamepadAxis = Vector.Zero;
-  // lastGamepadDpad = Vector.Zero;
+  keypressHistory: Keys[] = [];
   gamepadDeadzone = 0.2;
   giftsCollected = 0;
   giftsNeeded = 0;
@@ -274,6 +274,11 @@ export class Player extends GameActor {
     engine.input.keyboard.on("press", (evt) => {
       this.events.emit("ButtonPressed", new ButtonPressedEvent());
 
+      if (this.keypressHistory.length === 5) {
+        this.keypressHistory.shift();
+      }
+      this.keypressHistory.push(evt.key);
+
       switch (evt.key) {
         case Keys.Escape:
           if (
@@ -350,11 +355,28 @@ export class Player extends GameActor {
           }
           break;
 
-        case Keys.N:
+        case Keys.N: {
           if (engine.input.keyboard.isHeld(Keys.ShiftLeft)) {
             this.cameraShake?.induceStress(3);
+            break;
+          }
+
+          const len = this.keypressHistory.length;
+          const cheatLen = "kevin".length;
+          if (len < cheatLen) {
+            break;
+          }
+
+          if (
+            this.keypressHistory[len - cheatLen + 0] === Keys.K &&
+            this.keypressHistory[len - cheatLen + 1] === Keys.E &&
+            this.keypressHistory[len - cheatLen + 2] === Keys.V &&
+            this.keypressHistory[len - cheatLen + 3] === Keys.I
+          ) {
+            Audio.playEasterEggSfx();
           }
           break;
+        }
       }
     });
 

@@ -45,6 +45,10 @@ export function playSound(snd: Sound, volume: number) {
   snd.play();
 }
 
+export function playEasterEggSfx() {
+  playSound(rand.pickOne(SfxResources.easterEgg), 1.0);
+}
+
 export function playEnemyDeathSfx() {
   playSound(rand.pickOne(SfxResources.enemyDeath), enemyDeathSfxVolume);
 }
