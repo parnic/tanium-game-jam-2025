@@ -17,8 +17,6 @@ import { createGleamMaterial } from "./materials/gleam";
 import type { Player } from "./player";
 import { GameLevel } from "./scenes/game-level";
 
-const pickupAnimTimeMs = 250;
-
 export class EnemyCorpse extends GameActor {
   private _pickedUpBy?: Player;
   private pickupTime = 0;
@@ -26,16 +24,18 @@ export class EnemyCorpse extends GameActor {
   xpVal: number;
   private lastGlintTime = 0;
   private glintIntervalMs = 4000;
+  private pickupAnimTimeMs = 250;
 
   public get pickedUpBy(): Player | undefined {
     return this._pickedUpBy;
   }
 
-  public set pickedUpBy(p: Player | undefined) {
+  public setPickedUpBy(p: Player, showPickupFlourish?: boolean) {
     this._pickedUpBy = p;
     this.pickupTime = this.aliveTime;
-    if (p) {
-      this.pickupDir = this.pos.sub(p.pos).normalize();
+    this.pickupDir = this.pos.sub(p.pos).normalize();
+    if (showPickupFlourish === false) {
+      this.pickupAnimTimeMs = 0;
     }
   }
 
@@ -118,8 +118,9 @@ export class EnemyCorpse extends GameActor {
       return;
     }
 
-    if (this.pickupTime + pickupAnimTimeMs >= this.aliveTime) {
-      const percentage = (this.aliveTime - this.pickupTime) / pickupAnimTimeMs;
+    if (this.pickupTime + this.pickupAnimTimeMs > this.aliveTime) {
+      const percentage =
+        (this.aliveTime - this.pickupTime) / this.pickupAnimTimeMs;
       const t = lerp(1, 0, percentage ** 0.5);
       this.currMove = this.pickupDir.scale(t);
 

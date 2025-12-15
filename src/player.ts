@@ -326,7 +326,7 @@ export class Player extends GameActor {
           if (engine.input.keyboard.isHeld(Keys.ShiftLeft)) {
             (this.scene as GameLevel).xpPickups.forEach((p) => {
               if (p) {
-                p.pickedUpBy = this;
+                p.setPickedUpBy(this, false);
               }
             });
           }
@@ -576,7 +576,7 @@ export class Player extends GameActor {
       }
 
       if (this.pos.squareDistance(pickup.pos) <= this.pickupDistanceSq) {
-        pickup.pickedUpBy = this;
+        pickup.setPickedUpBy(this);
       }
     }
   }
