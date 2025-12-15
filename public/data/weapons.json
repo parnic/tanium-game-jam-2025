@@ -13,8 +13,11 @@
     "displayName": "Big boomer",
     "baseSpeed": 0.5,
     "baseDamage": 5,
+    "baseLifetime": 3000,
     "baseSpawnIntervalMs": 3000,
-    "spawnBehavior": "ownerFacing"
+    "spawnBehavior": "ownerFacing",
+    "spawns": "nuke",
+    "spawnsTrigger": "onDeath"
   },
   {
     "name": "bullet-circle",
@@ -36,12 +39,15 @@
   {
     "name": "bullet-elongated",
     "displayName": "Shotgun",
-    "baseSpeed": 2,
+    "baseSpeed": 3,
     "baseDamage": 0.4,
     "baseSpawnIntervalMs": 1500,
     "baseAmount": 5,
     "spawnBehavior": "ownerFacing",
-    "amountAddsSpread": true
+    "amountAddsSpread": true,
+    "spreadPattern": "evenRotation",
+    "spreadVariance": 6.8,
+    "spreadVarianceUnits": "degrees"
   },
   {
     "name": "fire",
@@ -62,7 +68,24 @@
     "baseLifetime": 6500,
     "spawnBehavior": "orbit",
     "spawns": "bullet-circle",
+    "spawnsTrigger": "onSpawn",
     "childSpawnBehavior": "targetNearestEnemy",
     "collides": false
+  },
+  {
+    "name": "nuke",
+    "displayName": "",
+    "baseSpeed": 1,
+    "baseDamage": 0.42,
+    "baseSpawnIntervalMs": 0,
+    "baseLifetime": 5000,
+    "spawnBehavior": "ownerLocation",
+    "tileName": "fire",
+    "selectable": false,
+    "baseAmount": 9,
+    "amountAddsSpread": true,
+    "spreadPattern": "distributePosition",
+    "spreadVariance": "64",
+    "spreadVarianceUnits": "pixels"
   }
 ]

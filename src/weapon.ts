@@ -6,6 +6,7 @@ import {
   Entity,
   Logger,
   lerp,
+  toDegrees,
   type Vector,
   vec,
 } from "excalibur";
@@ -25,6 +26,7 @@ import { OrbitDurationMs, WeaponActor } from "./weapon-actor";
 
 export interface WeaponData {
   name: string;
+  tileName?: string; // if set, uses this instead of "name" when grabbing the tile to use for this weapon's graphic
   displayName: string;
   baseSpeed: number;
   baseDamage: number;
@@ -38,15 +40,23 @@ export interface WeaponData {
     | "orbit"
     | "ownerLocation"
     | undefined;
-  spawns?: string;
+  spawns?: string; // indicates that this weapon spawns a sub-weapon of its own
+  spawnsTrigger: "onSpawn" | "onDeath" | undefined; // when "spawns" is set, this indicates when to spawn the "spawns" sub-weapon
   childSpawnBehavior?: string;
   targetBehavior: "tracking" | undefined;
   collides?: boolean;
   amountAddsSpread?: boolean; // for something like a shotgun, "amount" means how many projectiles to spawn at once whereas with a rocket we want to spawn them one after another.
+  spreadPattern: "evenRotation" | "distributePosition" | undefined;
+  spreadVariance?: number;
+  spreadVarianceUnits: "degrees" | "radians" | "pixels" | undefined;
+  selectable?: boolean;
 }
 
 const minMultiSpawnDelayMs = 30;
 const maxMultiSpawnDelayMs = 150;
+
+const phi = (Math.sqrt(5) + 1) / 2;
+const goldenSpiralAngleStep = (2 * Math.PI) / phi ** 2;
 
 export class Weapon extends Entity {
   level: TiledResource;
@@ -55,6 +65,7 @@ export class Weapon extends Entity {
   lastDelayedSpawnTimeMs?: number;
   aliveTime = 0;
   owner: GameActor;
+  outlivesOwner = false; // implies that the only way this weapon dies is when its spawned actors have all expired
   playerOwner: Player;
   definition: WeaponData;
   spawnBehaviorOverride?: string;
@@ -70,6 +81,7 @@ export class Weapon extends Entity {
   pendingDelayedSpawnInterval = maxMultiSpawnDelayMs;
   damageDealt = 0;
   kills = 0;
+  private spawnedWeaponActors: WeaponActor[] = [];
 
   constructor(data: WeaponData, level: TiledResource, owner: GameActor) {
     super({
@@ -116,7 +128,7 @@ export class Weapon extends Entity {
       t.getTilesByClassName("weapon"),
     );
     const weaponTile = weapons.find(
-      (w) => w.properties.get("name") === data.name,
+      (w) => w.properties.get("name") === (data.tileName ?? data.name),
     );
 
     if (!weaponTile) {
@@ -143,18 +155,22 @@ export class Weapon extends Entity {
       t.getTilesByClassName("weapon"),
     );
     const weaponTile = weapons.find(
-      (w) => w.properties.get("name") === this.definition.name,
+      (w) =>
+        w.properties.get("name") ===
+        (this.definition.tileName ?? this.definition.name),
     );
     if (!weaponTile) {
       Logger.getInstance().error(
-        `Unable to find weapon by name ${this.definition.name}`,
+        `Unable to find tile for weapon by name ${this.definition.name}`,
       );
     }
 
     this.tile = weaponTile;
 
     this.childTile = weapons.find(
-      (w) => w.properties.get("name") === this.childDefinition?.name,
+      (w) =>
+        w.properties.get("name") ===
+        (this.childDefinition?.tileName ?? this.childDefinition?.name),
     );
   }
 
@@ -163,10 +179,28 @@ export class Weapon extends Entity {
       return;
     }
 
+    if (
+      this.outlivesOwner &&
+      this.aliveTime > 0 &&
+      this.spawnedWeaponActors.every((wa) => wa.isKilled())
+    ) {
+      this.kill();
+      return;
+    }
+
     this.aliveTime += elapsedMs;
 
-    if (this.owner.isKilled() || this.playerOwner.isKilled()) {
+    if (
+      !this.outlivesOwner &&
+      (this.owner.isKilled() || this.playerOwner.isKilled())
+    ) {
       this.kill();
+      return;
+    }
+
+    // interval 0 means this weapon only ever spawns its actors once; it is expected to self-destruct
+    // when all of its spawned WeaponActors have expired.
+    if (this.intervalMs === 0 && this.lastSpawnedTimeMs) {
       return;
     }
 
@@ -279,18 +313,54 @@ export class Weapon extends Entity {
       vec(rand.integer(-25, 25), rand.integer(-25, 25)),
     );
 
-    const weapon = new WeaponActor(
-      this,
-      this.definition,
-      target,
-      spawnBehavior,
-      startPos,
-    );
-    this.scene.addWeaponActor(weapon);
+    const numToSpawn = amount - numToSpawnDelayed;
+    for (let i = 0; i < numToSpawn; i++) {
+      let startPosOverride: Vector | undefined;
+      if (this.definition.amountAddsSpread && amount > 1) {
+        if (this.definition.spreadPattern === "distributePosition") {
+          const maxRadius = this.definition.spreadVariance!;
+          const angle = (i + 1) * goldenSpiralAngleStep;
+          const dist = maxRadius * Math.sqrt(i / numToSpawn);
+          const feather = maxRadius * 0.2;
+          const x = this.owner.pos.x + dist * Math.cos(angle);
+          const y = this.owner.pos.y + dist * Math.sin(angle);
+          startPosOverride = vec(
+            x + rand.floating(-feather, feather),
+            y + rand.floating(-feather, feather),
+          );
+        }
+      }
 
-    if (this.definition.amountAddsSpread && amount > 1) {
-      // todo: make this into a spread rather than random selection
-      weapon.spawnRotationVarianceDegrees = rand.floating(0, 5);
+      const weapon = new WeaponActor(
+        this,
+        this.definition,
+        target,
+        spawnBehavior,
+        startPosOverride ?? startPos,
+      );
+      if (this.outlivesOwner) {
+        this.spawnedWeaponActors.push(weapon);
+      }
+      this.scene.addWeaponActor(weapon);
+
+      if (this.definition.amountAddsSpread && amount > 1) {
+        if (this.definition.spreadPattern === "evenRotation") {
+          const rangeBounds = this.definition.spreadVariance!;
+          const desiredRotation = lerp(
+            -rangeBounds,
+            rangeBounds,
+            i / (numToSpawn - 1),
+          );
+          const feather = rangeBounds * 0.1;
+          const rotationOffsetDegrees =
+            desiredRotation + rand.floating(-feather, feather);
+
+          weapon.spawnRotationOffsetDegrees =
+            this.definition.spreadVarianceUnits === "degrees"
+              ? rotationOffsetDegrees
+              : toDegrees(rotationOffsetDegrees);
+        }
+      }
     }
 
     this.lastDelayedSpawnTimeMs = this.aliveTime;
@@ -337,7 +407,7 @@ export class Weapon extends Entity {
       }
     } else if (upgrade instanceof Weapon) {
       // not all attributes should carry over to a copied weapon (which is intended to be used for child weapons only)
-      this.amount = upgrade.amount;
+      // this.amount = upgrade.amount;
       this.damage = upgrade.damage;
       // this.intervalMs = upgrade.intervalMs;
       // this.lifetimeMs = upgrade.lifetimeMs;

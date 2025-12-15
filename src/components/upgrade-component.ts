@@ -353,6 +353,7 @@ export class UpgradeComponent extends Component {
       // second, decide if we get an upgrade or a new unlock
       const availableWeapons = Resources.WeaponData.data.filter(
         (wd) =>
+          wd.selectable !== false &&
           !forPlayer.weapons.find((w) => w.definition === wd) &&
           !chosenWeapons.find((w) => w === wd),
       );

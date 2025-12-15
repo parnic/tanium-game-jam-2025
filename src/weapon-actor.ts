@@ -20,7 +20,6 @@ import { GameActor, TiledCollision } from "./game-actor";
 import { GameEngine } from "./game-engine";
 import { Player } from "./player";
 import { GameLevel } from "./scenes/game-level";
-import { rand } from "./utilities/math";
 import { Weapon, type WeaponData } from "./weapon";
 
 export const OrbitDurationMs = 2000;
@@ -39,7 +38,7 @@ export class WeaponActor extends GameActor {
   size: Vector;
   childWeapon?: Weapon;
   orbitDistanceScale = 1.1;
-  spawnRotationVarianceDegrees = 0;
+  spawnRotationOffsetDegrees = 0;
   fadeInOutDurationMs = 300;
   private lastOrbitOffset?: Vector;
   private lastRotation?: number;
@@ -161,21 +160,16 @@ export class WeaponActor extends GameActor {
     super.onInitialize(engine);
 
     this.conditionalUpdateTarget();
-    this.conditionalSpawnChildWeapon(engine);
+    this.conditionalSpawnChildWeapon(engine, "onSpawn");
 
     if (this.spawnBehavior === "ownerFacing") {
       this.direction = !this.instigator.moveDir.equals(Vector.Zero)
         ? this.instigator.moveDir.normalize()
         : Vector.Right;
 
-      if (this.spawnRotationVarianceDegrees) {
+      if (this.spawnRotationOffsetDegrees) {
         this.direction = this.direction.rotate(
-          toRadians(
-            rand.floating(
-              -this.spawnRotationVarianceDegrees,
-              this.spawnRotationVarianceDegrees,
-            ),
-          ),
+          toRadians(this.spawnRotationOffsetDegrees),
         );
       }
     } else if (this.spawnBehavior === "orbit") {
@@ -198,8 +192,11 @@ export class WeaponActor extends GameActor {
     this.direction = this.target.pos.sub(this.pos).normalize();
   }
 
-  conditionalSpawnChildWeapon(engine: Engine) {
-    if (!this.weapon.childDefinition) {
+  conditionalSpawnChildWeapon(engine: Engine, trigger: "onSpawn" | "onDeath") {
+    if (
+      !this.weapon.childDefinition ||
+      this.weapon.definition.spawnsTrigger !== trigger
+    ) {
       return;
     }
 
@@ -208,6 +205,7 @@ export class WeaponActor extends GameActor {
       this.weapon.level,
       this,
     );
+    this.childWeapon.outlivesOwner = trigger === "onDeath";
     this.childWeapon.applyUpgrade(this.weapon);
     this.childWeapon.spawnBehaviorOverride = this.definition.childSpawnBehavior;
     this.scene?.add(this.childWeapon);
@@ -339,6 +337,7 @@ export class WeaponActor extends GameActor {
       return;
     }
 
+    this.conditionalSpawnChildWeapon(scene.engine, "onDeath");
     scene.removeWeaponActor(this);
   }
 }
