@@ -28,6 +28,7 @@ export interface WeaponData {
   name: string;
   tileName?: string; // if set, uses this instead of "name" when grabbing the tile to use for this weapon's graphic
   displayName: string;
+  description: string; // shown on the upgrade weapon screen to give a small amount of context about what it does
   baseSpeed: number;
   baseDamage: number;
   baseScale?: number;

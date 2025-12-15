@@ -367,6 +367,7 @@ export class UpgradeComponent extends Component {
         upgrades.push({
           name: choice.displayName,
           img: Weapon.getSprite(choice, forPlayer.scene as GameLevel)!,
+          label: choice.description,
           weapon: choice,
           // todo: add label with a short weapon description?
         });
