@@ -30,7 +30,7 @@
     "@excaliburjs/plugin-tiled": "0.31.0",
     "@tauri-apps/api": "^2",
     "@tauri-apps/plugin-opener": "^2",
-    "excalibur": "0.32.0-alpha.1596"
+    "excalibur": "0.32.0-alpha.1598"
   },
   "devDependencies": {
     "@biomejs/biome": "2.3.8",
@@ -43,7 +43,7 @@
   },
   "overrides": {
     "@excaliburjs/plugin-tiled": {
-      "excalibur": "0.32.0-alpha.1596"
+      "excalibur": "0.32.0-alpha.1598"
     }
   },
   "pre-commit": [
