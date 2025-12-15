@@ -13,6 +13,7 @@
     "displayName": "Big boomer",
     "baseSpeed": 0.5,
     "baseDamage": 5,
+    "baseScale": 2,
     "baseLifetime": 3000,
     "baseSpawnIntervalMs": 3000,
     "spawnBehavior": "ownerFacing",
