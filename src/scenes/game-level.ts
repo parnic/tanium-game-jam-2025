@@ -64,7 +64,6 @@ export class GameLevel extends Scene {
   gifts: Gift[] = [];
   projectiles = new Map<string, WeaponActor[]>();
   xpPickups: (EnemyCorpse | undefined)[] = [];
-  lastTime = 0;
   elemUIRoot: HTMLElement;
   elemTimer: HTMLElement;
   elemGiftCounter: HTMLElement;
@@ -352,6 +351,13 @@ export class GameLevel extends Scene {
     }
   }
 
+  private getCurrentWave() {
+    const nowSeconds = this.totalElapsed / 1000;
+    return this.levelData.waveData.findLastIndex(
+      (w) => w.timeSeconds <= nowSeconds,
+    );
+  }
+
   private getCurrentWaveData() {
     return this.levelData.waveData[
       Math.min(this.levelData.waveData.length - 1, this.currentWave)
@@ -373,23 +379,15 @@ export class GameLevel extends Scene {
       return;
     }
 
-    // Called before anything updates in the scene
-    const nowSeconds = this.totalElapsed / 1000;
-    const lastSeconds = this.lastTime / 1000;
-    const nextWaveStartSeconds = this.getCurrentWaveData().timeSeconds;
-    if (
-      nowSeconds >= nextWaveStartSeconds &&
-      lastSeconds < nextWaveStartSeconds
-    ) {
-      this.currentWave++;
+    const currentWave = this.currentWave;
+    this.currentWave = this.getCurrentWave() + 1;
+    if (currentWave !== this.currentWave) {
       Logger.getInstance().info(
         `start of wave ${(this.currentWave + 1).toString()}`,
       );
     }
 
     this.trySpawnEnemies();
-
-    this.lastTime = this.totalElapsed;
   }
 
   private trySpawnEnemies() {

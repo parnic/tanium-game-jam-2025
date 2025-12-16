@@ -377,6 +377,34 @@ export class Player extends GameActor {
           }
           break;
         }
+
+        case Keys.Equal:
+          if (
+            engine.input.keyboard.isHeld(Keys.ShiftLeft) &&
+            this.scene instanceof GameLevel
+          ) {
+            this.scene.totalElapsed += 30 * 1000;
+          }
+          break;
+
+        case Keys.Minus:
+          if (
+            engine.input.keyboard.isHeld(Keys.ShiftLeft) &&
+            this.scene instanceof GameLevel
+          ) {
+            this.scene.totalElapsed = Math.max(
+              0,
+              this.scene.totalElapsed - 30 * 1000,
+            );
+
+            if (this.scene.lastEnemySpawnTime) {
+              this.scene.lastEnemySpawnTime = Math.max(
+                0,
+                this.scene.lastEnemySpawnTime - 30 * 1000,
+              );
+            }
+          }
+          break;
       }
     });
 
