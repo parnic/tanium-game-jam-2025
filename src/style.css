@@ -169,11 +169,11 @@ body {
   background-color: red;
 }
 
-.red {
+.failure {
   color: red;
 }
 
-.green {
+.success {
   color: green;
 }
 
@@ -207,6 +207,10 @@ body {
 
 .mt-5px {
   margin-top: 5px;
+}
+
+.mt-15px {
+  margin-top: 15px;
 }
 
 #xp-bar {
@@ -269,11 +273,11 @@ body {
     50px 50px 60px rgb(0 0 0 / 0.11);
 }
 
-.small-box:hover {
+.small-box-interactive:hover {
   background-color: #666;
 }
 
-.small-box:active {
+.small-box-interactive:active {
   background-color: #999;
 }
 
@@ -286,7 +290,7 @@ body {
 .btn {
   color: #fff;
   font-weight: 800;
-  font-size: 2vw;
+  font-size: 2vh;
   font-family: Silkscreen, sans-serif;
   background-color: #404663;
   border: none;
@@ -325,4 +329,20 @@ body {
 }
 .rarity-legendary {
   color: #ff8000;
+}
+
+.round-end-contents {
+  display: flex;
+  flex-flow: column;
+}
+
+.align-self-center {
+  align-self: center;
+}
+
+.stats {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: center;
+  align-self: center;
 }

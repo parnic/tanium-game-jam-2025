@@ -4,6 +4,7 @@ import { LevelDataResources, LevelResources } from "../resources";
 import { GameLevel, type LevelData } from "../scenes/game-level";
 import { TransitionScene } from "../scenes/transition-scene";
 import { TutorialScene } from "../scenes/tutorial-scene";
+import { Weapon } from "../weapon";
 import * as html from "./html";
 
 enum SceneType {
@@ -13,10 +14,8 @@ enum SceneType {
 
 let _engine: Engine;
 
-const elemGameOver = document.getElementById("you-died")!;
-const elemWon = document.getElementById("you-won")!;
+const elemRoundEnd = document.getElementById("round-end")!;
 const elemRestart = document.getElementById("restart")!;
-const elemRestartWin = document.getElementById("restart-win")!;
 
 let restartShownTime = 0;
 const restartShowDelayMs = 500;
@@ -27,12 +26,10 @@ const restartClickHandler = () => {
   }
 
   void reloadCurrentScene(_engine);
-  html.hideElement(elemGameOver);
-  html.hideElement(elemWon);
+  html.hideElement(elemRoundEnd);
 };
 
 elemRestart.addEventListener("click", restartClickHandler);
-elemRestartWin.addEventListener("click", restartClickHandler);
 
 export class SceneData {
   name = "";
@@ -107,6 +104,43 @@ export function getFirstSceneData(): SceneData {
   return sceneList[0];
 }
 
+function populateStats(parentElem: HTMLElement, scene: GameLevel) {
+  const template = parentElem.querySelector(".template") as HTMLElement;
+  const player = scene.player!;
+
+  for (let i = parentElem.children.length - 1; i >= 0; i--) {
+    const child = parentElem.children.item(i);
+    if (!child?.classList.contains("template")) {
+      child?.remove();
+    }
+  }
+
+  for (const weapon of player.weapons) {
+    const statBlock = template.cloneNode(true) as HTMLElement;
+    statBlock.classList.remove("template");
+
+    const elemName = statBlock.querySelector(".name") as HTMLElement;
+    elemName.innerText = weapon.definition.displayName;
+
+    const elemImg = statBlock.querySelector(".img") as HTMLElement;
+    Weapon.getSprite(weapon.definition, scene)?.then((v) =>
+      elemImg.appendChild(v),
+    );
+
+    const elemDamage = statBlock.querySelector(".damage") as HTMLElement;
+    elemDamage.innerText = `${(Math.round(weapon.damageDealt * 10) / 10).toLocaleString()} damage`;
+
+    const elemDps = statBlock.querySelector(".dps") as HTMLElement;
+    elemDps.innerText = `${(Math.round((weapon.damageDealt / (weapon.aliveTime / 1000)) * 10) / 10).toLocaleString()} dps`;
+
+    const elemKills = statBlock.querySelector(".kills") as HTMLElement;
+    elemKills.innerText = `${weapon.kills.toLocaleString()} kill${weapon.kills === 1 ? "" : "s"}`;
+
+    html.unhideElement(statBlock);
+    parentElem.appendChild(statBlock);
+  }
+}
+
 export async function goToScene(
   nextSceneData: SceneData,
   engine: Engine,
@@ -137,11 +171,25 @@ export async function goToScene(
   engine.removeScene("transition");
 
   nextScene.player?.on("postkill", () => {
+    const elemText = elemRoundEnd.querySelector(
+      "#round-end-text",
+    )! as HTMLElement;
+    elemText.classList.remove("success", "failure");
+
     if (nextScene.player?.reachedExit) {
-      html.showElement(elemWon);
+      elemText.classList.add("success");
+      elemText.innerText = "YOU WON";
     } else {
-      html.showElement(elemGameOver);
+      elemText.classList.add("failure");
+      elemText.innerText = "YOU DIED";
     }
+
+    populateStats(
+      elemRoundEnd.querySelector(".stats") as HTMLElement,
+      nextScene,
+    );
+
+    html.showElement(elemRoundEnd);
 
     restartShownTime = engine.clock.now();
     nextScene.player?.events.on("ButtonPressed", restartClickHandler);

@@ -43,7 +43,7 @@
         Choose an upgrade
       </div>
       <div class="responsive-flex-row">
-        <div id="upgrade-1" data-idx="0" class="upgrade small-box m-1vw">
+        <div id="upgrade-1" data-idx="0" class="upgrade small-box small-box-interactive m-1vw">
           <div class="name">
             Upgrade 1
           </div>
@@ -53,7 +53,7 @@
             +50% speed or whatever
           </div>
         </div>
-        <div id="upgrade-2" data-idx="1" class="upgrade small-box m-1vw">
+        <div id="upgrade-2" data-idx="1" class="upgrade small-box small-box-interactive m-1vw">
           <div class="name">
             Upgrade 2
           </div>
@@ -63,7 +63,7 @@
             +50% speed or whatever
           </div>
         </div>
-        <div id="upgrade-3" data-idx="2" class="upgrade small-box m-1vw">
+        <div id="upgrade-3" data-idx="2" class="upgrade small-box small-box-interactive m-1vw">
           <div class="name">
             Upgrade 3
           </div>
@@ -76,7 +76,7 @@
       </div>
     </div>
 
-    <div id="pause-text" class="absolute top-0 hide fs-10 outline outline-03 h-100 w-100 d-flex align-items-center justify-center red pe-none">
+    <div id="pause-text" class="absolute top-0 hide fs-10 outline outline-03 h-100 w-100 d-flex align-items-center justify-center failure pe-none">
       PAUSED
     </div>
 
@@ -84,24 +84,36 @@
       Tutorial box!
     </div>
 
-    <div id="you-died" class="absolute top-0 hide w-100 h-100 w-100 d-flex align-items-center justify-center">
-      <div>
-        <div id="you-died-text" class="fs-10 outline outline-03 text-center red">
-          YOU DIED
+    <div id="round-end" class="absolute top-0 hide w-100 h-100 w-100 d-flex align-items-center justify-center">
+      <div class="round-end-contents">
+        <div id="round-end-text" class="fs-10 outline outline-03 text-center success">
+          YOU WON
         </div>
         <div class="w-100 text-center">
           <button class="btn" id="restart">Restart</button>
         </div>
-      </div>
-    </div>
-
-    <div id="you-won" class="absolute top-0 hide w-100 h-100 w-100 d-flex align-items-center justify-center">
-      <div>
-        <div id="you-won-text" class="fs-10 outline outline-03 text-center green">
-          YOU WON
-        </div>
-        <div class="w-100 text-center">
-          <button class="btn" id="restart-win">Restart</button>
+        <div class="big-box text-center mt-15px align-self-center">
+          <div>
+            Weapon stats
+          </div>
+          <div class="stats">
+            <div class="hide template m-1vw small-box">
+              <div class="name">
+                Weapon
+              </div>
+              <div class="img m-auto">
+              </div>
+              <div class="label outline outline-15rem damage">
+                42 damage
+              </div>
+              <div class="label outline outline-15rem dps">
+                1.4dps
+              </div>
+              <div class="label outline outline-15rem kills">
+                139 kills
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
