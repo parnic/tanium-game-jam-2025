@@ -36,7 +36,7 @@ export enum UpgradeAttribute {
 }
 
 export enum UpgradeRarity {
-  Common,
+  // Common,
   Uncommon,
   Rare,
   Epic,
@@ -44,11 +44,11 @@ export enum UpgradeRarity {
 }
 
 const RarityWeights = {
-  [UpgradeRarity.Legendary]: 0.01,
-  [UpgradeRarity.Epic]: 0.04,
-  [UpgradeRarity.Rare]: 0.15,
-  [UpgradeRarity.Uncommon]: 0.3,
-  [UpgradeRarity.Common]: 0.5,
+  [UpgradeRarity.Legendary]: 0.05,
+  [UpgradeRarity.Epic]: 0.1,
+  [UpgradeRarity.Rare]: 0.25,
+  [UpgradeRarity.Uncommon]: 0.6,
+  // [UpgradeRarity.Common]: 0.5,
 };
 
 const RarityCSSClassMap = {
@@ -56,7 +56,7 @@ const RarityCSSClassMap = {
   [UpgradeRarity.Epic]: "rarity-epic",
   [UpgradeRarity.Rare]: "rarity-rare",
   [UpgradeRarity.Uncommon]: "rarity-uncommon",
-  [UpgradeRarity.Common]: "rarity-common",
+  // [UpgradeRarity.Common]: "rarity-common",
 };
 
 type UpgradeAttributeRarityValueRange = {
@@ -75,11 +75,11 @@ const UpgradeValues: UpgradeAttributeRarityRange[] = [
   {
     attribute: UpgradeAttribute.Amount,
     values: [
-      {
-        rarity: UpgradeRarity.Common,
-        min: 0.4,
-        max: 0.8,
-      },
+      // {
+      //   rarity: UpgradeRarity.Common,
+      //   min: 0.4,
+      //   max: 0.8,
+      // },
       {
         rarity: UpgradeRarity.Uncommon,
         min: 0.7,
@@ -106,11 +106,11 @@ const UpgradeValues: UpgradeAttributeRarityRange[] = [
     attribute: UpgradeAttribute.Damage,
     units: "%",
     values: [
-      {
-        rarity: UpgradeRarity.Common,
-        min: 0.02,
-        max: 0.04,
-      },
+      // {
+      //   rarity: UpgradeRarity.Common,
+      //   min: 0.02,
+      //   max: 0.04,
+      // },
       {
         rarity: UpgradeRarity.Uncommon,
         min: 0.04,
@@ -137,11 +137,11 @@ const UpgradeValues: UpgradeAttributeRarityRange[] = [
     attribute: UpgradeAttribute.Interval,
     units: "s", // todo: reconsider. this scale leads to some weapons dropping to a 0 interval really quickly and becoming massively overpowered.
     values: [
-      {
-        rarity: UpgradeRarity.Common,
-        min: -0.05,
-        max: -0.1,
-      },
+      // {
+      //   rarity: UpgradeRarity.Common,
+      //   min: -0.05,
+      //   max: -0.1,
+      // },
       {
         rarity: UpgradeRarity.Uncommon,
         min: -0.1,
@@ -168,11 +168,11 @@ const UpgradeValues: UpgradeAttributeRarityRange[] = [
     attribute: UpgradeAttribute.Lifetime,
     units: "s",
     values: [
-      {
-        rarity: UpgradeRarity.Common,
-        min: 0.1,
-        max: 0.3,
-      },
+      // {
+      //   rarity: UpgradeRarity.Common,
+      //   min: 0.1,
+      //   max: 0.3,
+      // },
       {
         rarity: UpgradeRarity.Uncommon,
         min: 0.25,
@@ -199,11 +199,11 @@ const UpgradeValues: UpgradeAttributeRarityRange[] = [
     attribute: UpgradeAttribute.Size,
     units: "%",
     values: [
-      {
-        rarity: UpgradeRarity.Common,
-        min: 0.05,
-        max: 0.1,
-      },
+      // {
+      //   rarity: UpgradeRarity.Common,
+      //   min: 0.05,
+      //   max: 0.1,
+      // },
       {
         rarity: UpgradeRarity.Uncommon,
         min: 0.1,
@@ -229,11 +229,11 @@ const UpgradeValues: UpgradeAttributeRarityRange[] = [
   {
     attribute: UpgradeAttribute.Speed,
     values: [
-      {
-        rarity: UpgradeRarity.Common,
-        min: 0.1,
-        max: 0.15,
-      },
+      // {
+      //   rarity: UpgradeRarity.Common,
+      //   min: 0.1,
+      //   max: 0.15,
+      // },
       {
         rarity: UpgradeRarity.Uncommon,
         min: 0.15,
@@ -321,7 +321,7 @@ export class UpgradeComponent extends Component {
       }
     }
 
-    return UpgradeRarity.Common;
+    return UpgradeRarity.Uncommon;
   }
 
   private getUpgradeAmount(
