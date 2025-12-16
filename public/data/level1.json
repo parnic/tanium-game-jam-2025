@@ -40,25 +40,25 @@
     },
     {
       "wave": 3,
-      "allowedEnemies": ["mouse-gray", "snail"],
+      "allowedEnemies": ["spike-green", "snail", "slug"],
       "minEnemies": 20,
       "maxEnemies": 45
     },
     {
       "wave": 4,
-      "allowedEnemies": ["mouse-gray", "snail"],
+      "allowedEnemies": ["spike-green", "snail", "slug"],
       "minEnemies": 30,
       "maxEnemies": 45
     },
     {
       "wave": 5,
-      "allowedEnemies": ["slime", "block-green"],
+      "allowedEnemies": ["slime", "block-green", "bee"],
       "minEnemies": 15,
       "maxEnemies": 30
     },
     {
       "wave": 6,
-      "allowedEnemies": ["slime", "block-green"],
+      "allowedEnemies": ["slime", "block-green", "bee"],
       "minEnemies": 25,
       "maxEnemies": 30
     }
