@@ -37,7 +37,7 @@ export class WeaponActor extends GameActor {
   spawnBehavior?: string;
   size: Vector;
   childWeapon?: Weapon;
-  orbitDistanceScale = 1.1;
+  orbitDistanceScale = 0.65;
   spawnRotationOffsetDegrees = 0;
   fadeInOutDurationMs = 300;
   private lastOrbitOffset?: Vector;
@@ -251,7 +251,7 @@ export class WeaponActor extends GameActor {
       const t = toRadians(degreeScaledSeconds);
       // position us an appropriate distance from the source
       const dist =
-        this.instigator.width *
+        this.instigator.graphics.bounds.width *
         this.orbitDistanceScale *
         parameterizedFadeScale.x;
       // offset from our owner
