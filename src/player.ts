@@ -554,7 +554,9 @@ export class Player extends GameActor {
     }
 
     const healthbarCoords = engine.screen.worldToPageCoordinates(
-      this.pos.add(vec(-this.width / 2, this.height / 1.4)),
+      this.pos.add(
+        vec(-this.graphics.bounds.width / 3, this.graphics.bounds.height / 1.8),
+      ),
     );
     this.healthbarContainerElem.style.setProperty(
       "--pointer-x",
@@ -566,7 +568,7 @@ export class Player extends GameActor {
     );
     this.healthbarContainerElem.style.setProperty(
       "--width",
-      `${(this.width * (this.scene?.camera.zoom ?? 0.4)).toString()}px`,
+      `${(2 * (this.graphics.bounds.width / 3) * (this.scene?.camera.zoom ?? 0.4)).toString()}px`,
     );
 
     this.tryPickup();
