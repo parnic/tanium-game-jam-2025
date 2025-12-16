@@ -20,7 +20,7 @@
    <property name="name" value="purple"/>
   </properties>
   <objectgroup draworder="index" id="2">
-   <object id="1" type="collision" x="46" y="52" width="166" height="201"/>
+   <object id="1" type="collision" x="87" y="91" width="88" height="118"/>
   </objectgroup>
   <animation>
    <frame tileid="33" duration="120"/>
