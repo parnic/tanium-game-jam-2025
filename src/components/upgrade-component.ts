@@ -51,7 +51,7 @@ const RarityWeights = {
   // [UpgradeRarity.Common]: 0.5,
 };
 
-const RarityCSSClassMap = {
+export const RarityCSSClassMap = {
   [UpgradeRarity.Legendary]: "rarity-legendary",
   [UpgradeRarity.Epic]: "rarity-epic",
   [UpgradeRarity.Rare]: "rarity-rare",

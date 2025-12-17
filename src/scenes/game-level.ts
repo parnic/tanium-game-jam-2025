@@ -14,6 +14,10 @@ import {
   Vector,
   vec,
 } from "excalibur";
+import {
+  RarityCSSClassMap,
+  UpgradeRarity,
+} from "../components/upgrade-component";
 import type { XpComponent } from "../components/xp-component";
 import { Enemy } from "../enemy";
 import type { EnemyCorpse } from "../enemy-corpse";
@@ -296,10 +300,10 @@ export class GameLevel extends Scene {
     );
 
     const playerTiles = playerTileset?.getTilesByClassName("player");
-    for (const playerTile of playerTiles!) {
-      const characterData = Resources.CharacterData.data.find(
-        (d) => d.name === playerTile.properties.get("name"),
-      );
+    for (const characterData of Resources.CharacterData.data!) {
+      const playerTile = playerTiles!.find(
+        (t) => t.properties.get("name") === characterData.name,
+      )!;
       const weaponData = Resources.WeaponData.data.find(
         (w) => w.name === characterData?.startingWeapon,
       );
@@ -334,6 +338,14 @@ export class GameLevel extends Scene {
         ".starting-weapon-description",
       ) as HTMLElement;
       elemStartingWeaponDesc.innerText = weaponData?.description ?? "-error-";
+
+      const elemDifficulty = cloned.querySelector(".difficulty") as HTMLElement;
+      elemDifficulty.innerText = characterData?.difficulty ?? "-error-";
+      elemDifficulty.classList.remove(...Object.values(RarityCSSClassMap));
+      elemDifficulty.classList.add(
+        characterData?.difficultyClass ??
+          RarityCSSClassMap[UpgradeRarity.Uncommon],
+      );
 
       cloned.addEventListener("click", () => {
         this.onCharacterSelected(characterData!.name);

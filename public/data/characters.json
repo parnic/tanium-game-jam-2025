@@ -2,26 +2,36 @@
   {
     "name": "purple",
     "displayName": "Three-eye",
-    "startingWeapon": "rocket-small"
-  },
-  {
-    "name": "yellow",
-    "displayName": "Happy",
-    "startingWeapon": "orbiter"
+    "startingWeapon": "rocket-small",
+    "difficulty": "Easy",
+    "difficultyClass": "rarity-uncommon"
   },
   {
     "name": "pink",
     "displayName": "Cyclops",
-    "startingWeapon": "plane"
+    "startingWeapon": "plane",
+    "difficulty": "Easy",
+    "difficultyClass": "rarity-uncommon"
   },
   {
     "name": "green",
     "displayName": "Greenie",
-    "startingWeapon": "bullet-elongated"
+    "startingWeapon": "bullet-elongated",
+    "difficulty": "Medium",
+    "difficultyClass": "rarity-rare"
   },
   {
     "name": "tan",
     "displayName": "Cpt. Visor",
-    "startingWeapon": "rocket-big"
+    "startingWeapon": "rocket-big",
+    "difficulty": "Medium",
+    "difficultyClass": "rarity-rare"
+  },
+  {
+    "name": "yellow",
+    "displayName": "Happy",
+    "startingWeapon": "orbiter",
+    "difficulty": "Hard",
+    "difficultyClass": "rarity-epic"
   }
 ]

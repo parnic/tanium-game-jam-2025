@@ -46,6 +46,8 @@ export interface CharacterData {
   name: string;
   displayName: string;
   startingWeapon: string;
+  difficulty: string;
+  difficultyClass: string;
 }
 
 interface PlayerEvents {
