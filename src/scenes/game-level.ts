@@ -3,13 +3,14 @@ import {
   Actor,
   BoundingBox,
   clamp,
-  type DefaultLoader,
   type Engine,
-  type ExcaliburGraphicsContext,
+  EventEmitter,
+  GameEvent,
   Logger,
   lerp,
   Scene,
   type SceneActivationContext,
+  type SceneEvents,
   Vector,
   vec,
 } from "excalibur";
@@ -21,6 +22,7 @@ import { LevelExit } from "../exit";
 import { GameEngine } from "../game-engine";
 import { Gift } from "../gift";
 import { Player } from "../player";
+import { Resources } from "../resources";
 import { PerlinNoiseCameraStrategy } from "../strategy-noise";
 import {
   hideElement,
@@ -47,10 +49,22 @@ export interface LevelData {
   spawnTimings: WaveTimingsData[];
 }
 
+interface GameLevelEvents {
+  CharacterChosen: CharacterChosenEvent;
+}
+
+export class CharacterChosenEvent extends GameEvent<void> {}
+
+export const GameLevelEvents = {
+  CharacterChosen: "CharacterChosen",
+} as const;
+
 export const MaxOnScreenCorpses = 350;
 const MaxLivingWeaponActors = 75;
 
 export class GameLevel extends Scene {
+  public events = new EventEmitter<SceneEvents & GameLevelEvents>();
+
   checkEnemySpawnIntervalMs = 1000;
   lastEnemySpawnTime?: number;
   currentWave = 0;
@@ -71,7 +85,10 @@ export class GameLevel extends Scene {
   elemXpBar: HTMLElement;
   elemXpLabel: HTMLElement;
   elemPause: HTMLElement;
+  elemCharacterSelect: HTMLElement;
   totalElapsed = 0;
+  showCharacterSelectOnActivate = true;
+  chosenCharacter = "purple";
 
   constructor(level: TiledResource, data: LevelData) {
     super();
@@ -85,18 +102,14 @@ export class GameLevel extends Scene {
     this.elemXpBar = document.getElementById("xp-bar")!;
     this.elemXpLabel = document.getElementById("xp-label")!;
     this.elemPause = document.getElementById("pause-text")!;
+    this.elemCharacterSelect = document.getElementById("character-select")!;
   }
 
   private _screenResizeHandler = () => this.activateCameraStrategies();
 
   override onInitialize(engine: Engine): void {
-    // Scene.onInitialize is where we recommend you perform the composition for your game
-    // const pointerSystem = this.world.systemManager.get(PointerSystem);
-    // this.world.systemManager.removeSystem(pointerSystem!);
-
     this.tiledLevel.addToScene(this);
 
-    this.initializePlayer();
     this.initializeExit();
     this.initializeEnemies();
     this.initializeObjectives();
@@ -143,7 +156,7 @@ export class GameLevel extends Scene {
     this.elemKillCounter.innerText = `Kills: ${(this.player?.kills ?? 0).toLocaleString()}`;
   }
 
-  initializePlayer() {
+  protected initializePlayer() {
     const playerStartActor = this.tiledLevel
       .getEntitiesByClassName("playerStart")
       .at(0);
@@ -160,17 +173,20 @@ export class GameLevel extends Scene {
     );
 
     const playerTiles = playerTileset?.getTilesByClassName("player");
-    const chosenCharacter = "purple"; // todo: have user choose in ui
     const playerTile = playerTiles?.find(
-      (t) => t.properties.get("name") === chosenCharacter,
+      (t) => t.properties.get("name") === this.chosenCharacter,
     );
     if (!playerTile) {
       Logger.getInstance().error(
-        `Unable to spawn chosen player ${chosenCharacter} - no tile found with that name set.`,
+        `Unable to spawn chosen player ${this.chosenCharacter} - no tile found with that name set.`,
       );
       return;
     }
-    this.player = new Player(playerStartActor.pos, playerTile, chosenCharacter);
+    this.player = new Player(
+      playerStartActor.pos,
+      playerTile,
+      this.chosenCharacter,
+    );
     this.add(this.player);
 
     this.player.events.on("GiftCollected", (evt) => {
@@ -249,14 +265,96 @@ export class GameLevel extends Scene {
     });
   }
 
-  override onPreLoad(loader: DefaultLoader): void {
-    // Add any scene specific resources to load
+  override onActivate(context: SceneActivationContext<unknown>): void {
+    if (this.showCharacterSelectOnActivate) {
+      this.showCharacterSelect();
+    }
   }
 
-  override onActivate(context: SceneActivationContext<unknown>): void {
-    // Called when Excalibur transitions to this scene
-    // Only 1 scene is active at a time
+  showCharacterSelect() {
+    if (this.engine instanceof GameEngine) {
+      this.engine.togglePause(true);
+    }
 
+    const elemTemplate = this.elemCharacterSelect.querySelector(
+      ".template",
+    ) as HTMLElement;
+    const elemCharacterParent = this.elemCharacterSelect.querySelector(
+      ".character-list",
+    ) as HTMLElement;
+
+    for (let i = elemCharacterParent.children.length - 1; i >= 0; i--) {
+      const child = elemCharacterParent.children.item(i);
+      if (!child?.classList.contains("template")) {
+        child?.remove();
+      }
+    }
+
+    const characters = this.tiledLevel.getTilesetByName("characters");
+    const playerTileset = characters.find(
+      (ch) => ch.getTilesByClassName("player").length > 0,
+    );
+
+    const playerTiles = playerTileset?.getTilesByClassName("player");
+    for (const playerTile of playerTiles!) {
+      const characterData = Resources.CharacterData.data.find(
+        (d) => d.name === playerTile.properties.get("name"),
+      );
+      const weaponData = Resources.WeaponData.data.find(
+        (w) => w.name === characterData?.startingWeapon,
+      );
+
+      const sprite = playerTile.tileset.spritesheet.sprites.at(playerTile.id);
+
+      const prom = playerTile.tileset.spritesheet.getSpriteAsImage(
+        sprite!.sourceView.x / sprite!.sourceView.width,
+        sprite!.sourceView.y / sprite!.sourceView.height,
+      );
+
+      const cloned = elemTemplate.cloneNode(true) as HTMLElement;
+      cloned.classList.remove("template");
+
+      const elemName = cloned.querySelector(".name") as HTMLElement;
+      elemName.innerText = characterData?.displayName ?? "-error-";
+
+      const elemImg = cloned.querySelector(".img") as HTMLElement;
+      prom.then((v) => {
+        // should probably find a better way to do this...
+        v.width = 64;
+        v.height = 64;
+        elemImg.appendChild(v);
+      });
+
+      const elemStartingWeapon = cloned.querySelector(
+        ".starting-weapon",
+      ) as HTMLElement;
+      elemStartingWeapon.innerText = weaponData?.displayName ?? "-error-";
+
+      const elemStartingWeaponDesc = cloned.querySelector(
+        ".starting-weapon-description",
+      ) as HTMLElement;
+      elemStartingWeaponDesc.innerText = weaponData?.description ?? "-error-";
+
+      cloned.addEventListener("click", () => {
+        this.onCharacterSelected(characterData!.name);
+      });
+
+      unhideElement(cloned);
+      elemCharacterParent.appendChild(cloned);
+    }
+
+    unhideElement(this.elemCharacterSelect);
+  }
+
+  onCharacterSelected(name: string) {
+    if (this.engine instanceof GameEngine) {
+      this.engine.togglePause(false);
+    }
+
+    this.chosenCharacter = name;
+    this.initializePlayer();
+
+    hideElement(this.elemCharacterSelect);
     unhideElement(this.elemUIRoot);
 
     // set the camera to the player's position before making it elastic to avoid
@@ -264,9 +362,15 @@ export class GameLevel extends Scene {
     this.camera.pos = this.player!.pos;
     this.activateCameraStrategies();
     this.updateUI();
+
+    this.events.emit("CharacterChosen");
   }
 
   activateCameraStrategies() {
+    if (!this.player) {
+      return;
+    }
+
     this.camera.strategy.elasticToActor(this.player!, 0.15, 0.75);
 
     this.setScaledZoom();
@@ -371,8 +475,8 @@ export class GameLevel extends Scene {
   }
 
   override onPreUpdate(engine: Engine, elapsedMs: number): void {
-    // don't spawn any enemies or adjust the clock/waves after the player dies
-    if (this.player?.isKilled() === true) {
+    // don't spawn any enemies or adjust the clock/waves before a player is chosen or after the player dies
+    if (!this.player || this.player.isKilled() === true) {
       return;
     }
     if (engine instanceof GameEngine && (engine.playersOnly || engine.paused)) {
@@ -425,7 +529,7 @@ export class GameLevel extends Scene {
   }
 
   override onPostUpdate(engine: Engine, elapsedMs: number): void {
-    if (this.player?.isKilled()) {
+    if (!this.player || this.player.isKilled()) {
       return;
     }
 
@@ -436,14 +540,6 @@ export class GameLevel extends Scene {
       this.totalElapsed += elapsedMs;
     }
     this.updateUI();
-  }
-
-  override onPreDraw(ctx: ExcaliburGraphicsContext, elapsedMs: number): void {
-    // Called before Excalibur draws to the screen
-  }
-
-  override onPostDraw(ctx: ExcaliburGraphicsContext, elapsedMs: number): void {
-    // Called after Excalibur draws to the screen
   }
 
   spawnEnemy() {

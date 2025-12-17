@@ -19,13 +19,17 @@ export class TutorialScene extends GameLevel {
     "If you collect enough enemy remains, you might just be able to use them to improve your weapons...",
   ];
 
-  private readonly _seenTutorialKey = "seenTutorial";
+  private static _seenTutorialKey = "seenTutorial";
 
   private _tutorialElement: HTMLElement;
   private _showTutorial: boolean = true;
   private _lastTutorialShownTime?: number;
 
   private _onClickHandler = () => this.goNextTutorialPhase();
+
+  static shouldShow() {
+    return localStorage.getItem(TutorialScene._seenTutorialKey) !== "true";
+  }
 
   constructor(
     map: TiledResource,
@@ -34,14 +38,10 @@ export class TutorialScene extends GameLevel {
   ) {
     super(map, data);
 
+    this.showCharacterSelectOnActivate = false;
     this._tutorialElement = document.getElementById("tutorial")!;
 
-    if (config?.showTutorial !== undefined) {
-      this._showTutorial = config.showTutorial;
-    }
-    if (localStorage.getItem(this._seenTutorialKey)) {
-      this._showTutorial = false;
-    }
+    this._showTutorial = config?.showTutorial ?? TutorialScene.shouldShow();
   }
 
   override onActivate(context: SceneActivationContext<unknown>): void {
@@ -55,7 +55,8 @@ export class TutorialScene extends GameLevel {
 
     document.addEventListener("click", this._onClickHandler);
     this.engine.input.pointers.primary.on("down", this._onClickHandler);
-    this.player?.events.on("ButtonPressed", this._onClickHandler);
+    this.engine.input.keyboard.on("press", this._onClickHandler);
+    // need to add gamepad button handling here
 
     this.goNextTutorialPhase();
   }
@@ -71,9 +72,11 @@ export class TutorialScene extends GameLevel {
 
     document.removeEventListener("click", this._onClickHandler);
     this.engine.input.pointers.primary.off("down", this._onClickHandler);
-    this.player?.events.off("ButtonPressed", this._onClickHandler);
+    this.engine.input.keyboard.off("press", this._onClickHandler);
 
-    localStorage.setItem(this._seenTutorialKey, "true");
+    localStorage.setItem(TutorialScene._seenTutorialKey, "true");
+
+    this.showCharacterSelect();
   }
 
   private goNextTutorialPhase() {

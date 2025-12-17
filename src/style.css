@@ -137,6 +137,10 @@ body {
   font-size: 10vw !important;
 }
 
+.font-italic {
+  font-style: italic;
+}
+
 .w-100 {
   width: 100%;
 }
@@ -345,4 +349,25 @@ body {
   flex-flow: row wrap;
   justify-content: center;
   align-self: center;
+}
+
+.character-list {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: center;
+  gap: 0.3rem;
+}
+
+.character-select-container {
+  width: 14rem;
+}
+
+@media (max-width: 800px) {
+  .character-select-container {
+    width: 9.6rem;
+  }
+
+  #character-select {
+    width: 90%;
+  }
 }

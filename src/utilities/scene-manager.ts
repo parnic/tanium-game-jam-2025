@@ -162,7 +162,7 @@ export async function goToScene(
     Audio.playMusic();
   }
 
-  if (nextSceneData.type === SceneType.Tutorial) {
+  if (nextSceneData.type === SceneType.Tutorial && TutorialScene.shouldShow()) {
     nextScene = new TutorialScene(nextSceneData.map, nextSceneData.levelData, {
       showTutorial: !currentSceneData,
     });
@@ -175,29 +175,31 @@ export async function goToScene(
   await engine.goToScene(nextSceneData.name);
   engine.removeScene("transition");
 
-  nextScene.player?.on("postkill", () => {
-    const elemText = elemRoundEnd.querySelector(
-      "#round-end-text",
-    )! as HTMLElement;
-    elemText.classList.remove("success", "failure");
+  nextScene.events.on("CharacterChosen", () => {
+    nextScene.player!.on("postkill", () => {
+      const elemText = elemRoundEnd.querySelector(
+        "#round-end-text",
+      )! as HTMLElement;
+      elemText.classList.remove("success", "failure");
 
-    if (nextScene.player?.reachedExit) {
-      elemText.classList.add("success");
-      elemText.innerText = "YOU WON";
-    } else {
-      elemText.classList.add("failure");
-      elemText.innerText = "YOU DIED";
-    }
+      if (nextScene.player?.reachedExit) {
+        elemText.classList.add("success");
+        elemText.innerText = "YOU WON";
+      } else {
+        elemText.classList.add("failure");
+        elemText.innerText = "YOU DIED";
+      }
 
-    populateStats(
-      elemRoundEnd.querySelector(".stats") as HTMLElement,
-      nextScene,
-    );
+      populateStats(
+        elemRoundEnd.querySelector(".stats") as HTMLElement,
+        nextScene,
+      );
 
-    html.showElement(elemRoundEnd);
+      html.showElement(elemRoundEnd);
 
-    restartShownTime = engine.clock.now();
-    nextScene.player?.events.on("ButtonPressed", restartClickHandler);
+      restartShownTime = engine.clock.now();
+      nextScene.player?.events.on("ButtonPressed", restartClickHandler);
+    });
   });
 }
 

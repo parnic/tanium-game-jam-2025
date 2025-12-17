@@ -44,6 +44,7 @@ import { Weapon, type WeaponData } from "./weapon";
 
 export interface CharacterData {
   name: string;
+  displayName: string;
   startingWeapon: string;
 }
 

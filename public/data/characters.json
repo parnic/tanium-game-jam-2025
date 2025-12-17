@@ -1,6 +1,27 @@
 [
   {
     "name": "purple",
+    "displayName": "Three-eye",
     "startingWeapon": "rocket-small"
+  },
+  {
+    "name": "yellow",
+    "displayName": "Happy",
+    "startingWeapon": "orbiter"
+  },
+  {
+    "name": "pink",
+    "displayName": "Cyclops",
+    "startingWeapon": "plane"
+  },
+  {
+    "name": "green",
+    "displayName": "Greenie",
+    "startingWeapon": "bullet-elongated"
+  },
+  {
+    "name": "tan",
+    "displayName": "Cpt. Visor",
+    "startingWeapon": "rocket-big"
   }
 ]
