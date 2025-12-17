@@ -35,6 +35,7 @@ import { LevelExit } from "./exit";
 import { GameActor, TiledCollision } from "./game-actor";
 import { GameEngine } from "./game-engine";
 import { Gift } from "./gift";
+import { GoHomeIndicator } from "./go-home-indicator";
 import { Resources } from "./resources";
 import { GameLevel } from "./scenes/game-level";
 import type { PerlinNoiseCameraStrategy } from "./strategy-noise";
@@ -651,8 +652,8 @@ export class Player extends GameActor {
     );
 
     if (this.giftsCollected === this.giftsNeeded) {
-      // todo: hint player to return to ship
-      this.logger.info("All gifts collected! Get outta here, you rascal.");
+      const exitIndicator = new GoHomeIndicator();
+      this.scene?.add(exitIndicator);
     }
   }
 
