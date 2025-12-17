@@ -29,6 +29,4 @@ await game.start(loader).then(async () => {
 
   const firstScene = SceneManager.getFirstSceneData();
   await SceneManager.goToScene(firstScene, game);
-
-  Audio.playMusic();
 });

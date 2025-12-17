@@ -3,7 +3,7 @@ import { SfxResources } from "../resources";
 import { rand } from "./math";
 
 let bgmOrder: number[] = [];
-let currBgmOrderIdx = 0;
+let currBgmOrderIdx = -1;
 
 function currBgmIdx(): number {
   return bgmOrder[currBgmOrderIdx % bgmOrder.length];
@@ -38,6 +38,10 @@ export function init() {
   for (const bgm of SfxResources.bgm) {
     bgm.on("playbackend", () => playMusic());
   }
+}
+
+export function isMusicStarted() {
+  return currBgmOrderIdx >= 0;
 }
 
 export function playSound(snd: Sound, volume: number) {

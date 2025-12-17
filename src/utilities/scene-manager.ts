@@ -4,6 +4,7 @@ import { LevelDataResources, LevelResources } from "../resources";
 import { GameLevel, type LevelData } from "../scenes/game-level";
 import { TransitionScene } from "../scenes/transition-scene";
 import { TutorialScene } from "../scenes/tutorial-scene";
+import * as Audio from "../utilities/audio";
 import { Weapon } from "../weapon";
 import * as html from "./html";
 
@@ -156,6 +157,10 @@ export async function goToScene(
   }
 
   let nextScene: GameLevel;
+
+  if (!Audio.isMusicStarted()) {
+    Audio.playMusic();
+  }
 
   if (nextSceneData.type === SceneType.Tutorial) {
     nextScene = new TutorialScene(nextSceneData.map, nextSceneData.levelData, {
