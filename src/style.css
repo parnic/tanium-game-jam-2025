@@ -121,6 +121,10 @@ body {
   -webkit-text-stroke: 0.3vw black;
 }
 
+.outline-3px {
+  -webkit-text-stroke: 3px black;
+}
+
 .outline-01 {
   -webkit-text-stroke: 0.1vw black;
 }
@@ -133,8 +137,18 @@ body {
   font-size: 3vw !important;
 }
 
-.fs-10 {
-  font-size: 10vw !important;
+.fs-36 {
+  font-size: 36pt !important;
+}
+
+.fs-96 {
+  font-size: 96pt !important;
+}
+
+@media (max-width: 800px) {
+  .fs-96 {
+    font-size: 10vw !important;
+  }
 }
 
 .font-italic {
@@ -170,15 +184,15 @@ body {
 }
 
 .bg-red {
-  background-color: red;
+  background-color: #d7191c;
 }
 
 .failure {
-  color: red;
+  color: #d7191c;
 }
 
 .success {
-  color: green;
+  color: #22bb33;
 }
 
 .z-100 {
@@ -360,6 +374,16 @@ body {
 
 .character-select-container {
   width: 14rem;
+}
+
+@media (max-width: 1280px) {
+  .character-select-container {
+    width: 9.6rem;
+  }
+
+  #character-select {
+    width: 80%;
+  }
 }
 
 @media (max-width: 800px) {
