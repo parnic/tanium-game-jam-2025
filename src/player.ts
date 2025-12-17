@@ -71,18 +71,6 @@ export const PlayerEvents = {
   GiftCollected: "GiftCollected",
 } as const;
 
-// Actors are the main unit of composition you'll likely use, anything that you want to draw and move around the screen
-// is likely built with an actor
-
-// They contain a bunch of useful components that you might use
-// actor.transform
-// actor.motion
-// actor.graphics
-// actor.body
-// actor.collider
-// actor.actions
-// actor.pointer
-
 export class Player extends GameActor {
   public events = new EventEmitter<ActorEvents & PlayerEvents>();
 
@@ -634,24 +622,6 @@ export class Player extends GameActor {
     }
   }
 
-  override onPreCollisionResolve(
-    self: Collider,
-    other: Collider,
-    side: Side,
-    contact: CollisionContact,
-  ): void {
-    // Called before a collision is resolved, if you want to opt out of this specific collision call contact.cancel()
-  }
-
-  override onPostCollisionResolve(
-    self: Collider,
-    other: Collider,
-    side: Side,
-    contact: CollisionContact,
-  ): void {
-    // Called every time a collision is resolved and overlap is solved
-  }
-
   override onCollisionStart(
     self: Collider,
     other: Collider,
@@ -684,15 +654,6 @@ export class Player extends GameActor {
       // todo: hint player to return to ship
       this.logger.info("All gifts collected! Get outta here, you rascal.");
     }
-  }
-
-  override onCollisionEnd(
-    self: Collider,
-    other: Collider,
-    side: Side,
-    lastContact: CollisionContact,
-  ): void {
-    // Called when a pair of objects separates
   }
 
   onHitByEnemy(enemy: Enemy): void {
