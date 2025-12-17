@@ -17,5 +17,7 @@ export class GameEngine extends Engine {
     if (this.currentScene instanceof GameLevel) {
       this.currentScene.onPaused(this.paused, showPauseUI);
     }
+
+    this.timescale = this.paused ? 0 : 1;
   }
 }

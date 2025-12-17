@@ -69,10 +69,6 @@ export class OffScreenIndicator extends ScreenElement {
     this.addChild(this.distanceLabelActor);
   }
 
-  onPaused(paused: boolean) {
-    // stub
-  }
-
   override onPostUpdate(engine: Engine, elapsed: number): void {
     if (!(this.scene instanceof GameLevel)) {
       return;

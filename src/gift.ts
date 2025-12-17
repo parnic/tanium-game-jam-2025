@@ -71,12 +71,6 @@ export class Gift extends GameActor {
     this.offScreen.kill();
   }
 
-  override onPaused(paused: boolean): void {
-    super.onPaused(paused);
-
-    this.offScreen.onPaused(paused);
-  }
-
   override onPostUpdate(engine: Engine, elapsedMs: number): void {
     if (engine instanceof GameEngine && (engine.playersOnly || engine.paused)) {
       return;

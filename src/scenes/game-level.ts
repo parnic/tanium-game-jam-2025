@@ -438,18 +438,6 @@ export class GameLevel extends Scene {
   onPaused(paused: boolean, showPauseUI?: boolean) {
     this.player?.onPaused(paused);
 
-    for (const enemy of this.enemies) {
-      if (enemy.isKilled()) {
-        continue;
-      }
-
-      enemy.onPaused(paused);
-    }
-
-    for (const gift of this.gifts) {
-      gift.onPaused(paused);
-    }
-
     if (showPauseUI) {
       showOrHideElement(this.elemPause, paused);
     }

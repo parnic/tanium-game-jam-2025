@@ -542,9 +542,7 @@ export class Player extends GameActor {
     gamepad.off("button");
   }
 
-  override onPaused(paused: boolean): void {
-    super.onPaused(paused);
-
+  onPaused(paused: boolean): void {
     this.lastGamepadAxis = Vector.Zero;
     this.pointerMoveSource = undefined;
   }

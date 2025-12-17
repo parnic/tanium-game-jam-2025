@@ -181,13 +181,6 @@ export abstract class GameActor extends Actor {
     this.lastDamagedByPlayer = false;
   }
 
-  onPaused(paused: boolean) {
-    if (paused) {
-      this.vel = Vector.Zero;
-      this.walk?.pause();
-    }
-  }
-
   override onPostUpdate(engine: Engine, elapsedMs: number): void {
     this.aliveTime += elapsedMs;
     this.currMove.clampMagnitude(1);
