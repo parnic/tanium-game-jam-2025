@@ -184,10 +184,10 @@ export async function goToScene(
 
       if (nextScene.player?.reachedExit) {
         elemText.classList.add("success");
-        elemText.innerText = "YOU WON";
+        elemText.innerText = "CHRISTMAS IS SAVED!";
       } else {
         elemText.classList.add("failure");
-        elemText.innerText = "YOU DIED";
+        elemText.innerText = "NO PRESENTS FOR CHRISTMAS :(";
       }
 
       populateStats(
