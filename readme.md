@@ -6,7 +6,7 @@ All code and content built 100% by real humans. No form of AI, generative or oth
 
 ## Play
 
-To play, visit <https://parnic.github.io/tanium-game-jam-2025>
+To play, visit <https://parnic.github.io/tanium-game-jam-2025> or <https://parnic.itch.io/gift-roundup>
 
 To play locally:
 
