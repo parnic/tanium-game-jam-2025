@@ -56,7 +56,17 @@ interface PlayerEvents {
   GiftCollected: GiftCollectedEvent;
 }
 
-export class ButtonPressedEvent extends GameEvent<void> {}
+export class ButtonPressedEvent extends GameEvent<void> {
+  key?: Keys;
+  button?: Buttons;
+
+  constructor(args?: { key?: Keys; button?: Buttons }) {
+    super();
+
+    this.key = args?.key;
+    this.button = args?.button;
+  }
+}
 
 export class GiftCollectedEvent extends GameEvent<void> {
   gift: Gift;
@@ -264,7 +274,10 @@ export class Player extends GameActor {
     });
 
     engine.input.keyboard.on("press", (evt) => {
-      this.events.emit("ButtonPressed", new ButtonPressedEvent());
+      this.events.emit(
+        "ButtonPressed",
+        new ButtonPressedEvent({ key: evt.key }),
+      );
 
       if (this.keypressHistory.length === 5) {
         this.keypressHistory.shift();
@@ -493,7 +506,10 @@ export class Player extends GameActor {
     });
 
     gamepad.on("button", (evt) => {
-      this.events.emit("ButtonPressed", new ButtonPressedEvent());
+      this.events.emit(
+        "ButtonPressed",
+        new ButtonPressedEvent({ button: evt.button }),
+      );
 
       // claim input from this gamepad
       this.lastUsedGamepad = gamepad;

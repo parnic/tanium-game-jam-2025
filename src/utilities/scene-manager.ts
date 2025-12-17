@@ -1,5 +1,5 @@
 import type { TiledResource } from "@excaliburjs/plugin-tiled";
-import type { Engine } from "excalibur";
+import { Buttons, type Engine, Keys } from "excalibur";
 import { LevelDataResources, LevelResources } from "../resources";
 import { GameLevel, type LevelData } from "../scenes/game-level";
 import { TransitionScene } from "../scenes/transition-scene";
@@ -198,7 +198,17 @@ export async function goToScene(
       html.showElement(elemRoundEnd);
 
       restartShownTime = engine.clock.now();
-      nextScene.player?.events.on("ButtonPressed", restartClickHandler);
+      nextScene.player?.events.on("ButtonPressed", (evt) => {
+        if (
+          evt.key === Keys.Enter ||
+          evt.key === Keys.Space ||
+          evt.key === Keys.Esc ||
+          evt.button === Buttons.Start ||
+          evt.button === Buttons.Face1
+        ) {
+          restartClickHandler();
+        }
+      });
     });
   });
 }
