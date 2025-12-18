@@ -27,8 +27,8 @@
     "name": "bullet-circle",
     "displayName": "Minigun",
     "description": "Rapid shots in front of you",
-    "baseSpeed": 1.5,
-    "baseDamage": 0.25,
+    "baseSpeed": 2.0,
+    "baseDamage": 0.35,
     "baseSpawnIntervalMs": 170,
     "spawnBehavior": "ownerFacing"
   },
@@ -36,7 +36,7 @@
     "name": "orbiter",
     "displayName": "Shield bash",
     "description": "An orbiting bludgeon",
-    "baseSpeed": 0.6,
+    "baseSpeed": 1.1,
     "baseDamage": 1,
     "baseSpawnIntervalMs": 4250,
     "baseLifetime": 3333,
@@ -60,12 +60,12 @@
     "name": "fire",
     "displayName": "Burn trap",
     "description": "Leaves a painful trail",
-    "baseSpeed": 1,
+    "baseSpeed": 0.9,
     "baseDamage": 0.42,
     "baseSpawnIntervalMs": 850,
     "baseLifetime": 2250,
     "spawnBehavior": "ownerLocation",
-    "baseScale": 1.5
+    "baseScale": 2
   },
   {
     "name": "plane",
