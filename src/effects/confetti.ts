@@ -153,7 +153,7 @@ function initDrawingCanvas() {
   ctx = effectsCanvas.getContext("2d");
 
   createExploder();
-  createParticles();
+  // createParticles();
 }
 
 function createExploder() {
@@ -176,11 +176,13 @@ function update() {
     case 1:
       exploder.update();
       break;
-    case 2:
-      particles.forEach((p) => {
-        p.update();
-      });
-      break;
+  }
+
+  for (let i = particles.length - 1; i >= 0; i--) {
+    particles[i].update();
+    if (particles[i].complete) {
+      particles.splice(i, 1);
+    }
   }
 }
 
@@ -214,6 +216,7 @@ function loop() {
   draw();
 
   if (phase === 1) {
+    createParticles();
     phase = 2;
   } else if (checkParticlesComplete()) {
     resetParticles();
@@ -225,8 +228,8 @@ function loop() {
 function resetParticles() {
   phase = 0;
   exploder.reset();
-  particles.length = 0;
-  createParticles();
+  // particles.length = 0;
+  // createParticles();
 }
 
 function checkParticlesComplete() {
