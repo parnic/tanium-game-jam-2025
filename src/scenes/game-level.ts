@@ -25,6 +25,7 @@ import { EnemyData } from "../enemy-data";
 import { LevelExit } from "../exit";
 import { GameEngine } from "../game-engine";
 import { Gift } from "../gift";
+import { Pickup } from "../pickup";
 import { Player } from "../player";
 import { Resources } from "../resources";
 import { PerlinNoiseCameraStrategy } from "../strategy-noise";
@@ -117,6 +118,7 @@ export class GameLevel extends Scene {
     this.initializeExit();
     this.initializeEnemies();
     this.initializeObjectives();
+    this.initializePickups();
     this.initializeCamera();
 
     engine.screen.events.on("resize", this._screenResizeHandler);
@@ -267,6 +269,33 @@ export class GameLevel extends Scene {
       );
       this.gifts.push(giftActor);
       this.add(giftActor);
+    });
+  }
+
+  initializePickups() {
+    const pickupSpawnLocs = this.tiledLevel.getObjectsByClassName("pickup");
+    const pickupTileset = this.tiledLevel
+      .getTilesetByName("holiday-rts-pack")
+      .find((pickup) => pickup.getTilesByClassName("pickup"));
+
+    pickupSpawnLocs.forEach((spawnPoint) => {
+      const type = spawnPoint.properties.get("type");
+      if (type !== "xp" && type !== "health") {
+        Logger.getInstance().error(
+          `Unable to spawn pickup of type ${type}: unsupported type`,
+        );
+        return;
+      }
+
+      const pickupActor = new Pickup(
+        vec(spawnPoint.x, spawnPoint.y),
+        type,
+        pickupTileset?.tiles.find(
+          (tile) =>
+            tile.properties.get("type") === spawnPoint.properties.get("type"),
+        ),
+      );
+      this.add(pickupActor);
     });
   }
 

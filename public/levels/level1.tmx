@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" class="level1" orientation="orthogonal" renderorder="right-down" width="432" height="368" tilewidth="128" tileheight="128" infinite="1" nextlayerid="5" nextobjectid="33">
+<map version="1.10" tiledversion="1.11.2" class="level1" orientation="orthogonal" renderorder="right-down" width="432" height="368" tilewidth="128" tileheight="128" infinite="1" nextlayerid="5" nextobjectid="57">
  <properties>
   <property name="enemies" value="mouse-gray,snail,slime,block-green,slug,fly,worm-yellow,spike-green,mouse-flame,bee,spike,worm-blue"/>
   <property name="num-gifts-to-spawn" type="int" value="5"/>
@@ -9,6 +9,7 @@
  <tileset firstgid="129" source="world-double.tsx"/>
  <tileset firstgid="669" source="holiday-pack.tsx"/>
  <tileset firstgid="729" source="tower-defense-tilesheet.tsx"/>
+ <tileset firstgid="1028" source="holiday-rts-pack.tsx"/>
  <objectgroup id="2" name="Collision">
   <object id="13" type="mapbarrier" x="0" y="0" width="128" height="47104">
    <properties>
@@ -71,6 +72,144 @@
   <object id="32" name="ship" type="exit" x="30336" y="22388">
    <properties>
     <property name="collisiontype" value="PreventCollision"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="33" name="health1" type="pickup" x="34744" y="21320">
+   <properties>
+    <property name="type" value="health"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="35" name="health2" type="pickup" x="40560" y="16784">
+   <properties>
+    <property name="type" value="health"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="36" name="health3" type="pickup" x="31216" y="10416">
+   <properties>
+    <property name="type" value="health"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="37" name="health4" type="pickup" x="20848" y="6016">
+   <properties>
+    <property name="type" value="health"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="38" name="health5" type="pickup" x="15072" y="12336">
+   <properties>
+    <property name="type" value="health"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="39" name="health6" type="pickup" x="11248" y="17456">
+   <properties>
+    <property name="type" value="health"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="40" name="health7" type="pickup" x="21792" y="21904">
+   <properties>
+    <property name="type" value="health"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="41" name="health8" type="pickup" x="12240" y="27680">
+   <properties>
+    <property name="type" value="health"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="42" name="health9" type="pickup" x="18672" y="34672">
+   <properties>
+    <property name="type" value="health"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="43" name="health10" type="pickup" x="10224" y="39472">
+   <properties>
+    <property name="type" value="health"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="44" name="health11" type="pickup" x="26448" y="41152">
+   <properties>
+    <property name="type" value="health"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="45" name="health12" type="pickup" x="35312" y="36880">
+   <properties>
+    <property name="type" value="health"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="46" name="health13" type="pickup" x="45104" y="28400">
+   <properties>
+    <property name="type" value="health"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="47" name="health14" type="pickup" x="43808" y="7520">
+   <properties>
+    <property name="type" value="health"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="48" name="attract1" type="pickup" x="36192" y="26720">
+   <properties>
+    <property name="type" value="xp"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="49" name="attract2" type="pickup" x="38496" y="8128">
+   <properties>
+    <property name="type" value="xp"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="50" name="attract3" type="pickup" x="15264" y="6304">
+   <properties>
+    <property name="type" value="xp"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="51" name="attract4" type="pickup" x="7648" y="21312">
+   <properties>
+    <property name="type" value="xp"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="52" name="attract5" type="pickup" x="24992" y="28480">
+   <properties>
+    <property name="type" value="xp"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="53" name="attract6" type="pickup" x="38368" y="40160">
+   <properties>
+    <property name="type" value="xp"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="54" name="attract7" type="pickup" x="46240" y="16640">
+   <properties>
+    <property name="type" value="xp"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="55" name="attract8" type="pickup" x="17888" y="17632">
+   <properties>
+    <property name="type" value="xp"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="56" name="attract9" type="pickup" x="26208" y="34528">
+   <properties>
+    <property name="type" value="xp"/>
    </properties>
    <point/>
   </object>

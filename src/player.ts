@@ -7,6 +7,7 @@ import {
   type Collider,
   type CollisionContact,
   CollisionType,
+  Color,
   type Engine,
   EventEmitter,
   GameEvent,
@@ -36,6 +37,7 @@ import { GameActor, TiledCollision } from "./game-actor";
 import { GameEngine } from "./game-engine";
 import { Gift } from "./gift";
 import { GoHomeIndicator } from "./go-home-indicator";
+import { Pickup } from "./pickup";
 import { Resources } from "./resources";
 import { GameLevel } from "./scenes/game-level";
 import type { PerlinNoiseCameraStrategy } from "./strategy-noise";
@@ -341,11 +343,7 @@ export class Player extends GameActor {
 
         case Keys.P:
           if (engine.input.keyboard.isHeld(Keys.ShiftLeft)) {
-            (this.scene as GameLevel).xpPickups.forEach((p) => {
-              if (p) {
-                p.setPickedUpBy(this, false);
-              }
-            });
+            this.pickUpAllXp();
           }
           break;
 
@@ -673,6 +671,14 @@ export class Player extends GameActor {
     }
   }
 
+  pickUpAllXp() {
+    (this.scene as GameLevel).xpPickups.forEach((p) => {
+      if (p) {
+        p.setPickedUpBy(this, false);
+      }
+    });
+  }
+
   override onCollisionStart(
     self: Collider,
     other: Collider,
@@ -686,6 +692,8 @@ export class Player extends GameActor {
         this.reachedExit = true;
         this.kill();
       }
+    } else if (other.owner instanceof Pickup) {
+      this.onPickedUpPickup(other.owner);
     }
   }
 
@@ -705,6 +713,18 @@ export class Player extends GameActor {
       const exitIndicator = new GoHomeIndicator();
       this.scene?.add(exitIndicator);
     }
+  }
+
+  private onPickedUpPickup(pickup: Pickup) {
+    if (pickup.type === "health") {
+      this.health++;
+      this.actions.flash(Color.Green, 150);
+    } else if (pickup.type === "xp") {
+      this.pickUpAllXp();
+    }
+
+    pickup.kill();
+    this.cameraShake?.induceStress(5);
   }
 
   onHitByEnemy(enemy: Enemy): void {
