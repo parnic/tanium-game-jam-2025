@@ -117,6 +117,7 @@ export class GameLevel extends Scene {
     this.initializeExit();
     this.initializeEnemies();
     this.initializeObjectives();
+    this.initializeCamera();
 
     engine.screen.events.on("resize", this._screenResizeHandler);
   }
@@ -267,6 +268,16 @@ export class GameLevel extends Scene {
       this.gifts.push(giftActor);
       this.add(giftActor);
     });
+  }
+
+  initializeCamera() {
+    const playerStartActor = this.tiledLevel
+      .getEntitiesByClassName("playerStart")
+      .at(0);
+    if (playerStartActor && playerStartActor instanceof Actor) {
+      this.camera.pos = playerStartActor.pos;
+    }
+    this.setScaledZoom();
   }
 
   override onActivate(context: SceneActivationContext<unknown>): void {
