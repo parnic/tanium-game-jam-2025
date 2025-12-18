@@ -203,6 +203,7 @@ export async function goToScene(
           evt.key === Keys.Enter ||
           evt.key === Keys.Space ||
           evt.key === Keys.Esc ||
+          evt.key === Keys.NumEnter ||
           evt.button === Buttons.Start ||
           evt.button === Buttons.Face1
         ) {
