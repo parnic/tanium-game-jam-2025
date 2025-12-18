@@ -691,6 +691,7 @@ export class Player extends GameActor {
       if (this.giftsCollected === this.giftsNeeded) {
         this.reachedExit = true;
         this.kill();
+        Audio.playVictorySfx();
       }
     } else if (other.owner instanceof Pickup) {
       this.onPickedUpPickup(other.owner);

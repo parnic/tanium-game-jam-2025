@@ -79,6 +79,11 @@ export const SfxResources = {
       "./sfx/pmsfx_UIClick_UI_Click_Coin_Metalic_2_PMSFXZAPSPLAT_ZSUIEX.mp3",
     ),
   ],
+  victory: [
+    new Sound(
+      "./sfx/zapsplat_multimedia_game_tone_win_bonus_success_tone_warm_chime_short_tail_92922.mp3",
+    ),
+  ],
 };
 
 export const loader = new Loader(Object.values(LevelResources));

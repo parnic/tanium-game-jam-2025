@@ -21,6 +21,7 @@ const pickupHealthSfxVolume = 1.0;
 const pickupXpSfxVolume = 0.4;
 const playerTakeDamageSfxVolume = 0.8;
 const selectUpgradeSfxVolume = 0.8;
+const victorySfxVolume = 1.0;
 
 let _masterVolumeMultiplier = 1.0;
 export function masterVolumeMultiplier(): number {
@@ -108,4 +109,6 @@ export function playSelectUpgradeSfx() {
   playSound(rand.pickOne(SfxResources.selectUpgrade), selectUpgradeSfxVolume);
 }
 
-// todo: find a "you won" sound
+export function playVictorySfx() {
+  playSound(rand.pickOne(SfxResources.victory), victorySfxVolume);
+}
