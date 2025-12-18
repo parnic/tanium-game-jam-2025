@@ -719,6 +719,7 @@ export class Player extends GameActor {
     if (pickup.type === "health") {
       this.health++;
       this.actions.flash(Color.Green, 150);
+      Audio.playPickupHealthSfx();
     } else if (pickup.type === "xp") {
       this.pickUpAllXp();
     }

@@ -63,6 +63,11 @@ export const SfxResources = {
       "./sfx/zapsplat_multimedia_game_sound_win_gold_coins_or_treasure_hit_twinkle_74544.mp3",
     ),
   ],
+  pickupHealth: [
+    new Sound(
+      "./sfx/zapsplat_human_eat_crunch_boiled_sweet_candy_002_21206.mp3",
+    ),
+  ],
   pickupXp: [
     new Sound("./sfx/select_003.ogg"),
     new Sound("./sfx/select_004.ogg"),
