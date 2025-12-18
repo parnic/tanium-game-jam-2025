@@ -1,10 +1,10 @@
 export const config = {
   ZIndexBackground: -20,
-  ZIndexExit: -10,
+  ZIndexWeapon: -10,
   ZIndexEnemyCorpse: -5,
+  ZIndexExit: -3,
   ZIndexCharacter: 0,
   ZIndexEnemy: 10,
-  ZIndexWeapon: 20,
   ZIndexScreenElements: 100,
 
   SpeedPickup: 3,
