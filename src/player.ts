@@ -367,8 +367,12 @@ export class Player extends GameActor {
           break;
 
         case Keys.O:
-          if (engine.input.keyboard.isHeld(Keys.ShiftLeft)) {
-            this.onPickedUpGift((this.scene as GameLevel).gifts[0]);
+          if (
+            engine.input.keyboard.isHeld(Keys.ShiftLeft) &&
+            this.scene instanceof GameLevel &&
+            this.scene.gifts.length > 0
+          ) {
+            this.onPickedUpGift(this.scene.gifts[0]);
           }
           break;
 
