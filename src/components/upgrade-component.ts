@@ -398,7 +398,7 @@ export class UpgradeComponent extends Component {
 
         let labelAmount =
           upgradeData.amount > 1
-            ? upgradeData.amount.toPrecision(2)
+            ? (Math.floor(upgradeData.amount * 10) / 10).toFixed(1)
             : upgradeData.amount.toPrecision(1);
         if (upgradeData.meta?.units === "%") {
           labelAmount = Math.round(upgradeData.amount * 100).toString();
