@@ -459,6 +459,7 @@ export class GameLevel extends Scene {
 
     const noiseStrat = new PerlinNoiseCameraStrategy(this.player!);
     this.player!.cameraShake = noiseStrat;
+    this.exit!.cameraShake = noiseStrat;
     this.camera.addStrategy(noiseStrat);
   }
 

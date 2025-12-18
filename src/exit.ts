@@ -1,7 +1,9 @@
 import {
   CollisionType,
   type Engine,
+  lerp,
   type Material,
+  remap,
   type Shader,
   Sprite,
   Vector,
@@ -13,10 +15,13 @@ import { createOutlineMaterial } from "./materials/outline";
 import { OffScreenIndicator } from "./off-screen-indicator";
 import { Resources } from "./resources";
 import { GameLevel } from "./scenes/game-level";
+import type { PerlinNoiseCameraStrategy } from "./strategy-noise";
 
 export class LevelExit extends GameActor {
   offScreen: OffScreenIndicator;
   outlineMat?: Material;
+  cameraShake?: PerlinNoiseCameraStrategy;
+  startPos: Vector;
   exited = false;
 
   constructor(pos: Vector) {
@@ -34,6 +39,7 @@ export class LevelExit extends GameActor {
     this.staticImage = sprite;
     // todo: this needs some work...real ugly right now
     this.offScreen = new OffScreenIndicator(this, undefined, vec(0.2, 0.2));
+    this.startPos = pos;
   }
 
   override onInitialize(engine: Engine): void {
@@ -82,5 +88,16 @@ export class LevelExit extends GameActor {
     }
 
     this.acc = this.acc.add(Vector.Up.scale(3));
+
+    if (this.cameraShake) {
+      const distSq = this.pos.squareDistance(this.startPos);
+      const zoomScaled = distSq * (this.scene?.camera.zoom ?? 1);
+      const stress = lerp(
+        10,
+        0,
+        remap(0, engine.screen.viewport.height ** 2, 0, 1, zoomScaled),
+      );
+      this.cameraShake.induceStress(stress);
+    }
   }
 }
