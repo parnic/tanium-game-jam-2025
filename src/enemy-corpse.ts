@@ -1,4 +1,3 @@
-import type { Tile } from "@excaliburjs/plugin-tiled";
 import {
   type Collider,
   type CollisionContact,
@@ -14,6 +13,7 @@ import {
   vec,
 } from "excalibur";
 import { config } from "./config";
+import type { Enemy } from "./enemy";
 import { GameActor } from "./game-actor";
 import { GameEngine } from "./game-engine";
 import { createGleamMaterial } from "./materials/gleam";
@@ -31,6 +31,8 @@ export class EnemyCorpse extends GameActor {
   private glintIntervalMs = 4000;
   private pickupAnimTimeMs = 250;
   private shrinkAnimTimeMs = 200;
+  pushbackDirection?: Vector;
+  pushbackDurationMs = 100;
 
   public get pickedUpBy(): Player | undefined {
     return this._pickedUpBy;
@@ -45,34 +47,31 @@ export class EnemyCorpse extends GameActor {
     }
   }
 
-  constructor(
-    inPos: Vector,
-    corpseTile: Tile,
-    width: number,
-    height: number,
-    enemyName: string,
-    flipHorizontal: boolean,
-    xpVal: number,
-  ) {
+  constructor(enemy: Enemy) {
     super({
-      name: `${enemyName}-corpse`,
-      pos: inPos,
-      width,
-      height,
+      name: `${enemy.name}-corpse`,
+      pos: enemy.pos,
+      width: enemy.def.textureWidth,
+      height: enemy.def.textureHeight,
       z: config.ZIndexEnemyCorpse,
       collisionType: CollisionType.PreventCollision,
     });
 
-    this.staticImage = corpseTile.tileset.spritesheet.sprites.at(corpseTile.id);
+    this.staticImage = enemy.def.corpseTile?.tileset.spritesheet.sprites.at(
+      enemy.def.corpseTile.id,
+    );
     if (!this.staticImage) {
       this.logger.error(
-        `Unable to find sprite for enemy corpse id ${corpseTile.id}`,
+        `Unable to find sprite for enemy corpse id ${enemy.def.corpseTile?.id.toString() ?? "-null-"}`,
       );
     }
-    this.graphics.flipHorizontal = flipHorizontal;
+    this.graphics.flipHorizontal = enemy.graphics.flipHorizontal;
     this._speed = config.SpeedPickup;
-    this.xpVal = xpVal;
+    this.xpVal = enemy.difficulty;
     this.shouldFaceMoveDir = false;
+    this.pushbackDirection = enemy.pushbackDirection;
+    this.pushbackDurationMs = enemy.pushbackDurationMs;
+    this._speed = enemy.speed;
   }
 
   onInitialize(engine: Engine): void {
@@ -116,6 +115,14 @@ export class EnemyCorpse extends GameActor {
       shrinkTargetScale,
       clamp(0, 1, this.aliveTime / this.shrinkAnimTimeMs),
     );
+
+    if (
+      !this.pickedUpBy &&
+      this.pushbackDirection &&
+      this.pushbackDurationMs > this.aliveTime
+    ) {
+      this.currMove = this.pushbackDirection;
+    }
   }
 
   override onPostUpdate(engine: Engine, elapsedMs: number): void {
@@ -123,6 +130,8 @@ export class EnemyCorpse extends GameActor {
       super.onPostUpdate(engine, elapsedMs);
       return;
     }
+
+    this._speed = 1.5;
 
     if (engine instanceof GameEngine && engine.paused) {
       this.currMove = Vector.Zero;

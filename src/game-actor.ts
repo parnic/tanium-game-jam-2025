@@ -200,6 +200,7 @@ export abstract class GameActor extends Actor {
 
   takeDamage(
     damage: number,
+    damageDirection: Vector,
     damagedByPlayer?: boolean,
     bypassInvulnWindow?: boolean,
   ): void {

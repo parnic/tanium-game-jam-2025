@@ -318,7 +318,7 @@ export class Player extends GameActor {
             this.scene instanceof GameLevel
           ) {
             this.scene.enemies.forEach((e) => {
-              e.takeDamage(e.health, true);
+              e.takeDamage(e.health, Vector.Zero, true);
             });
           }
           break;
@@ -730,7 +730,7 @@ export class Player extends GameActor {
   onHitByEnemy(enemy: Enemy): void {
     Audio.playPlayerTakeDamageSfx();
 
-    this.takeDamage(1);
+    this.takeDamage(1, Vector.Zero);
     this.cameraShake?.induceStress(4);
   }
 

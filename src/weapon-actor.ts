@@ -327,7 +327,11 @@ export class WeaponActor extends GameActor {
       // these collision events will only fire every Physics.sleepEpsilon time, so we
       // automatically get a "cooldown" period of sorts where a weapon won't hit the
       // same enemy every single frame they overlap.
-      other.owner.takeDamage(this.damage, this.instigator instanceof Player);
+      other.owner.takeDamage(
+        this.damage,
+        other.owner.pos.sub(this.pos),
+        this.instigator instanceof Player,
+      );
       weapon.damageDealt += this.damage;
 
       if (other.owner.isKilled()) {

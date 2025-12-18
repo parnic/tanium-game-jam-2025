@@ -22,6 +22,12 @@ export class Enemy extends GameActor {
   def: EnemyData;
   gameScene?: GameLevel;
   difficulty: number;
+
+  pushbackDirection?: Vector;
+  pushbackDurationMs = 100;
+  private pushbackStartTimeMs?: number;
+  private pushbackRecoveryDurationMs = 100;
+
   static enemyCounter = new Uint32Array([1]);
 
   constructor(inPos: Vector, def: EnemyData, difficulty: number) {
@@ -58,15 +64,31 @@ export class Enemy extends GameActor {
       return;
     }
 
-    const playerDead = this.gameScene?.player?.isKilled() === true;
-    const from = playerDead
-      ? (this.gameScene?.player?.pos ?? Vector.Zero)
-      : this.pos;
-    const to = playerDead
-      ? this.pos
-      : (this.gameScene?.player?.pos ?? Vector.Zero);
+    if (
+      this.pushbackStartTimeMs &&
+      this.pushbackDirection &&
+      this.pushbackStartTimeMs + this.pushbackDurationMs > this.aliveTime
+    ) {
+      this.currMove = this.pushbackDirection;
+    } else if (
+      this.pushbackStartTimeMs &&
+      this.pushbackStartTimeMs +
+        this.pushbackDurationMs +
+        this.pushbackRecoveryDurationMs >
+        this.aliveTime
+    ) {
+      this.currMove = Vector.Zero;
+    } else {
+      const playerDead = this.gameScene?.player?.isKilled() === true;
+      const from = playerDead
+        ? (this.gameScene?.player?.pos ?? Vector.Zero)
+        : this.pos;
+      const to = playerDead
+        ? this.pos
+        : (this.gameScene?.player?.pos ?? Vector.Zero);
 
-    this.currMove = to.sub(from);
+      this.currMove = to.sub(from);
+    }
 
     super.onPreUpdate(engine, elapsedMs);
   }
@@ -98,8 +120,25 @@ export class Enemy extends GameActor {
       // todo: we probably don't want to kill every enemy type that hits the player, e.g. the minibosses.
       // those should probably stop moving for a second or so.
       other.owner.onHitByEnemy(this);
-      this.takeDamage(this.health, false, true);
+      this.takeDamage(this.health, Vector.Zero, false, true);
     }
+  }
+
+  override takeDamage(
+    damage: number,
+    damageDirection: Vector,
+    damagedByPlayer?: boolean,
+    bypassInvulnWindow?: boolean,
+  ): void {
+    this.pushbackDirection = damageDirection;
+    this.pushbackStartTimeMs = this.aliveTime;
+
+    super.takeDamage(
+      damage,
+      damageDirection,
+      damagedByPlayer,
+      bypassInvulnWindow,
+    );
   }
 
   override onPostKill(scene: Scene): void {
@@ -153,15 +192,7 @@ export class Enemy extends GameActor {
       }
     }
 
-    const corpse = new EnemyCorpse(
-      this.pos,
-      this.def.corpseTile,
-      this.def.textureWidth,
-      this.def.textureHeight,
-      this.name,
-      this.graphics.flipHorizontal,
-      this.difficulty,
-    );
+    const corpse = new EnemyCorpse(this);
     scene.add(corpse);
 
     if (nextAvailableIdx >= 0) {
