@@ -723,6 +723,7 @@ export class Player extends GameActor {
     } else if (other.owner instanceof LevelExit) {
       if (this.giftsCollected === this.giftsNeeded) {
         this.reachedExit = true;
+        other.owner.onPlayerExited();
         this.kill();
         Audio.playVictorySfx();
 

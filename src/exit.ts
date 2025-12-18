@@ -4,7 +4,7 @@ import {
   type Material,
   type Shader,
   Sprite,
-  type Vector,
+  Vector,
   vec,
 } from "excalibur";
 import { config } from "./config";
@@ -17,6 +17,7 @@ import { GameLevel } from "./scenes/game-level";
 export class LevelExit extends GameActor {
   offScreen: OffScreenIndicator;
   outlineMat?: Material;
+  exited = false;
 
   constructor(pos: Vector) {
     const sprite = Sprite.from(Resources.ExitImage);
@@ -68,5 +69,18 @@ export class LevelExit extends GameActor {
     if (player.giftsCollected >= player.giftsNeeded) {
       this.graphics.material = this.outlineMat!;
     }
+  }
+
+  onPlayerExited() {
+    this.exited = true;
+  }
+
+  override onPostUpdate(engine: Engine, elapsedMs: number): void {
+    if (!this.exited) {
+      super.onPostUpdate(engine, elapsedMs);
+      return;
+    }
+
+    this.acc = this.acc.add(Vector.Up.scale(3));
   }
 }
