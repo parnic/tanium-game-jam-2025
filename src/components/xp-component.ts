@@ -6,12 +6,14 @@ interface XpEvents {
 }
 
 export class LeveledUpEvent extends GameEvent<void> {
-  level: number;
+  prevLevel: number;
+  newLevel: number;
 
-  constructor(level: number) {
+  constructor(prevLevel: number, newLevel: number) {
     super();
 
-    this.level = level;
+    this.prevLevel = prevLevel;
+    this.newLevel = newLevel;
   }
 }
 
@@ -106,10 +108,12 @@ export class XpComponent extends Component {
     this._currXp += xp;
     this.events.emit(XpEvents.GainedXp, new GainedXpEvent(xp));
 
+    const oldLevel = this.level;
     const newLevel = this.levelForXp(this._currXp);
-    for (let l = this.level + 1; l <= newLevel; l++) {
-      this._level = l;
-      this.events.emit(XpEvents.LeveledUp, new LeveledUpEvent(l));
-    }
+    this._level = newLevel;
+    this.events.emit(
+      XpEvents.LeveledUp,
+      new LeveledUpEvent(oldLevel, newLevel),
+    );
   }
 }

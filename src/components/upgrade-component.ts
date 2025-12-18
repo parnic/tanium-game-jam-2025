@@ -296,16 +296,16 @@ export class UpgradeComponent extends Component {
         Logger.getInstance().info(`Choosing upgrade ${elem.id}`);
         hideElement(this.elemUpgrade);
 
+        if (this.owner?.scene?.engine instanceof GameEngine) {
+          this.owner.scene.engine.togglePause(false);
+        }
+
         const idx = Number((elem as HTMLElement).dataset.idx);
 
         this.events.emit(
           UpgradeEvents.UpgradeChosen,
           new UpgradeChosenEvent(this.currentUpgrades[idx]),
         );
-
-        if (this.owner?.scene?.engine instanceof GameEngine) {
-          this.owner.scene.engine.togglePause(false);
-        }
       });
     });
   }

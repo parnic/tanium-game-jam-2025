@@ -96,6 +96,7 @@ export class Player extends GameActor {
   giftsNeeded = 0;
   kills = 0;
   xpComponent: XpComponent;
+  numUpgradesToChoose = 0;
   upgradeComponent: UpgradeComponent;
   weapons: Weapon[] = [];
   maxWeapons = 3;
@@ -186,6 +187,7 @@ export class Player extends GameActor {
 
     this.scene.updateXpBar(this.xpComponent);
 
+    this.numUpgradesToChoose += evt.newLevel - evt.prevLevel;
     this.chooseAndPresentUpgrades();
   }
 
@@ -199,6 +201,11 @@ export class Player extends GameActor {
       weapon?.applyUpgrade(evt.upgrade);
     } else if (evt.upgrade.weapon) {
       this.giveWeapon(evt.upgrade.weapon);
+    }
+
+    this.numUpgradesToChoose--;
+    if (this.numUpgradesToChoose > 0) {
+      this.chooseAndPresentUpgrades();
     }
   }
 
