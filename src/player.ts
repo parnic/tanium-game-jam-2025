@@ -348,6 +348,15 @@ export class Player extends GameActor {
           }
           break;
 
+        case Keys.X:
+          if (engine.input.keyboard.isHeld(Keys.ShiftLeft)) {
+            this.xpComponent.giveXp(
+              this.xpComponent.xpRequiredForNextLevel -
+                this.xpComponent.xpRequiredForLevel(this.xpComponent.level - 1),
+            );
+          }
+          break;
+
         case Keys.O:
           if (engine.input.keyboard.isHeld(Keys.ShiftLeft)) {
             this.onPickedUpGift((this.scene as GameLevel).gifts[0]);
@@ -408,6 +417,24 @@ export class Player extends GameActor {
                 this.scene.lastEnemySpawnTime - 30 * 1000,
               );
             }
+          }
+          break;
+
+        case Keys.Digit1:
+          if (engine.input.keyboard.isHeld(Keys.ShiftLeft)) {
+            this._speed += 0.2;
+          }
+          break;
+
+        case Keys.Digit2:
+          if (engine.input.keyboard.isHeld(Keys.ShiftLeft)) {
+            this._speed -= 0.2;
+          }
+          break;
+
+        case Keys.Digit3:
+          if (engine.input.keyboard.isHeld(Keys.ShiftLeft)) {
+            this._speed = 0.6;
           }
           break;
       }
