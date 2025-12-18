@@ -14,9 +14,9 @@ export class TutorialScene extends GameLevel {
   private _tutorialPhase = -1;
 
   private readonly _tutorialSteps = [
-    "The gifts you're supposed to deliver to Santa were scattered in the crash! Move with W/A/S/D, arrow keys, the left joystick of a gamepad, or tap-/click-and-drag with a virtual joystick.",
-    "Collect the gifts scattered around the area while dealing with the native fauna. Get back to your ship once you've collected them all!",
-    "If you collect enough enemy remains, you might just be able to use them to improve your weapons...",
+    `The gifts you're supposed to deliver to Santa were scattered in the crash! Move with <span class="rarity-uncommon">W/A/S/D</span>, <span class="rarity-uncommon">arrow keys</span>, the <span class="rarity-uncommon">left joystick</span> of a gamepad, or <span class="rarity-uncommon">tap-/click-and-drag</span> with a virtual joystick.`,
+    `<span class="rarity-uncommon">Collect the gifts</span> scattered around the area while dealing with the native fauna. <span class="rarity-uncommon">Get back to your ship</span> once you've collected them all!`,
+    `If you <span class="rarity-uncommon">collect enough enemy remains</span>, you might just be able to use them to <span class="rarity-uncommon">improve your weapons</span>...`,
   ];
 
   private static _seenTutorialKey = "seenTutorial";
@@ -93,8 +93,10 @@ export class TutorialScene extends GameLevel {
     this._tutorialPhase++;
 
     if (this._tutorialSteps.length > this._tutorialPhase) {
-      this._tutorialElement.textContent =
-        this._tutorialSteps[this._tutorialPhase];
+      const elemContent = this._tutorialElement.querySelector(
+        ".content",
+      ) as HTMLElement;
+      elemContent.innerHTML = this._tutorialSteps[this._tutorialPhase];
       html.unhideElement(this._tutorialElement);
     } else {
       this.onTutorialComplete();

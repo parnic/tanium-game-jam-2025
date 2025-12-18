@@ -151,6 +151,28 @@ body {
   }
 }
 
+#tutorial {
+  font-size: 30pt;
+}
+
+@media (max-width: 1280px) {
+  #tutorial {
+    font-size: 28pt;
+  }
+}
+
+@media (max-width: 1024px) {
+  #tutorial {
+    font-size: 4vw;
+  }
+}
+
+@media (max-width: 800px) {
+  #tutorial {
+    font-size: 5vw;
+  }
+}
+
 .font-italic {
   font-style: italic;
 }
