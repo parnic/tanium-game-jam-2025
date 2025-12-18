@@ -1,9 +1,12 @@
-import type { Sound } from "excalibur";
+import { Logger, type Sound } from "excalibur";
 import { SfxResources } from "../resources";
 import { rand } from "./math";
 
 let bgmOrder: number[] = [];
 let currBgmOrderIdx = -1;
+let playingSounds = 0;
+
+const maxPlayingSounds = 8;
 
 function currBgmIdx(): number {
   return bgmOrder[currBgmOrderIdx % bgmOrder.length];
@@ -44,9 +47,20 @@ export function isMusicStarted() {
   return currBgmOrderIdx >= 0;
 }
 
-export function playSound(snd: Sound, volume: number) {
+export function playSound(snd: Sound, volume: number, bypassLimit?: boolean) {
+  if (!bypassLimit && playingSounds >= maxPlayingSounds) {
+    Logger.getInstance().warn(
+      `Not playing sound ${snd.path}, currently playing max number of sounds (${maxPlayingSounds})`,
+    );
+    return;
+  }
+
   snd.volume = volume * masterVolumeMultiplier();
   snd.play();
+  playingSounds++;
+  snd.once("playbackend", () => {
+    playingSounds--;
+  });
 }
 
 export function playEasterEggSfx() {
@@ -67,7 +81,7 @@ export function playLevelUpSfx() {
 
 export function playMusic() {
   currBgmOrderIdx++;
-  playSound(SfxResources.bgm[currBgmIdx()], musicVolume);
+  playSound(SfxResources.bgm[currBgmIdx()], musicVolume, true);
 }
 
 export function playPickupGiftSfx() {
