@@ -725,6 +725,10 @@ export class Player extends GameActor {
         this.reachedExit = true;
         this.kill();
         Audio.playVictorySfx();
+
+        if (this.scene instanceof GameLevel) {
+          this.scene.onPlayerReachedExit();
+        }
       }
     } else if (other.owner instanceof Pickup) {
       this.onPickedUpPickup(other.owner);

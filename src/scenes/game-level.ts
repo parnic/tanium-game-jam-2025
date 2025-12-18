@@ -19,6 +19,7 @@ import {
   UpgradeRarity,
 } from "../components/upgrade-component";
 import type { XpComponent } from "../components/xp-component";
+import { triggerConfetti } from "../effects/confetti";
 import { Enemy } from "../enemy";
 import type { EnemyCorpse } from "../enemy-corpse";
 import { EnemyData } from "../enemy-data";
@@ -95,6 +96,8 @@ export class GameLevel extends Scene {
   totalElapsed = 0;
   showCharacterSelectOnActivate = true;
   chosenCharacter = "purple";
+  lastConfettiSpawnTime?: number;
+  confettiSpawnIntervalMs = 1500;
 
   constructor(level: TiledResource, data: LevelData) {
     super();
@@ -517,6 +520,15 @@ export class GameLevel extends Scene {
   }
 
   override onPreUpdate(engine: Engine, elapsedMs: number): void {
+    if (
+      this.lastConfettiSpawnTime &&
+      // use engine clock since it doesn't stop when the player wins
+      engine.clock.now() >=
+        this.lastConfettiSpawnTime + this.confettiSpawnIntervalMs
+    ) {
+      this.spawnVictoryConfetti();
+    }
+
     // don't spawn any enemies or adjust the clock/waves before a player is chosen or after the player dies
     if (!this.player || this.player.isKilled() === true) {
       return;
@@ -682,5 +694,15 @@ export class GameLevel extends Scene {
     }
 
     existing.splice(idx, 1);
+  }
+
+  onPlayerReachedExit() {
+    this.spawnVictoryConfetti();
+  }
+
+  spawnVictoryConfetti() {
+    triggerConfetti();
+    // use engine clock since it doesn't stop when the player wins
+    this.lastConfettiSpawnTime = this.engine.clock.now();
   }
 }
