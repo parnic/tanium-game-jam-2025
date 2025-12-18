@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" class="level1" orientation="orthogonal" renderorder="right-down" width="432" height="368" tilewidth="128" tileheight="128" infinite="1" nextlayerid="5" nextobjectid="57">
+<map version="1.10" tiledversion="1.11.2" class="level1" orientation="orthogonal" renderorder="right-down" width="432" height="368" tilewidth="128" tileheight="128" infinite="1" nextlayerid="5" nextobjectid="69">
  <properties>
   <property name="enemies" value="mouse-gray,snail,slime,block-green,slug,fly,worm-yellow,spike-green,mouse-flame,bee,spike,worm-blue"/>
   <property name="num-gifts-to-spawn" type="int" value="5"/>
@@ -210,6 +210,72 @@
   <object id="56" name="attract9" type="pickup" x="26208" y="34528">
    <properties>
     <property name="type" value="xp"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="57" name="speed1" type="pickup" x="37713.3" y="30853.2">
+   <properties>
+    <property name="type" value="speed"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="58" name="speed2" type="pickup" x="47372" y="23037.5">
+   <properties>
+    <property name="type" value="speed"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="60" name="speed3" type="pickup" x="35221.8" y="11535.8">
+   <properties>
+    <property name="type" value="speed"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="61" name="speed4" type="pickup" x="26798.9" y="11111.1">
+   <properties>
+    <property name="type" value="speed"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="62" name="speed5" type="pickup" x="22116.4" y="16851.9">
+   <properties>
+    <property name="type" value="speed"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="63" name="speed6" type="pickup" x="13545" y="31957.7">
+   <properties>
+    <property name="type" value="speed"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="64" name="speed7" type="pickup" x="15767.2" y="40502.6">
+   <properties>
+    <property name="type" value="speed"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="65" name="speed8" type="pickup" x="17116.4" y="8227.51">
+   <properties>
+    <property name="type" value="speed"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="66" name="speed9" type="pickup" x="30079.4" y="36481.5">
+   <properties>
+    <property name="type" value="speed"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="67" name="speed10" type="pickup" x="23783.1" y="24021.2">
+   <properties>
+    <property name="type" value="speed"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="68" name="speed11" type="pickup" x="14709" y="19973.5">
+   <properties>
+    <property name="type" value="speed"/>
    </properties>
    <point/>
   </object>

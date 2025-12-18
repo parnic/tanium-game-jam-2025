@@ -17,4 +17,9 @@
    <object id="1" type="collision" x="38" y="18" width="54" height="92"/>
   </objectgroup>
  </tile>
+ <tile id="12" type="pickup">
+  <properties>
+   <property name="type" value="speed"/>
+  </properties>
+ </tile>
 </tileset>

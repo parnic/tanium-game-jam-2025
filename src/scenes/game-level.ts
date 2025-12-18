@@ -281,7 +281,7 @@ export class GameLevel extends Scene {
 
     pickupSpawnLocs.forEach((spawnPoint) => {
       const type = spawnPoint.properties.get("type");
-      if (type !== "xp" && type !== "health") {
+      if (type !== "xp" && type !== "health" && type !== "speed") {
         Logger.getInstance().error(
           `Unable to spawn pickup of type ${type}: unsupported type`,
         );

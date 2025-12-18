@@ -11,9 +11,9 @@ import { createOutlineMaterial } from "./materials/outline";
 export class Pickup extends GameActor {
   static numPickups = 0;
 
-  type: "xp" | "health";
+  type: "xp" | "health" | "speed";
 
-  constructor(pos: Vector, type: "xp" | "health", tile?: Tile) {
+  constructor(pos: Vector, type: "xp" | "health" | "speed", tile?: Tile) {
     super({
       name: `pickup-${type}`,
       pos: pos,

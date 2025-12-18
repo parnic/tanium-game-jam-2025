@@ -105,6 +105,10 @@ export class Player extends GameActor {
   pickupDistanceSq = 250 * 250;
   characterData?: CharacterData;
   reachedExit = false;
+  baseSpeed = 0.6;
+  speedBoostStartMs?: number;
+  speedBoostDurationMs = 5000;
+  speedBoostScale = 1.8;
 
   healthbarContainerElem: HTMLElement;
   healthbarElem: HTMLElement;
@@ -133,7 +137,7 @@ export class Player extends GameActor {
     }
 
     this.invulnerabilityWindowMs = 300;
-    this._speed = 0.6;
+    this._speed = this.baseSpeed;
     this.tile = tile;
     this._spriteFacing =
       (this.tile.properties.get("facing") as number) < 0
@@ -439,7 +443,7 @@ export class Player extends GameActor {
 
         case Keys.Digit3:
           if (engine.input.keyboard.isHeld(Keys.ShiftLeft)) {
-            this._speed = 0.6;
+            this._speed = this.baseSpeed;
           }
           break;
       }
@@ -588,6 +592,13 @@ export class Player extends GameActor {
 
   override onPreUpdate(engine: Engine, elapsedMs: number): void {
     super.onPreUpdate(engine, elapsedMs);
+
+    if (
+      this.speedBoostStartMs &&
+      this.aliveTime > this.speedBoostStartMs + this.speedBoostDurationMs
+    ) {
+      this._speed = this.baseSpeed;
+    }
   }
 
   override onPostUpdate(engine: Engine, elapsedMs: number): void {
@@ -745,6 +756,9 @@ export class Player extends GameActor {
       Audio.playPickupHealthSfx();
     } else if (pickup.type === "xp") {
       this.pickUpAllXp();
+    } else if (pickup.type === "speed") {
+      this._speed = this.baseSpeed * this.speedBoostScale;
+      this.speedBoostStartMs = this.aliveTime;
     }
 
     if (this.scene instanceof GameLevel) {
