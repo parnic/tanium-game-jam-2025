@@ -4,11 +4,14 @@ import {
   type CollisionContact,
   CollisionType,
   Color,
+  clamp,
   type Engine,
   lerp,
+  lerpVector,
   type Shader,
   type Side,
   Vector,
+  vec,
 } from "excalibur";
 import { config } from "./config";
 import { GameActor } from "./game-actor";
@@ -16,6 +19,8 @@ import { GameEngine } from "./game-engine";
 import { createGleamMaterial } from "./materials/gleam";
 import type { Player } from "./player";
 import { GameLevel } from "./scenes/game-level";
+
+const shrinkTargetScale = vec(0.75, 0.75);
 
 export class EnemyCorpse extends GameActor {
   private _pickedUpBy?: Player;
@@ -25,6 +30,7 @@ export class EnemyCorpse extends GameActor {
   private lastGlintTime = 0;
   private glintIntervalMs = 4000;
   private pickupAnimTimeMs = 250;
+  private shrinkAnimTimeMs = 200;
 
   public get pickedUpBy(): Player | undefined {
     return this._pickedUpBy;
@@ -104,6 +110,12 @@ export class EnemyCorpse extends GameActor {
         s.trySetUniformFloat("u_glint_trigger", currentTime / 1000.0);
       });
     }
+
+    this.scale = lerpVector(
+      Vector.One,
+      shrinkTargetScale,
+      clamp(0, 1, this.aliveTime / this.shrinkAnimTimeMs),
+    );
   }
 
   override onPostUpdate(engine: Engine, elapsedMs: number): void {
