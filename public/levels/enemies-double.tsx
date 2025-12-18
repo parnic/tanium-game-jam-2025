@@ -190,8 +190,8 @@
    <property name="corpse-id" type="int" value="3"/>
    <property name="difficulty" type="float" value="1"/>
    <property name="facing" type="int" value="-1"/>
-   <property name="name" value="mouse-flame"/>
    <property name="health-mult" type="float" value="3"/>
+   <property name="name" value="mouse-flame"/>
    <property name="speed" type="float" value="0.25"/>
   </properties>
   <objectgroup draworder="index" id="2">
@@ -235,8 +235,9 @@
    <property name="corpse-id" type="int" value="31"/>
    <property name="difficulty" type="float" value="10"/>
    <property name="facing" type="int" value="-1"/>
+   <property name="health-mult" type="float" value="4"/>
    <property name="name" value="spike"/>
-   <property name="speed" type="float" value="0.28"/>
+   <property name="speed" type="float" value="0.5"/>
   </properties>
   <objectgroup draworder="index" id="2">
    <object id="1" type="collision" x="3" y="3" width="122" height="122"/>

@@ -23,6 +23,18 @@
     {
       "timeSeconds": 180,
       "difficulty": 4
+    },
+    {
+      "timeSeconds": 210,
+      "difficulty": 4
+    },
+    {
+      "timeSeconds": 240,
+      "difficulty": 4
+    },
+    {
+      "timeSeconds": 240,
+      "difficulty": 4
     }
   ],
   "spawnTimings": [
@@ -53,14 +65,32 @@
     {
       "wave": 5,
       "allowedEnemies": ["slime", "block-green", "bee"],
-      "minEnemies": 15,
+      "minEnemies": 22,
       "maxEnemies": 30
     },
     {
       "wave": 6,
       "allowedEnemies": ["slime", "block-green", "bee"],
-      "minEnemies": 25,
-      "maxEnemies": 30
+      "minEnemies": 29,
+      "maxEnemies": 40
+    },
+    {
+      "wave": 7,
+      "allowedEnemies": ["slime", "block-green", "bee", "spike"],
+      "minEnemies": 35,
+      "maxEnemies": 50
+    },
+    {
+      "wave": 8,
+      "allowedEnemies": ["slime", "block-green", "bee", "spike", "mouse-flame"],
+      "minEnemies": 45,
+      "maxEnemies": 60
+    },
+    {
+      "wave": 9,
+      "allowedEnemies": ["slime", "block-green", "bee", "spike", "mouse-flame"],
+      "minEnemies": 65,
+      "maxEnemies": 90
     }
   ]
 }
