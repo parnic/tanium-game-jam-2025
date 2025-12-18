@@ -81,6 +81,7 @@ export class GameLevel extends Scene {
   enemyData: EnemyData[] = [];
   enemies: Enemy[] = [];
   gifts: Gift[] = [];
+  levelPassives: Pickup[] = [];
   projectiles = new Map<string, WeaponActor[]>();
   xpPickups: (EnemyCorpse | undefined)[] = [];
   elemUIRoot: HTMLElement;
@@ -295,6 +296,7 @@ export class GameLevel extends Scene {
             tile.properties.get("type") === spawnPoint.properties.get("type"),
         ),
       );
+      this.levelPassives.push(pickupActor);
       this.add(pickupActor);
     });
   }

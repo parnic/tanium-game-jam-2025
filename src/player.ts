@@ -669,6 +669,28 @@ export class Player extends GameActor {
         pickup.setPickedUpBy(this);
       }
     }
+
+    for (let i = 0; i < this.scene.levelPassives.length; i++) {
+      const pickup = this.scene.levelPassives.at(i);
+      if (!pickup || pickup.isKilled()) {
+        continue;
+      }
+
+      if (this.pos.squareDistance(pickup.pos) <= this.pickupDistanceSq) {
+        this.onPickedUpPickup(pickup);
+      }
+    }
+
+    for (let i = 0; i < this.scene.gifts.length; i++) {
+      const gift = this.scene.gifts.at(i);
+      if (!gift || gift.isKilled()) {
+        continue;
+      }
+
+      if (this.pos.squareDistance(gift.pos) <= this.pickupDistanceSq) {
+        this.onPickedUpGift(gift);
+      }
+    }
   }
 
   pickUpAllXp() {
@@ -723,6 +745,13 @@ export class Player extends GameActor {
       Audio.playPickupHealthSfx();
     } else if (pickup.type === "xp") {
       this.pickUpAllXp();
+    }
+
+    if (this.scene instanceof GameLevel) {
+      const idx = this.scene.levelPassives.indexOf(pickup);
+      if (idx >= 0) {
+        this.scene.levelPassives.splice(idx, 1);
+      }
     }
 
     pickup.kill();
