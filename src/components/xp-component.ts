@@ -110,10 +110,12 @@ export class XpComponent extends Component {
 
     const oldLevel = this.level;
     const newLevel = this.levelForXp(this._currXp);
-    this._level = newLevel;
-    this.events.emit(
-      XpEvents.LeveledUp,
-      new LeveledUpEvent(oldLevel, newLevel),
-    );
+    if (newLevel > oldLevel) {
+      this._level = newLevel;
+      this.events.emit(
+        XpEvents.LeveledUp,
+        new LeveledUpEvent(oldLevel, newLevel),
+      );
+    }
   }
 }
