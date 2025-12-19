@@ -3,7 +3,8 @@ import {
   CollisionType,
   type Engine,
   type Shader,
-  type Vector,
+  Vector,
+  vec,
 } from "excalibur";
 import { GameActor, TiledCollision } from "./game-actor";
 import { createOutlineMaterial } from "./materials/outline";
@@ -14,9 +15,16 @@ export class Pickup extends GameActor {
   type: "xp" | "health" | "speed";
 
   constructor(pos: Vector, type: "xp" | "health" | "speed", tile?: Tile) {
+    const scale =
+      type === "health"
+        ? Vector.One
+        : type === "xp"
+          ? vec(1.2, 1.2)
+          : vec(2, 2);
     super({
       name: `pickup-${type}`,
       pos: pos,
+      scale: scale,
       width: tile?.tileset.tileWidth,
       height: tile?.tileset.tileHeight,
       collisionType: CollisionType.Passive,
