@@ -113,23 +113,23 @@ const UpgradeValues: UpgradeAttributeRarityRange[] = [
       // },
       {
         rarity: UpgradeRarity.Uncommon,
-        min: 0.04,
-        max: 0.07,
-      },
-      {
-        rarity: UpgradeRarity.Rare,
-        min: 0.06,
+        min: 0.08,
         max: 0.1,
       },
       {
+        rarity: UpgradeRarity.Rare,
+        min: 0.12,
+        max: 0.18,
+      },
+      {
         rarity: UpgradeRarity.Epic,
-        min: 0.15,
+        min: 0.19,
         max: 0.25,
       },
       {
         rarity: UpgradeRarity.Legendary,
-        min: 0.2,
-        max: 0.35,
+        min: 0.25,
+        max: 0.3,
       },
     ],
   },
