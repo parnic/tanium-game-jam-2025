@@ -422,7 +422,19 @@ export class Weapon extends Entity {
       // this.amount = upgrade.amount;
       this.damage = upgrade.damage;
       // this.intervalMs = upgrade.intervalMs;
-      // this.lifetimeMs = upgrade.lifetimeMs;
+
+      // take the same relative upgrade to lifetime
+      if (
+        this.lifetimeMs &&
+        upgrade.lifetimeMs &&
+        upgrade.definition.baseLifetime &&
+        this.definition.baseLifetime
+      ) {
+        const upgradeAmount =
+          upgrade.lifetimeMs - upgrade.definition.baseLifetime;
+        this.lifetimeMs += upgradeAmount;
+      }
+
       this.size = (this.definition.baseScale ?? 1) * upgrade.size;
       // this.speed = upgrade.speed;
     }
