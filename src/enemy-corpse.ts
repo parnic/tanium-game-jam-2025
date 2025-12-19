@@ -77,8 +77,6 @@ export class EnemyCorpse extends GameActor {
   onInitialize(engine: Engine): void {
     super.onInitialize(engine);
 
-    // todo: squish the corpse in the opposite direction of the hit they took, knock them back
-    // in the same direction, reset both and render as grayscale after they hit the "ground"
     this.actions.flash(Color.White, 150).callMethod(() => {
       this.graphics.material = createGleamMaterial(engine);
       this.graphics.material?.update((s: Shader) => {
