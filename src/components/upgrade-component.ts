@@ -135,7 +135,7 @@ const UpgradeValues: UpgradeAttributeRarityRange[] = [
   },
   {
     attribute: UpgradeAttribute.Interval,
-    units: "s", // todo: reconsider. this scale leads to some weapons dropping to a 0 interval really quickly and becoming massively overpowered.
+    units: "%",
     values: [
       // {
       //   rarity: UpgradeRarity.Common,
@@ -144,23 +144,23 @@ const UpgradeValues: UpgradeAttributeRarityRange[] = [
       // },
       {
         rarity: UpgradeRarity.Uncommon,
-        min: -0.1,
-        max: -0.15,
+        min: -0.03,
+        max: -0.05,
       },
       {
         rarity: UpgradeRarity.Rare,
-        min: -0.15,
-        max: -0.2,
+        min: -0.05,
+        max: -0.07,
       },
       {
         rarity: UpgradeRarity.Epic,
-        min: -0.2,
-        max: -0.27,
+        min: -0.08,
+        max: -0.11,
       },
       {
         rarity: UpgradeRarity.Legendary,
-        min: -0.25,
-        max: -0.32,
+        min: -0.12,
+        max: -0.15,
       },
     ],
   },
