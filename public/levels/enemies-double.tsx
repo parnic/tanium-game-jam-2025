@@ -32,7 +32,7 @@
    <property name="corpse-id" type="int" value="25"/>
    <property name="difficulty" type="float" value="1"/>
    <property name="facing" type="int" value="-1"/>
-   <property name="health-mult" type="float" value="2"/>
+   <property name="health-mult" type="float" value="1.3"/>
    <property name="name" value="snail"/>
    <property name="speed" type="float" value="0.2625"/>
   </properties>
@@ -49,7 +49,7 @@
    <property name="corpse-id" type="int" value="34"/>
    <property name="difficulty" type="float" value="2"/>
    <property name="facing" type="int" value="-1"/>
-   <property name="health-mult" type="float" value="2"/>
+   <property name="health-mult" type="float" value="1.3"/>
    <property name="name" value="slime"/>
    <property name="speed" type="float" value="0.15"/>
   </properties>
@@ -66,7 +66,7 @@
    <property name="corpse-id" type="int" value="27"/>
    <property name="difficulty" type="float" value="3"/>
    <property name="facing" type="int" value="1"/>
-   <property name="health-mult" type="float" value="3"/>
+   <property name="health-mult" type="float" value="1.7"/>
    <property name="name" value="block-green"/>
    <property name="speed" type="float" value="0.175"/>
   </properties>
@@ -190,7 +190,7 @@
    <property name="corpse-id" type="int" value="3"/>
    <property name="difficulty" type="float" value="1"/>
    <property name="facing" type="int" value="-1"/>
-   <property name="health-mult" type="float" value="3"/>
+   <property name="health-mult" type="float" value="1.7"/>
    <property name="name" value="mouse-flame"/>
    <property name="speed" type="float" value="0.25"/>
   </properties>
@@ -208,7 +208,7 @@
    <property name="corpse-id" type="int" value="15"/>
    <property name="difficulty" type="float" value="2"/>
    <property name="facing" type="int" value="-1"/>
-   <property name="health-mult" type="float" value="3"/>
+   <property name="health-mult" type="float" value="1.5"/>
    <property name="name" value="bee"/>
    <property name="speed" type="float" value="0.45"/>
   </properties>
@@ -235,7 +235,7 @@
    <property name="corpse-id" type="int" value="31"/>
    <property name="difficulty" type="float" value="10"/>
    <property name="facing" type="int" value="-1"/>
-   <property name="health-mult" type="float" value="4"/>
+   <property name="health-mult" type="float" value="2.5"/>
    <property name="name" value="spike"/>
    <property name="speed" type="float" value="0.5"/>
   </properties>
