@@ -1,4 +1,4 @@
-import { DisplayMode, ImageFiltering, SolverStrategy } from "excalibur";
+import { Color, DisplayMode, ImageFiltering, SolverStrategy } from "excalibur";
 import * as Confetti from "./effects/confetti";
 import { GameEngine } from "./game-engine";
 import { loader } from "./resources";
@@ -7,6 +7,7 @@ import * as SceneManager from "./utilities/scene-manager";
 
 const game = new GameEngine({
   canvasElementId: "game",
+  backgroundColor: Color.Black,
   displayMode: DisplayMode.FillScreen,
   antialiasing: {
     filtering: ImageFiltering.Pixel,

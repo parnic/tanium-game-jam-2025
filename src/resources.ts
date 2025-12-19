@@ -16,6 +16,9 @@ export const Resources = {
     "json",
   ),
   ExitImage: new ImageSource("./images/spaceRockets_001.png"),
+  IntroImg1: new ImageSource("./images/intro1.png"),
+  IntroImg2: new ImageSource("./images/intro2.png"),
+  IntroImg3: new ImageSource("./images/intro3.png"),
 } as const;
 
 export const LevelResources = {

@@ -1,7 +1,8 @@
 import type { TiledResource } from "@excaliburjs/plugin-tiled";
-import { Buttons, type Engine, Keys } from "excalibur";
+import { Buttons, type Engine, Keys, type Scene } from "excalibur";
 import { LevelDataResources, LevelResources } from "../resources";
 import { GameLevel, type LevelData } from "../scenes/game-level";
+import { IntroScene } from "../scenes/intro-scene";
 import { TransitionScene } from "../scenes/transition-scene";
 import { TutorialScene } from "../scenes/tutorial-scene";
 import * as Audio from "../utilities/audio";
@@ -9,6 +10,7 @@ import { Weapon } from "../weapon";
 import * as html from "./html";
 
 enum SceneType {
+  Intro,
   Tutorial,
   Game,
 }
@@ -34,17 +36,17 @@ elemRestart.addEventListener("click", restartClickHandler);
 
 export class SceneData {
   name = "";
-  map: TiledResource;
+  map?: TiledResource;
   nextScene = "";
   type: SceneType = SceneType.Game;
-  levelData: LevelData;
+  levelData?: LevelData;
 
   constructor(
     name: string,
-    map: TiledResource,
     nextScene: string,
     type: SceneType,
-    levelData: LevelData,
+    levelData?: LevelData,
+    map?: TiledResource,
   ) {
     this.name = name;
     this.map = map;
@@ -58,12 +60,23 @@ const sceneList: SceneData[] = [];
 
 export function init() {
   sceneList.push({
+    name: "intro",
+    nextScene: "level1",
+    type: SceneType.Intro,
+  });
+
+  sceneList.push({
     name: "level1",
     map: LevelResources.level1,
     nextScene: "",
     type: SceneType.Tutorial,
     levelData: LevelDataResources.level1.data,
   });
+}
+
+function getSceneDataByName(name: string): SceneData | undefined {
+  const targetSceneData = sceneList.find((s) => s.name === name);
+  return targetSceneData;
 }
 
 export function getCurrentSceneData(engine: Engine): SceneData | undefined {
@@ -156,18 +169,30 @@ export async function goToScene(
     engine.removeScene(currentSceneData.name);
   }
 
-  let nextScene: GameLevel;
+  let nextScene: Scene;
 
   if (!Audio.isMusicStarted()) {
     Audio.playMusic();
   }
 
-  if (nextSceneData.type === SceneType.Tutorial && TutorialScene.shouldShow()) {
-    nextScene = new TutorialScene(nextSceneData.map, nextSceneData.levelData, {
-      showTutorial: !currentSceneData,
-    });
+  if (nextSceneData.type === SceneType.Intro) {
+    if (!TutorialScene.shouldShow()) {
+      goToScene(
+        getSceneDataByName(nextSceneData.nextScene)!,
+        engine,
+        nextSceneData,
+      );
+      return;
+    }
+
+    nextScene = new IntroScene();
+  } else if (
+    nextSceneData.type === SceneType.Tutorial &&
+    TutorialScene.shouldShow()
+  ) {
+    nextScene = new TutorialScene(nextSceneData.map!, nextSceneData.levelData!);
   } else {
-    nextScene = new GameLevel(nextSceneData.map, nextSceneData.levelData);
+    nextScene = new GameLevel(nextSceneData.map!, nextSceneData.levelData!);
   }
 
   engine.addScene(nextSceneData.name, nextScene);
@@ -175,43 +200,45 @@ export async function goToScene(
   await engine.goToScene(nextSceneData.name);
   engine.removeScene("transition");
 
-  nextScene.events.on("CharacterChosen", () => {
-    nextScene.player!.on("postkill", () => {
-      const elemText = elemRoundEnd.querySelector(
-        "#round-end-text",
-      )! as HTMLElement;
-      elemText.classList.remove("success", "failure");
+  if (nextScene instanceof GameLevel) {
+    nextScene.events.on("CharacterChosen", () => {
+      nextScene.player!.on("postkill", () => {
+        const elemText = elemRoundEnd.querySelector(
+          "#round-end-text",
+        )! as HTMLElement;
+        elemText.classList.remove("success", "failure");
 
-      if (nextScene.player?.reachedExit) {
-        elemText.classList.add("success");
-        elemText.innerText = "CHRISTMAS IS SAVED!";
-      } else {
-        elemText.classList.add("failure");
-        elemText.innerText = "NO PRESENTS FOR CHRISTMAS :(";
-      }
-
-      populateStats(
-        elemRoundEnd.querySelector(".stats") as HTMLElement,
-        nextScene,
-      );
-
-      html.showElement(elemRoundEnd);
-
-      restartShownTime = engine.clock.now();
-      nextScene.player?.events.on("ButtonPressed", (evt) => {
-        if (
-          evt.key === Keys.Enter ||
-          evt.key === Keys.Space ||
-          evt.key === Keys.Esc ||
-          evt.key === Keys.NumEnter ||
-          evt.button === Buttons.Start ||
-          evt.button === Buttons.Face1
-        ) {
-          restartClickHandler();
+        if (nextScene.player?.reachedExit) {
+          elemText.classList.add("success");
+          elemText.innerText = "CHRISTMAS IS SAVED!";
+        } else {
+          elemText.classList.add("failure");
+          elemText.innerText = "NO PRESENTS FOR CHRISTMAS :(";
         }
+
+        populateStats(
+          elemRoundEnd.querySelector(".stats") as HTMLElement,
+          nextScene,
+        );
+
+        html.showElement(elemRoundEnd);
+
+        restartShownTime = engine.clock.now();
+        nextScene.player?.events.on("ButtonPressed", (evt) => {
+          if (
+            evt.key === Keys.Enter ||
+            evt.key === Keys.Space ||
+            evt.key === Keys.Esc ||
+            evt.key === Keys.NumEnter ||
+            evt.button === Buttons.Start ||
+            evt.button === Buttons.Face1
+          ) {
+            restartClickHandler();
+          }
+        });
       });
     });
-  });
+  }
 }
 
 export async function goToNextScene(engine: Engine) {
