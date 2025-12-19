@@ -1,5 +1,10 @@
 import type { TiledResource } from "@excaliburjs/plugin-tiled";
 import { Buttons, type Engine, Keys, type Scene } from "excalibur";
+import {
+  RarityCSSClassMap,
+  type RarityCSSClassMapKey,
+  UpgradeRarity,
+} from "../components/upgrade-component";
 import { LevelDataResources, LevelResources } from "../resources";
 import { GameLevel, type LevelData } from "../scenes/game-level";
 import { IntroScene } from "../scenes/intro-scene";
@@ -129,6 +134,22 @@ function populateStats(parentElem: HTMLElement, scene: GameLevel) {
     }
   }
 
+  const damageTiers: number[] = [];
+  const dpsTiers: number[] = [];
+  const killsTiers: number[] = [];
+  for (const weapon of player.weapons) {
+    damageTiers.push(Math.round(weapon.damageDealt * 10) / 10);
+    dpsTiers.push(
+      Math.round((weapon.damageDealt / (weapon.aliveTime / 1000)) * 10) / 10,
+    );
+    killsTiers.push(weapon.kills);
+  }
+  damageTiers.sort((a, b) => b - a);
+  dpsTiers.sort((a, b) => b - a);
+  killsTiers.sort((a, b) => b - a);
+
+  const numRarities = Object.values(UpgradeRarity).length / 2;
+
   for (const weapon of player.weapons) {
     const statBlock = template.cloneNode(true) as HTMLElement;
     statBlock.classList.remove("template");
@@ -142,13 +163,35 @@ function populateStats(parentElem: HTMLElement, scene: GameLevel) {
     );
 
     const elemDamage = statBlock.querySelector(".damage") as HTMLElement;
-    elemDamage.innerText = `${(Math.round(weapon.damageDealt * 10) / 10).toLocaleString()} damage`;
+    const dmg = Math.round(weapon.damageDealt * 10) / 10;
+    const dmgTier = damageTiers.indexOf(dmg);
+    elemDamage.classList.remove(...Object.values(RarityCSSClassMap));
+    elemDamage.classList.add(
+      RarityCSSClassMap[(numRarities - dmgTier - 1) as RarityCSSClassMapKey],
+    );
+    elemDamage.innerText = dmg.toLocaleString();
 
     const elemDps = statBlock.querySelector(".dps") as HTMLElement;
-    elemDps.innerText = `${(Math.round((weapon.damageDealt / (weapon.aliveTime / 1000)) * 10) / 10).toLocaleString()} dps`;
+    const dps =
+      Math.round((weapon.damageDealt / (weapon.aliveTime / 1000)) * 10) / 10;
+    const dpsTier = dpsTiers.indexOf(dps);
+    elemDps.classList.remove(...Object.values(RarityCSSClassMap));
+    elemDps.classList.add(
+      RarityCSSClassMap[(numRarities - dpsTier - 1) as RarityCSSClassMapKey],
+    );
+    elemDps.innerText = dps.toLocaleString();
 
     const elemKills = statBlock.querySelector(".kills") as HTMLElement;
-    elemKills.innerText = `${weapon.kills.toLocaleString()} kill${weapon.kills === 1 ? "" : "s"}`;
+    const elemKillsPlural = statBlock.querySelector(
+      ".kills-plural",
+    ) as HTMLElement;
+    const killsTier = killsTiers.indexOf(weapon.kills);
+    elemKills.classList.remove(...Object.values(RarityCSSClassMap));
+    elemKills.classList.add(
+      RarityCSSClassMap[(numRarities - killsTier - 1) as RarityCSSClassMapKey],
+    );
+    elemKills.innerText = weapon.kills.toLocaleString();
+    elemKillsPlural.innerText = weapon.kills === 1 ? "" : "s";
 
     html.unhideElement(statBlock);
     parentElem.appendChild(statBlock);

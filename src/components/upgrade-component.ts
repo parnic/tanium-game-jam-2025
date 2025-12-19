@@ -58,6 +58,7 @@ export const RarityCSSClassMap = {
   [UpgradeRarity.Uncommon]: "rarity-uncommon",
   // [UpgradeRarity.Common]: "rarity-common",
 };
+export type RarityCSSClassMapKey = keyof typeof RarityCSSClassMap;
 
 type UpgradeAttributeRarityValueRange = {
   rarity: UpgradeRarity;
