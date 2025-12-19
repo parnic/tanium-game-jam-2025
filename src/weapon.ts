@@ -52,6 +52,7 @@ export interface WeaponData {
   spreadVarianceUnits: "degrees" | "radians" | "pixels" | undefined;
   selectable?: boolean;
   acceleration?: number; // a multiplier applied to speed, scaled per second, to slow it down (values <0) or speed it up (values>0). speed += speed * acceleration * elapsedSeconds
+  blockedUpgradeAttributes?: string[]; // some attributes either don't make sense or are downright harmful for some weapons, so don't allow them to be chosen
 }
 
 const minMultiSpawnDelayMs = 30;

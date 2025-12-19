@@ -394,10 +394,10 @@ export class UpgradeComponent extends Component {
         });
       } else {
         const choice = rand.pickOne(forPlayer.weapons);
-        let attribute = attributes.pop()!;
-        // if the weapon doesn't have a lifetime, don't choose the Lifetime upgrade attribute
+        let attribute = attributes.shift()!;
+        // if the weapon doesn't have a lifetime, don't choose the Lifetime upgrade attribute.
         if (!choice.lifetimeMs && attribute === UpgradeAttribute.Lifetime) {
-          attribute = attributes.pop()!;
+          attribute = attributes.shift()!;
           // put it back into the pool in case we somehow run through them all
           attributes.push(UpgradeAttribute.Lifetime);
         }
@@ -407,9 +407,22 @@ export class UpgradeComponent extends Component {
           choice.definition.spawnBehavior === "ownerLocation" &&
           attribute === UpgradeAttribute.Speed
         ) {
-          attribute = attributes.pop()!;
+          attribute = attributes.shift()!;
           // put it back into the pool in case we somehow run through them all
           attributes.push(UpgradeAttribute.Speed);
+        }
+
+        // block any other blocked attributes
+        while (
+          choice.definition.blockedUpgradeAttributes?.includes(
+            Object.values(UpgradeAttribute)[attribute].toString(),
+          )
+        ) {
+          Logger.getInstance().error(
+            `Skipping attribute ${attribute} for weapon ${choice.definition.displayName} because it's blocklisted`,
+          );
+          attributes.push(attribute);
+          attribute = attributes.shift()!;
         }
 
         const rarity = this.getRandomRarity();
