@@ -61,7 +61,7 @@
     "displayName": "Burn trap",
     "description": "Leaves a painful trail",
     "baseSpeed": 0.9,
-    "baseDamage": 0.42,
+    "baseDamage": 0.51,
     "baseSpawnIntervalMs": 850,
     "baseLifetime": 2250,
     "spawnBehavior": "ownerLocation",
