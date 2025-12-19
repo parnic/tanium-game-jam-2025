@@ -279,6 +279,7 @@ export const UpgradeEvents = {
 export class UpgradeComponent extends Component {
   public events = new EventEmitter<UpgradeEvents>();
   private currentUpgrades: UpgradeUIData[] = [];
+  private clickEventListener;
 
   elemUpgrade: HTMLElement;
 
@@ -287,26 +288,47 @@ export class UpgradeComponent extends Component {
 
     this.elemUpgrade = document.querySelector("#upgrades")!;
 
-    this.hookEvents();
+    this.clickEventListener = (event: Event) => {
+      this.onUpgradeClicked(event);
+    };
+  }
+
+  private onUpgradeChosen(elem: HTMLElement) {
+    Logger.getInstance().info(`Choosing upgrade ${elem.id}`);
+    hideElement(this.elemUpgrade);
+
+    if (this.owner?.scene?.engine instanceof GameEngine) {
+      this.owner.scene.engine.togglePause(false);
+    }
+
+    const idx = Number((elem as HTMLElement).dataset.idx);
+
+    this.events.emit(
+      UpgradeEvents.UpgradeChosen,
+      new UpgradeChosenEvent(this.currentUpgrades[idx]),
+    );
+  }
+
+  private onUpgradeClicked(event: Event) {
+    this.unhookEvents();
+
+    const upgradeParent = (event.target as HTMLElement).closest(
+      ".upgrade",
+    ) as HTMLElement;
+    this.onUpgradeChosen(upgradeParent);
   }
 
   private hookEvents() {
+    const upgradeElems = this.elemUpgrade.querySelectorAll(".upgrade");
+    for (let i = 0; i < upgradeElems.length; i++) {
+      const elem = upgradeElems.item(i);
+      elem.addEventListener("click", this.clickEventListener);
+    }
+  }
+
+  private unhookEvents() {
     this.elemUpgrade.querySelectorAll(".upgrade").forEach((elem) => {
-      elem.addEventListener("click", () => {
-        Logger.getInstance().info(`Choosing upgrade ${elem.id}`);
-        hideElement(this.elemUpgrade);
-
-        if (this.owner?.scene?.engine instanceof GameEngine) {
-          this.owner.scene.engine.togglePause(false);
-        }
-
-        const idx = Number((elem as HTMLElement).dataset.idx);
-
-        this.events.emit(
-          UpgradeEvents.UpgradeChosen,
-          new UpgradeChosenEvent(this.currentUpgrades[idx]),
-        );
-      });
+      elem.removeEventListener("click", this.clickEventListener);
     });
   }
 
@@ -423,6 +445,8 @@ export class UpgradeComponent extends Component {
   }
 
   presentUpgrades(upgrades: UpgradeUIData[]) {
+    this.hookEvents();
+
     this.currentUpgrades = upgrades;
 
     if (this.owner?.scene?.engine instanceof GameEngine) {
