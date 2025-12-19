@@ -81,7 +81,7 @@ export class XpComponent extends Component {
       return 0;
     }
 
-    return level * 5 + level ** 2.8;
+    return level * 5 + level ** 2.5;
   }
 
   levelForXp(inXp: number): number {
